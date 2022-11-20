@@ -1,0 +1,29 @@
+<html>
+<body>
+    <div>
+        <form th:action="/logout}" method="post">
+            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+            <input type="submit" value="Sign Out"/>
+        </form>
+    </div>
+    <div>
+        <form method="post" action="post">
+            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+            <input type="text" name="name" placeholder="enter text" />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <div>Users list:</div>
+    <form method="post" action="filter">
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+        <input type="text" name="filter" placeholder="enter filter" />
+        <button type="submit">Filter</button>
+    </form>
+    {{#roles}}
+        <div>
+        <b>{{id}}</b>
+        <i>{{name}}</i>
+        </div>
+    {{/roles}}
+</body>
+</html>
