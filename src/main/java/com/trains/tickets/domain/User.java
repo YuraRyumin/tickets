@@ -17,13 +17,11 @@ public class User {
     private Integer id_passenger;
     private Integer id_role;
     private boolean active;
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.LAZY)
-    private Set<Role> role;
 
     public User() {
     }
 
-    public User(String email, String telephone, String login, String password, Integer id_passenger, Integer id_role, boolean active, Set<Role> role) {
+    public User(String email, String telephone, String login, String password, Integer id_passenger, Integer id_role, boolean active) {
         this.email = email;
         this.telephone = telephone;
         this.login = login;
@@ -31,7 +29,6 @@ public class User {
         this.id_passenger = id_passenger;
         this.id_role = id_role;
         this.active = active;
-        this.role = role;
     }
 
     public Integer getId() {
@@ -96,13 +93,5 @@ public class User {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public Set<Role> getRoles() {
-        return role;
-    }
-
-    public void setRoles(Set<Role> role) {
-        this.role = role;
     }
 }
