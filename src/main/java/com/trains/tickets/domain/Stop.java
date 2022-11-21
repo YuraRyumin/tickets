@@ -1,8 +1,6 @@
 package com.trains.tickets.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
@@ -12,17 +10,22 @@ public class Stop {
 
     private LocalDate time_begining;
     private LocalDate time_end;
-    private Integer id_schedule;
-    private Integer id_station;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_schedule")
+    private Schedule schedule;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_station")
+    private Station station;
 
     public Stop() {
     }
 
-    public Stop(LocalDate time_begining, LocalDate time_end, Integer id_schedule, Integer id_station) {
+    public Stop(LocalDate time_begining, LocalDate time_end, Schedule schedule, Station station) {
         this.time_begining = time_begining;
         this.time_end = time_end;
-        this.id_schedule = id_schedule;
-        this.id_station = id_station;
+        this.schedule = schedule;
+        this.station = station;
     }
 
     public LocalDate getTime_begining() {
@@ -41,19 +44,19 @@ public class Stop {
         this.time_end = time_end;
     }
 
-    public Integer getId_schedule() {
-        return id_schedule;
+    public Schedule getSchedule() {
+        return schedule;
     }
 
-    public void setId_schedule(Integer id_schedule) {
-        this.id_schedule = id_schedule;
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 
-    public Integer getId_station() {
-        return id_station;
+    public Station getStation() {
+        return station;
     }
 
-    public void setId_station(Integer id_station) {
-        this.id_station = id_station;
+    public void setStation(Station station) {
+        this.station = station;
     }
 }

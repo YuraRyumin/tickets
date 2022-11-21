@@ -1,41 +1,53 @@
 package com.trains.tickets.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "distances")
 public class Distance {
     @Id
+    private Integer id;
 
-    private Integer id_station_first;
-    private Integer id_station_last;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_station_first")
+    private Station StationFirst;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_station_last")
+    private Station StationLast;
     private Integer km;
 
     public Distance() {
     }
 
-    public Distance(Integer id_station_first, Integer id_station_last, Integer km) {
-        this.id_station_first = id_station_first;
-        this.id_station_last = id_station_last;
+    public Distance(Station StationFirst, Station StationLast, Integer km) {
+        this.StationFirst = StationFirst;
+        this.StationLast = StationLast;
         this.km = km;
     }
 
-    public Integer getId_station_first() {
-        return id_station_first;
+    public Integer getId() {
+        return id;
     }
 
-    public void setId_station_first(Integer id_station_first) {
-        this.id_station_first = id_station_first;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public Integer getId_station_last() {
-        return id_station_last;
+    public Station getStationFirst() {
+        return StationFirst;
     }
 
-    public void setId_station_last(Integer id_station_last) {
-        this.id_station_last = id_station_last;
+    public void setStationFirst(Station stationFirst) {
+        StationFirst = stationFirst;
+    }
+
+    public Station getStationLast() {
+        return StationLast;
+    }
+
+    public void setStationLast(Station stationLast) {
+        StationLast = stationLast;
     }
 
     public Integer getKm() {
@@ -45,5 +57,4 @@ public class Distance {
     public void setKm(Integer km) {
         this.km = km;
     }
-
 }

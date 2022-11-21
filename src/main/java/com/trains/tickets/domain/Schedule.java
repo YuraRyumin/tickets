@@ -10,15 +10,18 @@ public class Schedule {
     private Integer id;
     private Character time;
     private Integer day_of_week;
-    private Integer id_train;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_train")
+    private Train train;
 
     public Schedule() {
     }
 
-    public Schedule(Character time, Integer day_of_week, Integer id_train) {
+    public Schedule(Character time, Integer day_of_week, Train train) {
         this.time = time;
         this.day_of_week = day_of_week;
-        this.id_train = id_train;
+        this.train = train;
     }
 
     public Integer getId() {
@@ -45,11 +48,11 @@ public class Schedule {
         this.day_of_week = day_of_week;
     }
 
-    public Integer getId_train() {
-        return id_train;
+    public Train getTrain() {
+        return train;
     }
 
-    public void setId_train(Integer id_train) {
-        this.id_train = id_train;
+    public void setTrain(Train train) {
+        this.train = train;
     }
 }

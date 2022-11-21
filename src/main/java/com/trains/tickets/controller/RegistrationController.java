@@ -30,8 +30,8 @@ public class RegistrationController {
         }
 
         user.setActive(true);
-        user.setId_passenger(1);
-        user.setId_role(2);
+        //user.setPassenger(1);
+        //user.setRole(2);
         userRepository.save(user);
         return "redirect:/login";
     }

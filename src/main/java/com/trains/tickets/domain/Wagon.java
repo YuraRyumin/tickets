@@ -8,17 +8,23 @@ public class Wagon {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    private Integer id_train;
-    private Integer id_service_classes;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_train")
+    private Train train;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_service_classes")
+    private ServiceClass serviceClasses;
     private String name;
     private Integer seats;
 
     public Wagon() {
     }
 
-    public Wagon(Integer id_train, Integer id_service_classes, String name, Integer seats) {
-        this.id_train = id_train;
-        this.id_service_classes = id_service_classes;
+    public Wagon(Train train, ServiceClass serviceClasses, String name, Integer seats) {
+        this.train = train;
+        this.serviceClasses = serviceClasses;
         this.name = name;
         this.seats = seats;
     }
@@ -31,20 +37,20 @@ public class Wagon {
         this.id = id;
     }
 
-    public Integer getId_train() {
-        return id_train;
+    public Train getTrain() {
+        return train;
     }
 
-    public void setId_train(Integer id_train) {
-        this.id_train = id_train;
+    public void setTrain(Train train) {
+        this.train = train;
     }
 
-    public Integer getId_service_classes() {
-        return id_service_classes;
+    public ServiceClass getServiceClasses() {
+        return serviceClasses;
     }
 
-    public void setId_service_classes(Integer id_service_classes) {
-        this.id_service_classes = id_service_classes;
+    public void setServiceClasses(ServiceClass serviceClasses) {
+        this.serviceClasses = serviceClasses;
     }
 
     public String getName() {

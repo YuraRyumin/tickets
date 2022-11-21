@@ -15,20 +15,26 @@ public class User {
     private String telephone;
     private String login;
     private String password;
-    private Integer id_passenger;
-    private Integer id_role;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_passenger")
+    private Passenger passenger;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_role")
+    private Role role;
     private boolean active;
 
     public User() {
     }
 
-    public User(String email, String telephone, String login, String password, Integer id_passenger, Integer id_role, boolean active) {
+    public User(String email, String telephone, String login, String password, Passenger passenger, Role role, boolean active) {
         this.email = email;
         this.telephone = telephone;
         this.login = login;
         this.password = password;
-        this.id_passenger = id_passenger;
-        this.id_role = id_role;
+        this.passenger = passenger;
+        this.role = role;
         this.active = active;
     }
 
@@ -72,20 +78,20 @@ public class User {
         this.password = password;
     }
 
-    public Integer getId_passenger() {
-        return id_passenger;
+    public Passenger getPassenger() {
+        return passenger;
     }
 
-    public void setId_passenger(Integer id_passenger) {
-        this.id_passenger = id_passenger;
+    public void setPassenger(Passenger passenger) {
+        this.passenger = passenger;
     }
 
-    public Integer getId_role() {
-        return id_role;
+    public Role getRole() {
+        return role;
     }
 
-    public void setId_role(Integer id_role) {
-        this.id_role = id_role;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public boolean isActive() {
