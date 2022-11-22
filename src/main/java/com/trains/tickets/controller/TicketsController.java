@@ -5,6 +5,9 @@ import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +21,19 @@ import java.util.Set;
 
 @Controller
 public class TicketsController {
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Value("${spring.mail.username}")
+    private String username;
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
+
+    public TicketsController(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender) {
+        this.roleRepository = roleRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
+    }
 
     @GetMapping("/")
     public String greeting(Map<String, Object> model) {
@@ -62,6 +72,14 @@ public class TicketsController {
 
     @PostMapping("changePass")
     public String post(Map<String, Object> model){
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+
+        mailMessage.setFrom(username);
+        mailMessage.setTo("s_shukrik_s@mail.ru");
+        mailMessage.setSubject("activation");
+        mailMessage.setText("User successfully activated");
+
+        mailSender.send(mailMessage);
         //User myUser1 = userRepository.findByLogin("user1");
         //myUser1.setPassword(passwordEncoder.encode(myUser1.getPassword()));
         //userRepository.save(myUser1);

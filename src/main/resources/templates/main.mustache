@@ -7,20 +7,21 @@
         <form action="logout" method="post">
             <input type="submit" value="Sign Out"/>
             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+            <span><a href="/user">User list</a></span>
         </form>
     </div>
     <div>
-        <form method="post" action="changePass">
+        <form method="post" id="add" action="changePass">
             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
             <input type="text" name="name" placeholder="enter text" />
-            <button type="submit">Send</button>
+            <button type="submit">&#xf00c;</button>
         </form>
     </div>
-    <div>Users list:</div>
-    <form method="post" action="filter">
+    <div>Roles list:</div>
+    <form method="post"  id="registr" action="filter">
         <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
         <input type="text" name="filter" placeholder="enter filter" />
-        <button type="submit">Filter</button>
+        <button type="submit">&#xf0b0;</button>
     </form>
     {{#roles}}
         <div>

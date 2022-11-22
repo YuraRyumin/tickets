@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="/styles/stylebesheniy.css">
+    <title>Login</title>
+</head>
+<body>
+<div align=center>
+    List of users
+    <table>
+        <thead>
+        <tr>
+            <th>Login</th>
+            <th>Role</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#users}}
+            <tr>
+                <td>{{login}}</td>
+                <td>{{role.name}}</td>
+                <td><a href="/user/{{id}}">edit</a></td>
+            </tr>
+        {{/users}}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

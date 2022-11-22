@@ -7,7 +7,11 @@
 <body>
 <div align=center>
 Login page
-<form id="signin" th:action="/login" method="post">
+    <br>
+    {{#message}}
+    {{message}}
+    {{/message}}
+<form id="signin" action="/login" method="post">
   <div align=right>
 	  <input type="text" id="user" name="username" placeholder="login" />
 	  <input type="password"  id="pass" name="password" placeholder="password" />

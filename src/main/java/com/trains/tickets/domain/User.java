@@ -20,12 +20,13 @@ public class User implements UserDetails {
     private String telephone;
     private String login;
     private String password;
+    private String activationCode;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_passenger")
     private Passenger passenger;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role")
     private Role role;
     private boolean active;
@@ -33,7 +34,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String email, String telephone, String login, String password, Passenger passenger, Role role, boolean active) {
+    public User(String email, String telephone, String login, String password, Passenger passenger, Role role, boolean active, String activationCode) {
         this.email = email;
         this.telephone = telephone;
         this.login = login;
@@ -41,6 +42,7 @@ public class User implements UserDetails {
         this.passenger = passenger;
         this.role = role;
         this.active = active;
+        this.activationCode = activationCode;
     }
 
     public Integer getId() {
@@ -73,6 +75,14 @@ public class User implements UserDetails {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getActivationCode() {
+        return activationCode;
+    }
+
+    public void setActivationCode(String activationCode) {
+        this.activationCode = activationCode;
     }
 
     @Override

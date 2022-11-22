@@ -103,4 +103,165 @@ h1{
 #signin p > a:hover{
     border-bottom: 1px solid;
 }
-
+/* === Add in Form === */
+#add {
+    height: 90px;
+    width: 300px;
+    border-radius: 8px;
+    position: relative;
+}
+#add::before {
+    display: block;
+    position: relative;
+    height: 2px;
+    background: rgb(52, 56, 61);
+    content: '';
+    top: 44px;
+    margin-left: 20px;
+    z-index: 1;
+}
+#add input:first-of-type{
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+#add input:last-of-type{
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+#add  input[type="text"], #add  input[type="password"], #add button[type="submit"]{
+    background: rgb(128, 130, 133);
+    box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
+    color: rgb(152, 156, 161);
+}
+#add  input[type="text"], #add  input[type="password"]{
+    position: relative;
+    display: block;
+    width: 280px;
+    height: 45px;
+    border: 0;
+    outline: 0;
+    top: -2px;
+    padding: 0 0 0 20px;
+    font-weight: 700;
+}
+#add  input[type="text"]:focus, #add  input[type="password"]:focus{
+    color: rgb(255, 255, 255);
+}
+#add button[type="submit"]{
+    display: block;
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    color: rgb(52, 56, 61);
+    border-radius: 50px;
+    outline: 0;
+    z-index: 2;
+    top: 19px;
+    right: -24px;
+    border: 6px solid rgb(52, 56, 61);
+    font-size: 25px;
+    text-indent: 0px;
+    padding-left: 9px;
+    padding-bottom: 3px;
+    text-align: center;
+}
+#add button[type="submit"]:hover{
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+    cursor: pointer;
+}
+#add p {
+    color: rgb(79, 85, 97);
+    padding: 0 20px;
+    font-weight: 700;
+    font-size: 12px;
+    margin: 5px 0 0 0;
+}
+#add p > a{
+    color: rgb(211, 119, 135);
+    text-decoration: none;
+}
+#add p > a:hover{
+    border-bottom: 1px solid;
+}
+/* === Registr in Form === */
+#registr {
+    height: 90px;
+    width: 300px;
+    border-radius: 8px;
+    position: relative;
+}
+#registr::before {
+    display: block;
+    position: relative;
+    height: 2px;
+    background: rgb(52, 56, 61);
+    content: '';
+    top: 44px;
+    margin-left: 20px;
+    z-index: 1;
+}
+#registr input:first-of-type{
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+#registr input:last-of-type{
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+#registr  input[type="text"], #registr  input[type="password"], #registr button[type="submit"]{
+    background: rgb(128, 130, 133);
+    box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
+    color: rgb(152, 156, 161);
+}
+#registr  input[type="text"], #registr  input[type="password"]{
+    position: relative;
+    display: block;
+    width: 280px;
+    height: 45px;
+    border: 0;
+    outline: 0;
+    top: -2px;
+    padding: 0 0 0 20px;
+    font-weight: 700;
+}
+#registr  input[type="text"]:focus, #registr  input[type="password"]:focus{
+    color: rgb(255, 255, 255);
+}
+#registr button[type="submit"]{
+    display: block;
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    color: rgb(52, 56, 61);
+    border-radius: 50px;
+    outline: 0;
+    z-index: 2;
+    top: 19px;
+    right: -24px;
+    border: 6px solid rgb(52, 56, 61);
+    font-size: 25px;
+    text-indent: 0px;
+    padding-left: 9px;
+    padding-bottom: 3px;
+    text-align: center;
+}
+#registr button[type="submit"]:hover{
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+    cursor: pointer;
+}
+#registr p {
+    color: rgb(79, 85, 97);
+    padding: 0 20px;
+    font-weight: 700;
+    font-size: 12px;
+    margin: 5px 0 0 0;
+}
+#registr p > a{
+    color: rgb(211, 119, 135);
+    text-decoration: none;
+}
+#registr p > a:hover{
+    border-bottom: 1px solid;
+}

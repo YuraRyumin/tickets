@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="/styles/stylebesheniy.css">
+    <title>Login</title>
+</head>
+<body>
+<div align=center>
+    User editor
+    <form action="/user" method="post">
+        <input type="text" name="login" value="{{user.login}}">
+        <input type="text" name="role" value="{{user.role.name}}">
+        <input type="hidden" value="{{user.id}}" name="userId">
+        <input type="hidden" value="{{_csrf.token}}" name="_csrf">
+        <button type="submit">Save</button>
+    </form>
+</div>
+</body>
+</html>

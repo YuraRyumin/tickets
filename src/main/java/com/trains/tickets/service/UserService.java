@@ -4,30 +4,37 @@ import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PassengerRepository passengerRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final PassengerRepository passengerRepository;
+    private final MailSender mailSender;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, PassengerRepository passengerRepository, MailSender mailSender) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+        this.passengerRepository = passengerRepository;
+        this.mailSender = mailSender;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByLogin(username);
     }
 
-    public UserService() {
-    }
+
 
     public boolean addUser(User user) {
         User userFromBD = userRepository.findByLogin(user.getLogin());
@@ -39,6 +46,27 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setPassenger(passengerRepository.findByPassport("2222222222"));
         user.setRole(roleRepository.findByName("user"));
+        user.setActivationCode(UUID.randomUUID().toString());
+        userRepository.save(user);
+
+        if(user.getEmail() != ""){
+            String message = String.format(
+                "Hello, %s! \n" +
+                "Welcom to Trains. Please visit next link: http://localhost:8080/activate/%s",
+                user.getLogin(), user.getActivationCode()
+            );
+            mailSender.send(user.getEmail(), "Activation", message);
+        }
+
+        return true;
+    }
+
+    public boolean activateUser(String code) {
+        User user = userRepository.findByActivationCode(code);
+        if(user == null){
+            return false;
+        }
+        user.setActivationCode(null);
         userRepository.save(user);
         return true;
     }
