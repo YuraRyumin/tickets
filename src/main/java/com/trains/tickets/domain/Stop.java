@@ -10,11 +10,11 @@ public class Stop {
 
     private LocalDate time_begining;
     private LocalDate time_end;
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_schedule")
     private Schedule schedule;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_station")
     private Station station;
 

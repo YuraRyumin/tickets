@@ -9,16 +9,16 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_passenger")
     private Passenger passenger;
     private LocalDate date_ticket;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_train")
     private Train train;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_wagons")
     private Wagon wagon;
 

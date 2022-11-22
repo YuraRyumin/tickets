@@ -8,5 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface RoleRepository extends CrudRepository<Role, Long> {
-    Set<Role> findByName(String name);
+    //Set<Role> findByName(String name);
+    Role findByName(String name);
 }

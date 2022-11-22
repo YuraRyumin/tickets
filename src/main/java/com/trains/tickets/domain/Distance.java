@@ -8,21 +8,21 @@ public class Distance {
     @Id
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_station_first")
-    private Station StationFirst;
+    private Station stationFirst;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_station_last")
-    private Station StationLast;
+    private Station stationLast;
     private Integer km;
 
     public Distance() {
     }
 
-    public Distance(Station StationFirst, Station StationLast, Integer km) {
-        this.StationFirst = StationFirst;
-        this.StationLast = StationLast;
+    public Distance(Station stationFirst, Station stationLast, Integer km) {
+        this.stationFirst = stationFirst;
+        this.stationLast = stationLast;
         this.km = km;
     }
 
@@ -35,19 +35,19 @@ public class Distance {
     }
 
     public Station getStationFirst() {
-        return StationFirst;
+        return stationFirst;
     }
 
     public void setStationFirst(Station stationFirst) {
-        StationFirst = stationFirst;
+        stationFirst = stationFirst;
     }
 
     public Station getStationLast() {
-        return StationLast;
+        return stationLast;
     }
 
     public void setStationLast(Station stationLast) {
-        StationLast = stationLast;
+        stationLast = stationLast;
     }
 
     public Integer getKm() {

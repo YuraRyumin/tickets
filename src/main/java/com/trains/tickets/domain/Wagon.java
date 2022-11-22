@@ -9,11 +9,11 @@ public class Wagon {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_train")
     private Train train;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_service_classes")
     private ServiceClass serviceClasses;
     private String name;

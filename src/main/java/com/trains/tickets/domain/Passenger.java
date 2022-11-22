@@ -8,6 +8,7 @@ import java.time.LocalDate;
 public class Passenger {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    //@OneToOne(mappedBy = "id_passenger")
     private Integer id;
     private String name;
     private String surname;

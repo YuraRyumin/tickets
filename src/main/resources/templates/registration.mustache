@@ -5,11 +5,12 @@
   <link href="/styles/stylebesheniy.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<div align=center>
 Add new user
 {{#message}}
     {{message}}
 {{/message}}
-<form th:action="/registration" id="signin" method="post">
+<form action="/registration" id="signin" method="post">
   <div align=right>
     <input type="text" id="user" name="login" placeholder="login" />
     <input type="password" id="pass" name="password" placeholder="password" />
@@ -21,5 +22,6 @@ Add new user
     <button type="submit" value="Sign In">&#xf0da;</button>
   </div>
 </form>
+</div>
 </body>
 </html>

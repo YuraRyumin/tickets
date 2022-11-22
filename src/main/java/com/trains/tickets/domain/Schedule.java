@@ -11,7 +11,7 @@ public class Schedule {
     private Character time;
     private Integer day_of_week;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_train")
     private Train train;
 

@@ -48,9 +48,9 @@ h1{
     border-bottom-left-radius: 8px;
 }
 #signin  input[type="text"], #signin  input[type="password"], #signin button[type="submit"]{
-    background: rgb(28, 30, 33);
-    box-shadow: inset -100px -100px 0 rgb(28, 30, 33); /*Prevent yellow autofill color*/
-    color: rgb(52, 56, 61);
+    background: rgb(128, 130, 133);
+    box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
+    color: rgb(152, 156, 161);
 }
 #signin  input[type="text"], #signin  input[type="password"]{
     position: relative;
@@ -97,7 +97,7 @@ h1{
     margin: 5px 0 0 0;
 }
 #signin p > a{
-    color: rgb(111, 119, 135);
+    color: rgb(211, 119, 135);
     text-decoration: none;
 }
 #signin p > a:hover{
