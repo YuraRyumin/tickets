@@ -47,12 +47,12 @@ h1{
     border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
 }
-#signin  input[type="text"], #signin  input[type="password"], #signin button[type="submit"]{
+#signin  input[type="email"], #signin  input[type="text"], #signin  input[type="password"], #signin button[type="submit"]{
     background: rgb(128, 130, 133);
     box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
     color: rgb(152, 156, 161);
 }
-#signin  input[type="text"], #signin  input[type="password"]{
+#signin  input[type="email"], #signin  input[type="text"], #signin  input[type="password"]{
     position: relative;
     display: block;
     width: 280px;
@@ -63,7 +63,7 @@ h1{
     padding: 0 0 0 20px;
     font-weight: 700;
 }
-#signin  input[type="text"]:focus, #signin  input[type="password"]:focus{
+#signin  input[type="email"]:focus, #signin  input[type="text"]:focus, #signin  input[type="password"]:focus{
     color: rgb(255, 255, 255);
 }
 #signin button[type="submit"]{
@@ -128,12 +128,12 @@ h1{
     border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
 }
-#add  input[type="text"], #add  input[type="password"], #add button[type="submit"]{
+#add  input[type="email"], #add  input[type="text"], #add  input[type="password"], #add button[type="submit"]{
     background: rgb(128, 130, 133);
     box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
     color: rgb(152, 156, 161);
 }
-#add  input[type="text"], #add  input[type="password"]{
+#add  input[type="email"], #add  input[type="text"], #add  input[type="password"]{
     position: relative;
     display: block;
     width: 280px;
@@ -144,7 +144,7 @@ h1{
     padding: 0 0 0 20px;
     font-weight: 700;
 }
-#add  input[type="text"]:focus, #add  input[type="password"]:focus{
+#add  input[type="email"]:focus, #add  input[type="text"]:focus, #add  input[type="password"]:focus{
     color: rgb(255, 255, 255);
 }
 #add button[type="submit"]{
@@ -209,12 +209,12 @@ h1{
     border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
 }
-#registr  input[type="text"], #registr  input[type="password"], #registr button[type="submit"]{
+#registr  input[type="email"], #registr  input[type="text"], #registr  input[type="password"], #registr button[type="submit"]{
     background: rgb(128, 130, 133);
     box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
     color: rgb(152, 156, 161);
 }
-#registr  input[type="text"], #registr  input[type="password"]{
+#registr  input[type="email"], #registr  input[type="text"], #registr  input[type="password"]{
     position: relative;
     display: block;
     width: 280px;
@@ -225,7 +225,7 @@ h1{
     padding: 0 0 0 20px;
     font-weight: 700;
 }
-#registr  input[type="text"]:focus, #registr  input[type="password"]:focus{
+#registr  input[type="email"]:focus, #registr  input[type="text"]:focus, #registr  input[type="password"]:focus{
     color: rgb(255, 255, 255);
 }
 #registr button[type="submit"]{
