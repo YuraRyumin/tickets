@@ -1,15 +1,26 @@
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/styles/stylebesheniy.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+    <div class="topnav">
+        <a class="active" href="/">Tickets to trains</a>
+        <a href="/main">Main</a>
+        <a href="/user">Users list</a>
+    </div>
+    {{#user}}
     <div>
         <form action="logout" method="post">
-            <input type="submit" value="Sign Out"/>
+            <button type="submit" value="Sign Out">Sign out {{login}}</button>
             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
-            <span><a href="/user">User list</a></span>
         </form>
     </div>
+    <br>
+    {{/user}}
+
+
     <div>
         <form method="post" id="add" action="changePass">
             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />

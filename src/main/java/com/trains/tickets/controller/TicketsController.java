@@ -4,10 +4,13 @@ import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,9 +44,11 @@ public class TicketsController {
     }
 
     @GetMapping("/main")
-    public String main(Map<String, Object> model){
+    public String main(@AuthenticationPrincipal User user,
+                       Map<String, Object> model){
         Iterable<Role> role = roleRepository.findAll();
         model.put("roles", role);
+        model.put("user", user);
         return "main";
     }
 

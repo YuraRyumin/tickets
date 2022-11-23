@@ -3,20 +3,36 @@
 <head>
   <title>Spring Security Example </title>
   <link href="/styles/stylebesheniy.css" rel="stylesheet" type="text/css">
+
+  <script type="text/javascript">
+
+    function ValidPhone() {
+      var re = /^[\d\+][\d\(\)\ -]{4,14}\d$/;
+      var myPhone = document.getElementById('telephone').value;
+      var valid = re.test(myPhone);
+      return valid;
+    }
+
+  </script>
 </head>
 <body>
+<div class="topnav">
+  <a class="active" href="/">Tickets to trains</a>
+  <a href="/main">Main</a>
+  <a href="/user">Users list</a>
+</div>
 <div align=center>
 Add new user
   <br>
 {{#message}}
     {{message}}
 {{/message}}
-<form action="/registration" id="signin" method="post">
+<form action="/registration" id="signin" method="post" onsubmit="return ValidPhone()">
   <div align=right>
     <input type="text" id="user" name="login" placeholder="login" />
     <input type="password" id="pass" name="password" placeholder="password" />
     <input type="email" id="email" name="email" class="form-control" placeholder="e-mail" />
-    <input type="text" id="telephone" name="telephone" placeholder="telephone" />
+    <input type="tel" id="telephone" pattern="^\+\d{2}\d{9}$" name="telephone" placeholder="telephone" />
   </div>
     <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
   <div>

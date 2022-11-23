@@ -1,4 +1,7 @@
 package com.trains.tickets.repository;
 
-public interface StopRepository {
+import com.trains.tickets.domain.Stop;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface StopRepository extends JpaRepository<Stop, Long> {
 }

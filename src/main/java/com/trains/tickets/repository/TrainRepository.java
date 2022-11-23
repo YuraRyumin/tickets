@@ -1,4 +1,7 @@
 package com.trains.tickets.repository;
 
-public interface TrainRepository {
+import com.trains.tickets.domain.Train;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TrainRepository extends JpaRepository<Train, Long> {
 }

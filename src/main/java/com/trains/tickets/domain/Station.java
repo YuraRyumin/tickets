@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name = "stations")
 public class Station {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     @OneToOne(fetch = FetchType.LAZY)

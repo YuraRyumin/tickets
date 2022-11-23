@@ -12,7 +12,7 @@ import java.util.Set;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
 
@@ -20,6 +20,7 @@ public class User implements UserDetails {
     private String telephone;
     private String login;
     private String password;
+    @Column(name = "activation_code")
     private String activationCode;
 
     @OneToOne(fetch = FetchType.EAGER)
@@ -147,5 +148,9 @@ public class User implements UserDetails {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isAdmin(){
+        return role.getName().equals("admin");
     }
 }

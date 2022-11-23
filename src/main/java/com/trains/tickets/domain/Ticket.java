@@ -7,12 +7,13 @@ import java.time.LocalDate;
 @Table(name = "tickets")
 public class Ticket {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_passenger")
     private Passenger passenger;
-    private LocalDate date_ticket;
+    @Column(name = "date_ticket")
+    private LocalDate dateTicket;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_train")
@@ -25,9 +26,9 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Passenger passenger, LocalDate date_ticket, Train train, Wagon wagon) {
+    public Ticket(Passenger passenger, LocalDate dateTicket, Train train, Wagon wagon) {
         this.passenger = passenger;
-        this.date_ticket = date_ticket;
+        this.dateTicket = dateTicket;
         this.train = train;
         this.wagon = wagon;
     }
@@ -48,12 +49,12 @@ public class Ticket {
         this.passenger = passenger;
     }
 
-    public LocalDate getDate_ticket() {
-        return date_ticket;
+    public LocalDate getDateTicket() {
+        return dateTicket;
     }
 
-    public void setDate_ticket(LocalDate date_ticket) {
-        this.date_ticket = date_ticket;
+    public void setDateTicket(LocalDate dateTicket) {
+        this.dateTicket = dateTicket;
     }
 
     public Train getTrain() {

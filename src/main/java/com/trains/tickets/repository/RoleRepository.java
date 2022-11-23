@@ -7,7 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Set;
 
-public interface RoleRepository extends CrudRepository<Role, Long> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
+    //public interface RoleRepository extends CrudRepository<Role, Long> {
     //Set<Role> findByName(String name);
     Role findByName(String name);
 }

@@ -7,9 +7,12 @@ import java.time.LocalDate;
 @Table(name = "stops")
 public class Stop {
     @Id
-
-    private LocalDate time_begining;
-    private LocalDate time_end;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Column(name = "time_begining")
+    private LocalDate timeBegining;
+    @Column(name = "time_end")
+    private LocalDate timeEnd;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_schedule")
     private Schedule schedule;
@@ -21,27 +24,27 @@ public class Stop {
     public Stop() {
     }
 
-    public Stop(LocalDate time_begining, LocalDate time_end, Schedule schedule, Station station) {
-        this.time_begining = time_begining;
-        this.time_end = time_end;
+    public Stop(LocalDate timeBegining, LocalDate timeEnd, Schedule schedule, Station station) {
+        this.timeBegining = timeBegining;
+        this.timeEnd = timeEnd;
         this.schedule = schedule;
         this.station = station;
     }
 
-    public LocalDate getTime_begining() {
-        return time_begining;
+    public LocalDate getTimeBegining() {
+        return timeBegining;
     }
 
-    public void setTime_begining(LocalDate time_begining) {
-        this.time_begining = time_begining;
+    public void setTimeBegining(LocalDate timeBegining) {
+        this.timeBegining = timeBegining;
     }
 
-    public LocalDate getTime_end() {
-        return time_end;
+    public LocalDate getTimeEnd() {
+        return timeEnd;
     }
 
-    public void setTime_end(LocalDate time_end) {
-        this.time_end = time_end;
+    public void setTimeEnd(LocalDate timeEnd) {
+        this.timeEnd = timeEnd;
     }
 
     public Schedule getSchedule() {

@@ -6,10 +6,11 @@ import javax.persistence.*;
 @Table(name = "schedule")
 public class Schedule {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Character time;
-    private Integer day_of_week;
+    @Column(name = "day_of_week")
+    private Integer dayOfWeek;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_train")
@@ -18,9 +19,9 @@ public class Schedule {
     public Schedule() {
     }
 
-    public Schedule(Character time, Integer day_of_week, Train train) {
+    public Schedule(Character time, Integer dayOfWeek, Train train) {
         this.time = time;
-        this.day_of_week = day_of_week;
+        this.dayOfWeek = dayOfWeek;
         this.train = train;
     }
 
@@ -40,12 +41,12 @@ public class Schedule {
         this.time = time;
     }
 
-    public Integer getDay_of_week() {
-        return day_of_week;
+    public Integer getDayOfWeek() {
+        return dayOfWeek;
     }
 
-    public void setDay_of_week(Integer day_of_week) {
-        this.day_of_week = day_of_week;
+    public void setDayOfWeek(Integer dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public Train getTrain() {

@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Table(name = "distances")
 public class Distance {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -15,15 +16,16 @@ public class Distance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_station_last")
     private Station stationLast;
-    private Integer km;
+    @Column(name = "km")
+    private Integer kilometers;
 
     public Distance() {
     }
 
-    public Distance(Station stationFirst, Station stationLast, Integer km) {
+    public Distance(Station stationFirst, Station stationLast, Integer kilometers) {
         this.stationFirst = stationFirst;
         this.stationLast = stationLast;
-        this.km = km;
+        this.kilometers = kilometers;
     }
 
     public Integer getId() {
@@ -39,7 +41,7 @@ public class Distance {
     }
 
     public void setStationFirst(Station stationFirst) {
-        stationFirst = stationFirst;
+        this.stationFirst = stationFirst;
     }
 
     public Station getStationLast() {
@@ -47,14 +49,14 @@ public class Distance {
     }
 
     public void setStationLast(Station stationLast) {
-        stationLast = stationLast;
+        this.stationLast = stationLast;
     }
 
-    public Integer getKm() {
-        return km;
+    public Integer getKilometers() {
+        return kilometers;
     }
 
-    public void setKm(Integer km) {
-        this.km = km;
+    public void setKilometers(Integer km) {
+        this.kilometers = kilometers;
     }
 }

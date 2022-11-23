@@ -6,17 +6,18 @@ import javax.persistence.*;
 @Table(name = "service_classes")
 public class ServiceClass {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private Float prise_per_km;
+    @Column(name = "prise_per_km")
+    private Float prisePerKm;
 
     public ServiceClass() {
     }
 
-    public ServiceClass(String name, Float prise_per_km) {
+    public ServiceClass(String name, Float prisePerKm) {
         this.name = name;
-        this.prise_per_km = prise_per_km;
+        this.prisePerKm = prisePerKm;
     }
 
     public Integer getId() {
@@ -35,11 +36,11 @@ public class ServiceClass {
         this.name = name;
     }
 
-    public Float getPrise_per_km() {
-        return prise_per_km;
+    public Float getPrisePerKm() {
+        return prisePerKm;
     }
 
-    public void setPrise_per_km(Float prise_per_km) {
-        this.prise_per_km = prise_per_km;
+    public void setPrisePerKm(Float prisePerKm) {
+        this.prisePerKm = prisePerKm;
     }
 }

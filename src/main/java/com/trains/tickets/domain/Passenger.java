@@ -7,24 +7,25 @@ import java.time.LocalDate;
 @Table(name = "passengers")
 public class Passenger {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     //@OneToOne(mappedBy = "id_passenger")
     private Integer id;
     private String name;
     private String surname;
     private String passport;
     private String gender;
-    private LocalDate date_of_birth;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     public Passenger() {
     }
 
-    public Passenger(String name, String surname, String passport, String gender, LocalDate date_of_birth) {
+    public Passenger(String name, String surname, String passport, String gender, LocalDate dateOfBirth) {
         this.name = name;
         this.surname = surname;
         this.passport = passport;
         this.gender = gender;
-        this.date_of_birth = date_of_birth;
+        this.dateOfBirth = dateOfBirth;
     }
 
     public Integer getId() {
@@ -67,11 +68,11 @@ public class Passenger {
         this.gender = gender;
     }
 
-    public LocalDate getDate_of_birth() {
-        return date_of_birth;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setDate_of_birth(LocalDate date_of_birth) {
-        this.date_of_birth = date_of_birth;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }
