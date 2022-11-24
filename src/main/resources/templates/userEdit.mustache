@@ -10,6 +10,14 @@
     <a href="/main">Main</a>
     <a href="/user">Users list</a>
 </div>
+{{#user}}
+<div align="right">
+    <form action="logout" method="post">
+        <button type="submit" value="Sign Out">{{login}} &#xf08b;</button>
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    </form>
+</div>
+{{/user}}
 <div align=center>
     User editor
     <form action="/user" method="post">

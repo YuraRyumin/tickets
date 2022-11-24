@@ -1,8 +1,12 @@
 package com.trains.tickets.service;
 
+import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.PassengerDTO;
+import com.trains.tickets.dto.UserDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
+import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -59,6 +63,22 @@ public class UserService implements UserDetailsService {
         }
 
         return true;
+    }
+
+    private UserDTO convertEntityToDto(User user){
+        UserDTO userDTO = new UserDTO();
+
+        userDTO.setId(user.getId());
+        userDTO.setLogin(user.getLogin());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setTelephone(user.getTelephone());
+        userDTO.setPassenger(user.getPassenger());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setActive(user.isActive());
+        userDTO.setActivationCode(user.getActivationCode());
+        userDTO.setRole(user.getRole());
+
+        return userDTO;
     }
 
     public boolean activateUser(String code) {

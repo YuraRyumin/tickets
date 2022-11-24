@@ -3,6 +3,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/styles/stylebesheniy.css" rel="stylesheet" type="text/css">
+    <script src="/jquery.min.js"></script>
+    <script src="/select2/dist/js/select2.min.js"></script>
+    <script src="/select2/dist/js/i18n/ru.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.js-select2').select2({
+                placeholder: "Выберите город",
+                maximumSelectionLength: 2,
+                language: "ru"
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="topnav">
@@ -11,16 +24,13 @@
         <a href="/user">Users list</a>
     </div>
     {{#user}}
-    <div>
+    <div align="right">
         <form action="logout" method="post">
-            <button type="submit" value="Sign Out">Sign out {{login}}</button>
+            <button type="submit" value="Sign Out">{{login}} &#xf08b;</button>
             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
         </form>
     </div>
-    <br>
     {{/user}}
-
-
     <div>
         <form method="post" id="add" action="changePass">
             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
@@ -33,6 +43,32 @@
         <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
         <input type="text" name="filter" placeholder="enter filter" />
         <button type="submit">&#xf0b0;</button>
+    </form>
+    <form method="get"  id="ticket" action="chooseTickets">
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+        <div class="field">
+            From:
+            <select class="js-select2" name="stationFirst" placeholder="Choose station">
+                <option value=""></option>
+                {{#stations}}
+                <<option value="{{name}}">{{name}}</option>
+                {{/stations}}
+            </select>
+        </div>
+        <br>
+        <div class="field">
+            To:
+            <select class="js-select2" name="stationLast" placeholder="Choose station">
+                <option value=""></option>
+                {{#stations}}
+                <<option value="{{name}}">{{name}}</option>
+                {{/stations}}
+            </select>
+        </div>
+        <div class="field">
+            <label></label>
+            <button type="submit">&#xf0b0;</button>
+        </div>
     </form>
     {{#roles}}
         <div>

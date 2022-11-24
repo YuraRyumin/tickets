@@ -11,7 +11,7 @@ public class TicketForUserDTO {
     private String surname;
     private String passport;
     private LocalDate dateOfBirth;
-    private LocalDateTime dateTicket;
+    private LocalDate dateTicket;
     private String gender;
     private String trainNumber;
     private String wagonNumber;

@@ -10,6 +10,19 @@
     <a class="active" href="/">Tickets to trains</a>
     <a href="/main">Main</a>
 </div>
-<div>Hello!!!</div>
+{{#user}}
+<div align="right">
+    <form action="logout" method="post">
+        <button type="submit" value="Sign Out">{{login}} &#xf08b;</button>
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    </form>
+</div>
+{{/user}}
+<div align="center">
+    <h1>Hello!!!</h1>
+    <br>
+    <h2>Welcome to best site in whole world!!!</h2>
+</div>
+<img src="/images/Train.png" />
 </body>
 </html>

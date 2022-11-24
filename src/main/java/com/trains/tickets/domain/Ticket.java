@@ -22,6 +22,7 @@ public class Ticket {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_wagons")
     private Wagon wagon;
+    private Integer price;
 
     public Ticket() {
     }
@@ -31,6 +32,14 @@ public class Ticket {
         this.dateTicket = dateTicket;
         this.train = train;
         this.wagon = wagon;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
     public Integer getId() {
