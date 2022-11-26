@@ -5,6 +5,7 @@ import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.Stop;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.StationsForMainDTO;
+import com.trains.tickets.dto.StopsForMainDTO;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
@@ -70,6 +71,9 @@ public class TicketsController {
         model.put("roles", role);
         model.put("user", user);
         model.put("stations", stationService.convertEntityToDto(stations));
+        if(user.isAdmin()) {
+            model.put("adminRole", true);
+        }
         return "main";
     }
 
@@ -81,6 +85,7 @@ public class TicketsController {
         Iterable<Role> roleI = roleRepository.findAll();
         model.put("roles", roleI);
         model.put("user", user);
+
         return "main";
     }
 
@@ -111,51 +116,9 @@ public class TicketsController {
         mailMessage.setText("User successfully activated");
 
         mailSender.send(mailMessage);
-        //User myUser1 = userRepository.findByLogin("user1");
-        //myUser1.setPassword(passwordEncoder.encode(myUser1.getPassword()));
-        //userRepository.save(myUser1);
-        //User myUser2 = userRepository.findByLogin("user2");
-        //myUser2.setPassword(passwordEncoder.encode(myUser2.getPassword()));
-        //userRepository.save(myUser2);
-        //User myUser3 = userRepository.findByLogin("user3");
-        //myUser3.setPassword(passwordEncoder.encode(myUser3.getPassword()));
-        //userRepository.save(myUser3);
-        //User myUser4 = userRepository.findByLogin("user4");
-        //myUser4.setPassword(passwordEncoder.encode(myUser4.getPassword()));
-        //userRepository.save(myUser4);
-        //User myNewUser = userRepository.findByLogin("newuser");
-        //myNewUser.setPassword(passwordEncoder.encode(myNewUser.getPassword()));
-        //userRepository.save(myNewUser);
         model.put("user", user);
         return "main";
     }
 
-    @GetMapping("chooseTickets")
-    public String chooseTickets(@AuthenticationPrincipal User user,
-                                @RequestParam String stationFirst,
-                                @RequestParam String stationLast,
-                                Map<String, Object> model){
-        String sqlGetSheduleByStations =
-                String.format("select sched.id " +
-                        "from schedule sched" +
-                        "    left join stations s1 on sched.id = s1.id_schedule" +
-                        "    left join stations s2 on sched.id = s2.id_schedule" +
-                        " where s1.name = '%s' && s2.name = '%s'", stationFirst, stationLast);
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(urlSql, usernameSql, passwordSql);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlGetSheduleByStations);
-            int columns = rs.getMetaData().getColumnCount();
-            while(rs.next()){
-                for (int i = 1; i <= columns; i++){
-                    System.out.print(rs.getString(i) + "\t");
-                }
-                System.out.println();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return "/";
-    }
+
 }

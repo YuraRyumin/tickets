@@ -48,11 +48,12 @@ public class TicketFinder {
         //Station objStationFirst = stationRepository.findByName(stationFirst);
         //Station objStationLast = stationRepository.findByName(stationLast);
         String sqlGetSheduleByStations =
-                String.format("select sched.id " +
-                        "from schedule sched" +
-                        "    left join stations s1 on sched.id = s1.id_schedule" +
-                        "    left join stations s2 on sched.id = s2.id_schedule" +
-                        " where s1.name = %s && s2.name = %s", stationFirst, stationLast);
+                String.format("SELECT sched.id, s1.name, s2.name, stops1.stops1.time_end, stops2.time_begining FROM schedule sched" +
+                        " LEFT JOIN stops stops1 ON sched.id = stops1.id_schedule" +
+                        " LEFT JOIN stations s1 ON stops1.id_station = s1.id" +
+                        " LEFT JOIN stops stops2 ON sched.id = stops2.id_schedule" +
+                        " LEFT JOIN stations s2 ON stops2.id_station = s2.id" +
+                        " WHERE s1.name = '%s' && s2.name = '%s' && stops1.time_begining < stops2.time_begining", stationFirst, stationLast);
         Connection conn = DriverManager.getConnection(url, username, password);
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sqlGetSheduleByStations);
