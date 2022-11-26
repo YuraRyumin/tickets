@@ -51,35 +51,8 @@
         <button type="submit">&#xf0b0;</button>
     </div>
 
-    <div>
-        <table border="1">
-            <thead>
-            <tr>
-                <th>Choosen</th>
-                <th>Departure station</th>
-                <th>Arrival station</th>
-                <th>Departure time</th>
-                <th>Arrival time</th>
-            </tr>
-            </thead>
-            <tbody>
-            {{#stopsForMainDTOS}}
-            <tr>
-                <td><input name="radioStation" type="radio" id="radioStation"></td>
-                <td>{{StationFirst}}</td>
-                <td>{{StationLast}}</td>
-                <td>{{TimeDeparture}}</td>
-                <td>{{TimeArrival}}</td>
-            </tr>
-            {{/stopsForMainDTOS}}
-            </tbody>
-        </table>
 </form>
 <form method="get"  id="ticketTest" action="getTableTickets">
-    <div>
-        <p class="testClass">!!!</p>
-        <button type="button" id="testBtn">Test</button>
-    </div>
     <div id="tableTrains">
 
     </div>

@@ -8,7 +8,7 @@ $(document).on("change", "#stationLast", function (){
         {stationFirst: stationFirst,
         stationLast: stationLast}).done(
         function (data) {
-        //$(".testClass").append(data.login);
+        console.log(data);
         if (data != null) {
             let table = "<table border = '1'>" +
                 "<thead><tr>" +
@@ -21,10 +21,10 @@ $(document).on("change", "#stationLast", function (){
                 for(i = 0; i < data.length; i++) {
                     table = table + "<tr>" +
                     "<td><input name=\"radioStation\" type=\"radio\" id=\"radioStation\"></td>" +
-                    "<td>data[i].StationFirst</td>" +
-                    "<td>data[i].StationLast</td>" +
-                    "<td>data[i].TimeDeparture</td>" +
-                    "<td>data[i].TimeArrival</td>" +
+                    "<td>" + data[i].stationFirst + "</td>" +
+                    "<td>" + data[i].stationLast + "</td>" +
+                    "<td>" + data[i].timeDeparture + "</td>" +
+                    "<td>" + data[i].timeArrival + "</td>" +
                     "</tr>";
                 }
 
