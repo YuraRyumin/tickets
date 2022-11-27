@@ -304,3 +304,12 @@ div.field label {
     width: 70px;
     height: 15px;
 }
+
+#route_table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+table th { background-color: lightblue; }
+.hover_Row { background-color: lightblue; }
+.clicked_Row { background-color: lightgreen; }

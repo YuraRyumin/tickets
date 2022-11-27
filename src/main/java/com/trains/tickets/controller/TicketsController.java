@@ -74,7 +74,8 @@ public class TicketsController {
         if(user.isAdmin()) {
             model.put("adminRole", true);
         }
-        return "main";
+        //return "main";
+        return "ticketsSearch";
     }
 
     @PostMapping("/main")
@@ -86,7 +87,8 @@ public class TicketsController {
         model.put("roles", roleI);
         model.put("user", user);
 
-        return "main";
+        //return "main";
+        return "ticketsSearch";
     }
 
     @PostMapping("filter")
@@ -117,7 +119,8 @@ public class TicketsController {
 
         mailSender.send(mailMessage);
         model.put("user", user);
-        return "main";
+        //return "main";
+        return "ticketsSearch";
     }
 
 
