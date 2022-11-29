@@ -52,7 +52,7 @@ h1{
     box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
     color: rgb(152, 156, 161);
 }
-#signin  select, #signin  input[type="tel"], #signin  input[type="email"], #signin  input[type="text"], #signin  input[type="password"]{
+#signin  input[type="tel"], #signin  input[type="email"], #signin  input[type="text"], #signin  input[type="password"]{
     position: relative;
     display: block;
     width: 280px;
@@ -63,7 +63,7 @@ h1{
     padding: 0 0 0 20px;
     font-weight: 700;
 }
-#signin  select, #signin  input[type="tel"]:focus, #signin  input[type="email"]:focus, #signin  input[type="text"]:focus, #signin  input[type="password"]:focus{
+#signin  input[type="tel"]:focus, #signin  input[type="email"]:focus, #signin  input[type="text"]:focus, #signin  input[type="password"]:focus{
     color: rgb(255, 255, 255);
 }
 #signin button[type="submit"]{
@@ -128,12 +128,12 @@ h1{
     border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
 }
-#add  select, #add  input[type="tel"], #add  input[type="email"], #add  input[type="text"], #add  input[type="password"], #add button[type="submit"]{
+#add  input[type="tel"], #add  input[type="email"], #add  input[type="text"], #add  input[type="password"], #add button[type="submit"]{
     background: rgb(128, 130, 133);
     box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
     color: rgb(152, 156, 161);
 }
-#add  select, #add  input[type="tel"], #add  input[type="email"], #add  input[type="text"], #add  input[type="password"]{
+#add  input[type="tel"], #add  input[type="email"], #add  input[type="text"], #add  input[type="password"]{
     position: relative;
     display: block;
     width: 280px;
@@ -144,7 +144,7 @@ h1{
     padding: 0 0 0 20px;
     font-weight: 700;
 }
-#add  select:focus, #add  input[type="tel"]:focus, #add  input[type="email"]:focus, #add  input[type="text"]:focus, #add  input[type="password"]:focus{
+#add  input[type="tel"]:focus, #add  input[type="email"]:focus, #add  input[type="text"]:focus, #add  input[type="password"]:focus{
     color: rgb(255, 255, 255);
 }
 #add button[type="submit"]{
@@ -305,11 +305,55 @@ div.field label {
     height: 15px;
 }
 
+div.field input {
+    display: block;
+    float: left;
+    width: 70px;
+    height: 15px;
+}
+
 #route_table {
-    border: 1px solid black;
-    border-collapse: collapse;
+    border: 3px solid rgb(128, 130, 133);
+    border-radius: 10px;
+
     margin: 0 auto;
 }
+
 table th { background-color: lightblue; }
 .hover_Row { background-color: lightblue; }
 .clicked_Row { background-color: lightgreen; }
+
+select {
+    background-color: rgb(128, 130, 133);
+    box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
+    color: white;
+    position: relative;
+    display: block;
+    width: 280px;
+    height: 45px;
+    border: 0;
+    outline: 0;
+    top: -2px;
+    padding: 0 0 0 20px;
+    font-weight: 700;
+}
+
+.field {
+    clear: both;
+    text-align: right;
+}
+label {
+    float: left;
+    text-align: left;
+}
+.mainDiv {
+    float: top;
+    overflow: auto;
+}
+.form-row > label {
+    padding: .5em 1em .5em 0;
+    flex: 1;
+}
+.form-row > select {
+    flex: 2;
+}

@@ -66,15 +66,12 @@ public class TicketsController {
     @GetMapping("/main")
     public String main(@AuthenticationPrincipal User user,
                        Map<String, Object> model){
-        Iterable<Role> role = roleRepository.findAll();
         Iterable<Station> stations = stationRepository.findAll();
-        model.put("roles", role);
         model.put("user", user);
         model.put("stations", stationService.convertEntityToDto(stations));
         if(user.isAdmin()) {
             model.put("adminRole", true);
         }
-        //return "main";
         return "ticketsSearch";
     }
 

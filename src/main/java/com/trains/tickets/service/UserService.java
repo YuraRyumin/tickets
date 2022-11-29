@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -40,10 +41,11 @@ public class UserService implements UserDetailsService {
 
 
 
-    public boolean addUser(User user) {
-        User userFromBD = userRepository.findByLogin(user.getLogin());
-        if(userFromBD != null){
-            return false;
+    public String addUser(User user, Map<String, Object> model) {
+        User userFromDB = userRepository.findByLogin(user.getLogin());
+        if(userFromDB != null){
+            model.put("message", "User exists!");
+            return "registration";
         }
 
         user.setActive(true);
@@ -52,17 +54,15 @@ public class UserService implements UserDetailsService {
         user.setRole(roleRepository.findByName("user"));
         user.setActivationCode(UUID.randomUUID().toString());
         userRepository.save(user);
-
         if(user.getEmail() != ""){
             String message = String.format(
-                "Hello, %s! \n" +
-                "Welcom to Trains. Please visit next link: http://localhost:8080/activate/%s",
-                user.getLogin(), user.getActivationCode()
+                    "Hello, %s! \n" +
+                            "Welcom to Trains. Please visit next link: http://localhost:8080/activate/%s",
+                    user.getLogin(), user.getActivationCode()
             );
             mailSender.send(user.getEmail(), "Activation", message);
         }
-
-        return true;
+        return "redirect:/login";
     }
 
     private UserDTO convertEntityToDto(User user){
