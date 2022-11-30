@@ -25,7 +25,6 @@ public class StationService {
                     stationForMainDTO.setId(station.getId());
                     stationForMainDTO.setName(station.getName());
                     return  stationForMainDTO;})
-                //.sorted(Comparator.comparing(StationsForMainDTO::getName))
                 .sorted((h1, h2) -> h1.getName().compareTo(h2.getName()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }

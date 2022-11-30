@@ -59,7 +59,6 @@ public class TicketsSearchController {
                                 @RequestParam String stationFirst,
                                 @RequestParam String stationLast,
                                 Map<String, Object> model){
-//
         return "main";
     }
 }
