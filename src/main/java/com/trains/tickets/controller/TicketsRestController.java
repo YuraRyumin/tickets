@@ -14,13 +14,6 @@ import java.util.Set;
 
 @RestController
 public class TicketsRestController {
-    @Value("${spring.datasource.url}")
-    private String urlSql;
-    @Value("${spring.datasource.username}")
-    private String usernameSql;
-    @Value("${spring.datasource.password}")
-    private String passwordSql;
-
     private final UserRepository userRepository;
     private final StopsForMainDTORepository stopsForMainDTORepository;
 
