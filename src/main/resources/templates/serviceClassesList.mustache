@@ -22,27 +22,34 @@
 </div>
 <div>
     <div class="sidenav">
-        <a href="/user">Users</a>
-        <a href="/roles">Roles</a>
+        <a href="/distances" >Distances</a>
+        <a href="/passengers">Passengers</a>
+        <a href="/schedule">Schedule</a>
+        <a href="/serviceClasses">Service classes</a>
+        <a href="/stations">Stations</a>
+        <a href="/stops">Stops</a>
+        <a href="/tickets">Tickets</a>
+        <a href="/trains">Trains</a>
+        <a href="/wagons">Wagons</a>
     </div>
 
     <div align=center>
-        List of users
+        List of service classes
         <table id='ticket_table' border = '1'>
             <thead>
             <tr>
-                <th>Login</th>
-                <th>Role</th>
+                <th>Name</th>
+                <th>Prise per km</th>
             </tr>
             </thead>
             <tbody>
-            {{#users}}
-                <tr>
-                    <td>{{login}}</td>
-                    <td>{{role.name}}</td>
-                    <td><a href="/user/{{id}}">edit</a></td>
-                </tr>
-            {{/users}}
+            {{#serviceClasses}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{prisePerKm}}</td>
+                <td><a href="/serviceClasses/{{id}}">edit</a></td>
+            </tr>
+            {{/serviceClasses}}
             </tbody>
         </table>
     </div>

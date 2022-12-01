@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="/styles/stylebesheniy.css">
+    <title>Login</title>
+</head>
+<body>
+<div class="topnav">
+    <a class="active" href="/">Tickets to trains</a>
+    <a href="/main">Main</a>
+    <a href="/user">Users list</a>
+</div>
+{{#user}}
+<div align="right">
+    <form action="logout" method="post">
+        <button type="submit" value="Sign Out">{{login}} &#xf08b;</button>
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    </form>
+</div>
+{{/user}}
+<div>
+    <div class="sidenav">
+        <a href="/distances" >Distances</a>
+        <a href="/passengers">Passengers</a>
+        <a href="/schedule">Schedule</a>
+        <a href="/serviceClasses">Service classes</a>
+        <a href="/stations">Stations</a>
+        <a href="/stops">Stops</a>
+        <a href="/tickets">Tickets</a>
+        <a href="/trains">Trains</a>
+        <a href="/wagons">Wagons</a>
+    </div>
+
+    <div align=center>
+        Stop editor
+        <form action="/stop" method="post">
+            <table id='ticket_table' border = '1'>
+                <tbody>
+                <tr>
+                    <td>Time begining</td>
+                    <td><input type="text" name="timeBegining" value="{{stop.timeBegining}}"></td>
+                </tr>
+                <tr>
+                    <td>Time end</td>
+                    <td><input type="text" name="timeEnd" value="{{stop.timeEnd}}"></td>
+                </tr>
+                <tr>
+                    <td>Schedule</td>
+                    <td><input type="text" name="schedule" value="{{stop.schedule.id}}"></td>
+                </tr>
+                <tr>
+                    <td>Station</td>
+                    <td><input type="text" name="station" value="{{stop.station.id}}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <input type="hidden" value="{{stop.id}}" name="stopId">
+            <input type="hidden" value="{{_csrf.token}}" name="_csrf">
+            <button type="submit">Save</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,6 +1,8 @@
 package com.trains.tickets.controller;
 
+import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.repository.DistanceRepository;
 import com.trains.tickets.repository.UserRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,19 +13,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/user")
-@PreAuthorize("hasAuthority('admin')")
-public class UserController {
-    private final UserRepository userRepository;
+@RequestMapping("/distances")
+@PreAuthorize("hasAuthority('operator')")
+//@PreAuthorize("hasAuthority('admin')")
+public class DistancesController {
+    private final DistanceRepository distanceRepository;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public DistancesController(DistanceRepository distanceRepository) {
+        this.distanceRepository = distanceRepository;
     }
 
     @GetMapping
-    public String userList(@AuthenticationPrincipal User user,
+    public String distanceList(@AuthenticationPrincipal User user,
                            Model model){
-        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("distances", distanceRepository.findAll());
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -31,14 +34,14 @@ public class UserController {
         if(user.isOperator()) {
             model.addAttribute("operatorRole", true);
         }
-        return "userList";
+        return "distancesList";
     }
 
-    @GetMapping("{userThis}")
-    public String userEditForm(@AuthenticationPrincipal User user,
-                               @PathVariable String userThis,
+    @GetMapping("{distance}")
+    public String distanceEditForm(@AuthenticationPrincipal User user,
+                               @PathVariable String distance,
                                Model model){
-        model.addAttribute("userThis", userRepository.findById(Integer.parseInt(userThis)));
+        model.addAttribute("distance", distanceRepository.findById(Integer.parseInt(distance)));
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -48,15 +51,14 @@ public class UserController {
         }
         return "userEdit";
     }
-
     @PostMapping
-    public String userSave(@AuthenticationPrincipal User user,
-            @RequestParam String login,
-            @RequestParam Map<String, String> form,
-            @RequestParam("userId") User userChanged,
-            Model model){
-        userChanged.setLogin(login);
-        userRepository.save(userChanged);
+    public String distanceSave(@AuthenticationPrincipal User user,
+                           @RequestParam String login,
+                           @RequestParam Map<String, String> form,
+                           @RequestParam("distanceId") Distance distanceChanged,
+                           Model model){
+        //distanceChanged.setLogin(login);
+        distanceRepository.save(distanceChanged);
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -64,6 +66,6 @@ public class UserController {
         if(user.isOperator()) {
             model.addAttribute("operatorRole", true);
         }
-        return "redirect:/user";
+        return "redirect:/distance";
     }
 }

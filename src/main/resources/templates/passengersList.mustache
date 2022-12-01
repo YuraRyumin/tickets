@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="/styles/stylebesheniy.css">
+    <title>Login</title>
+</head>
+<body>
+<div>
+    <div class="topnav">
+        <a class="active" href="/">Tickets to trains</a>
+        <a href="/main">Main</a>
+        <a href="/user">Users list</a>
+    </div>
+    {{#user}}
+    <div align="right">
+        <form action="logout" method="post">
+            <button type="submit" value="Sign Out">{{login}} &#xf08b;</button>
+            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+        </form>
+    </div>
+    {{/user}}
+</div>
+<div>
+    <div class="sidenav">
+        <a href="/distances" >Distances</a>
+        <a href="/passengers">Passengers</a>
+        <a href="/schedule">Schedule</a>
+        <a href="/serviceClasses">Service classes</a>
+        <a href="/stations">Stations</a>
+        <a href="/stops">Stops</a>
+        <a href="/tickets">Tickets</a>
+        <a href="/trains">Trains</a>
+        <a href="/wagons">Wagons</a>
+    </div>
+
+    <div align=center>
+        List of passengers
+        <table id='ticket_table' border = '1'>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Passport</th>
+                <th>Gender</th>
+                <th>Date of birth</th>
+                <th>Change</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#passengers}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{surname}}</td>
+                <td>{{passport}}</td>
+                <td>{{gender}}</td>
+                <td>{{dateOfBirth}}</td>
+                <td><a href="/passengers/{{id}}">edit</a></td>
+            </tr>
+            {{/passengers}}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

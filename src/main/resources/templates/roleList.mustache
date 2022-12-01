@@ -27,22 +27,21 @@
     </div>
 
     <div align=center>
-        List of users
+        List of roles
         <table id='ticket_table' border = '1'>
             <thead>
             <tr>
-                <th>Login</th>
                 <th>Role</th>
+                <th>Change</th>
             </tr>
             </thead>
             <tbody>
-            {{#users}}
-                <tr>
-                    <td>{{login}}</td>
-                    <td>{{role.name}}</td>
-                    <td><a href="/user/{{id}}">edit</a></td>
-                </tr>
-            {{/users}}
+            {{#roles}}
+            <tr>
+                <td>{{name}}</td>
+                <td><a href="/roles/{{id}}">edit</a></td>
+            </tr>
+            {{/roles}}
             </tbody>
         </table>
     </div>

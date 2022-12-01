@@ -6,6 +6,7 @@ import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
 import com.trains.tickets.service.MailSender;
 import com.trains.tickets.service.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

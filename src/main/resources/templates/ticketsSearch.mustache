@@ -12,8 +12,11 @@
 <div class="topnav">
     <a class="active" href="/">Tickets to trains</a>
     <a href="/main">Main</a>
+    {{#operatorRole}}
+    <a href="/distances">Correct data</a>
+    {{/operatorRole}}
     {{#adminRole}}
-    <a href="/user">Users list</a>
+    <a href="/user">Users & roles</a>
     {{/adminRole}}
 </div>
 {{#user}}
@@ -56,7 +59,17 @@
 </div>
 </form>
 <form method="get"  id="ticketTest" action="getTableTickets">
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     <div id="tableTrains">
+
+    </div>
+</form>
+<form method="get"  id="ticketsInfo" action="getTicketsInfo">
+    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    <div id="tableTickets">
+
+    </div>
+    <div id="tableTicketsTwo">
 
     </div>
 </form>

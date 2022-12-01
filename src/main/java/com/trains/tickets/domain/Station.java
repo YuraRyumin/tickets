@@ -9,16 +9,13 @@ public class Station {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_schedule")
-    private Schedule schedule;
+
 
     public Station() {
     }
 
-    public Station(String name, Schedule schedule) {
+    public Station(String name) {
         this.name = name;
-        this.schedule = schedule;
     }
 
     public Integer getId() {
@@ -37,11 +34,4 @@ public class Station {
         this.name = name;
     }
 
-    public Schedule getId_schedule() {
-        return schedule;
-    }
-
-    public void setId_schedule(Schedule schedule) {
-        this.schedule = schedule;
-    }
 }

@@ -1,10 +1,12 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.projection.StopsForMainProjection;
+import com.trains.tickets.domain.User;
+import com.trains.tickets.projection.StopsDirectProjection;
 import com.trains.tickets.projection.StopsTwoTrainsProjection;
+import com.trains.tickets.projection.TicketInfoProjection;
 import com.trains.tickets.repository.StopsForMainDTORepository;
 import com.trains.tickets.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +25,7 @@ public class TicketsRestController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getTableTickets")
-    public Set<StopsForMainProjection> getTableTickets(
+    public Set<StopsDirectProjection> getTableTickets(
             @RequestParam String stationFirst,
             @RequestParam String stationLast
             ){
@@ -35,7 +37,17 @@ public class TicketsRestController {
             @RequestParam String stationFirst,
             @RequestParam String stationLast
     ){
-        Set<StopsTwoTrainsProjection> srtStops = stopsForMainDTORepository.findScheduleByTwoStations(stationFirst, stationLast);
         return stopsForMainDTORepository.findScheduleByTwoStations(stationFirst, stationLast);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getTicketsInfo")
+    public Set<TicketInfoProjection> getTicketsInfo(
+            @AuthenticationPrincipal User user,
+            @RequestParam String stationFirst,
+            @RequestParam String stationLast,
+            @RequestParam String timeDeparture,
+            @RequestParam String timeArrival
+    ){
+        return stopsForMainDTORepository.findTicketsInfoAndPassanger(user.getPassenger().getId(), stationFirst, stationLast, timeDeparture, timeArrival);
     }
 }

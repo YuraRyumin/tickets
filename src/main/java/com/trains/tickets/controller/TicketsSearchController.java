@@ -51,6 +51,9 @@ public class TicketsSearchController {
         if(user.isAdmin()) {
             model.put("adminRole", true);
         }
+        if(user.isOperator()) {
+            model.put("operatorRole", true);
+        }
         return "ticketsSearch";
     }
 
@@ -59,6 +62,12 @@ public class TicketsSearchController {
                                 @RequestParam String stationFirst,
                                 @RequestParam String stationLast,
                                 Map<String, Object> model){
+        if(user.isAdmin()) {
+            model.put("adminRole", true);
+        }
+        if(user.isOperator()) {
+            model.put("operatorRole", true);
+        }
         return "main";
     }
 }

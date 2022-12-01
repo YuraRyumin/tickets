@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" type="text/css" href="/styles/stylebesheniy.css">
+    <title>Login</title>
+</head>
+<body>
+<div class="topnav">
+    <a class="active" href="/">Tickets to trains</a>
+    <a href="/main">Main</a>
+    <a href="/user">Users list</a>
+</div>
+{{#user}}
+<div align="right">
+    <form action="logout" method="post">
+        <button type="submit" value="Sign Out">{{login}} &#xf08b;</button>
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+    </form>
+</div>
+{{/user}}
+<div>
+    <div class="sidenav">
+        <a href="/distances" >Distances</a>
+        <a href="/passengers">Passengers</a>
+        <a href="/schedule">Schedule</a>
+        <a href="/serviceClasses">Service classes</a>
+        <a href="/stations">Stations</a>
+        <a href="/stops">Stops</a>
+        <a href="/tickets">Tickets</a>
+        <a href="/trains">Trains</a>
+        <a href="/wagons">Wagons</a>
+    </div>
+
+    <div align=center>
+        Service class editor
+        <form action="/serviceClass" method="post">
+            <table id='ticket_table' border = '1'>
+                <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td><input type="text" name="name" value="{{serviceClass.name}}"></td>
+                </tr>
+                <tr>
+                    <td>Prise per km</td>
+                    <td><input type="text" name="prisePerKm" value="{{serviceClass.prisePerKm}}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <input type="hidden" value="{{serviceClass.id}}" name="serviceClassId">
+            <input type="hidden" value="{{_csrf.token}}" name="_csrf">
+            <button type="submit">Save</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

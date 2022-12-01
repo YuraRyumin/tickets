@@ -24,6 +24,10 @@ public class Ticket {
     private Wagon wagon;
     private Integer price;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_schedule")
+    private Schedule schedule;
+
     public Ticket() {
     }
 

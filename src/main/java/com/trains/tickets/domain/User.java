@@ -152,4 +152,8 @@ public class User implements UserDetails {
     public boolean isAdmin(){
         return role.getName().equals("admin");
     }
+
+    public boolean isOperator(){
+        return role.getName().equals("operator");
+    }
 }

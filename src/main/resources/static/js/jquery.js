@@ -43,16 +43,17 @@ function ReturnTicketsTableByStations() {
                             "</tr></thead><tbody>";
                         for (i = 0; i < data.length; i++) {
                             table = table + "<tr>" +
-                                "<td>" + data[i].stationFirst + "</td>" +
-                                "<td>" + data[i].stationLast + "</td>" +
-                                "<td>" + data[i].timeDeparture + "</td>" +
-                                "<td>" + data[i].timeArrival + "</td>" +
+                                "<td class='stationFirstT'>" + data[i].stationFirst + "</td>" +
+                                "<td class='stationLastT'>" + data[i].stationLast + "</td>" +
+                                "<td class='timeDepartureT'>" + data[i].timeDeparture + "</td>" +
+                                "<td class='timeArrivalT'>" + data[i].timeArrival + "</td>" +
                                 "</tr>";
                         }
 
                         table = table + "</tbody></table> " +
                             "<script type='text/javascript'>highlight_Table_Rows('route_table', 'hover_Row', 'clicked_Row');</script>";
                         $("#tableTrains").html(table);
+                        $("#tableTicketsTwo").html("");
                         //}
                     }
                 });
@@ -68,7 +69,7 @@ function ReturnTicketsTableByStations() {
                         //if(data.length = 0){
                         //    $("#tableTrains").html("No trains, sorry...");
                         //}else {
-                        let table = "<table id='route_table' border = '1'>" +
+                        let table = "<table id='two_routes_table' border = '1'>" +
                             "<thead><tr>" +
                             "<th>Departure time (1 train)</th>" +
                             "<th>Departure station  (1 train)</th>" +
@@ -93,8 +94,9 @@ function ReturnTicketsTableByStations() {
                         }
 
                         table = table + "</tbody></table> " +
-                            "<script type='text/javascript'>highlight_Table_Rows('route_table', 'hover_Row', 'clicked_Row');</script>";
+                            "<script type='text/javascript'>highlight_Table_Rows('two_routes_table', 'hover_Row', 'clicked_Row');</script>";
                         $("#tableTrains").html(table);
+                        $("#tableTicketsTwo").html("");
                         //}
                     }
                 });

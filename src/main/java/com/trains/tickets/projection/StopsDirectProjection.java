@@ -1,6 +1,6 @@
 package com.trains.tickets.projection;
 
-public interface StopsForMainProjection {
+public interface StopsDirectProjection {
     Integer getId();
     String getStationFirst();
     String getStationLast();

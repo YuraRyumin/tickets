@@ -18,15 +18,53 @@
     </form>
 </div>
 {{/user}}
-<div align=center>
-    User editor
-    <form action="/user" method="post">
-        <input type="text" name="login" value="{{user.login}}">
-        <input type="text" name="role" value="{{user.role.name}}">
-        <input type="hidden" value="{{user.id}}" name="userId">
-        <input type="hidden" value="{{_csrf.token}}" name="_csrf">
-        <button type="submit">Save</button>
-    </form>
+<div>
+    <div class="sidenav">
+        <a href="/user">Users</a>
+        <a href="/roles">Roles</a>
+    </div>
+
+    <div align=center>
+        User editor
+        <form action="/user" method="post">
+            <table id='ticket_table' border = '1'>
+                <tbody>
+                <tr>
+                    <td>Login</td>
+                    <td><input type="text" name="login" value="{{userThis.login}}"></td>
+                </tr>
+                <tr>
+                    <td>Role</td>
+                    <td><input type="text" name="role" value="{{userThis.role.name}}"></td>
+                </tr>
+                <tr>
+                    <td>E-mail</td>
+                    <td><input type="text" name="email" value="{{userThis.email}}"></td>
+                </tr>
+                <tr>
+                    <td>Telephone</td>
+                    <td><input type="text" name="telephone" value="{{userThis.telephone}}"></td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td><input type="password" name="password" value=""></td>
+                </tr>
+                <tr>
+                    <td>Passenger</td>
+                    <td><input type="text" name="passenger" value="{{userThis.passenger}}"></td>
+                </tr>
+                <tr>
+                    <td>Activ</td>
+                    <td><input type="text" name="activationCode" value="{{userThis.active}}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <input type="hidden" value="{{userThis.id}}" name="userId">
+            <input type="hidden" value="{{_csrf.token}}" name="_csrf">
+            <button type="submit">Save</button>
+        </form>
+    </div>
 </div>
 </body>
 </html>

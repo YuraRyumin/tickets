@@ -319,6 +319,27 @@ div.field input {
     margin: 0 auto;
 }
 
+#two_route_table {
+    border: 3px solid rgb(128, 130, 133);
+    border-radius: 10px;
+
+    margin: 0 auto;
+}
+
+#ticket_table {
+    border: 3px solid rgb(128, 130, 133);
+    border-radius: 10px;
+    background-color: lightblue;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+th {
+    border: none; /* Граница вокруг ячеек */
+}
+td {
+    border: none; /* Граница вокруг ячеек */
+}
+
 table th { background-color: lightblue; }
 .hover_Row { background-color: lightblue; }
 .clicked_Row { background-color: lightgreen; }
@@ -356,4 +377,26 @@ label {
 }
 .form-row > select {
     flex: 2;
+}
+.sidenav {
+    height: 100%;
+    width: 160px;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    background-color: rgb(128, 130, 133);
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    color: black;
+    display: block;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
 }

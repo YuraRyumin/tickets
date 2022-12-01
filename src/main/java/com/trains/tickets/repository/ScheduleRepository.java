@@ -10,6 +10,6 @@ import java.util.Set;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-
+    Schedule findById(Integer id);
 
 }
