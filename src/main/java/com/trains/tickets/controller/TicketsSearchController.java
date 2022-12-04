@@ -10,6 +10,7 @@ import com.trains.tickets.repository.UserRepository;
 import com.trains.tickets.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +45,7 @@ public class TicketsSearchController {
     public String main(@AuthenticationPrincipal User user,
                        Map<String, Object> model){
         Iterable<Role> role = roleRepository.findAll();
-        Iterable<Station> stations = stationRepository.findAll();
+        Iterable<Station> stations = stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         model.put("roles", role);
         model.put("user", user);
         model.put("stations", stationService.convertEntityToDto(stations));

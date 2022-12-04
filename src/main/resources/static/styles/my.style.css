@@ -1,0 +1,14 @@
+:root{
+    --color1: #8f2cb3;
+    --color2: rgb(54, 134, 156);
+    --color3: #6d6f71;
+}
+body{
+    background: var(--color2);
+}
+.navbar-brand, .nav-link, .nav-item{
+    color: var(--color2);
+}
+.navbar-brand:hover, .nav-link:hover, .nav-item:hover{
+    color: var(--color3);
+}

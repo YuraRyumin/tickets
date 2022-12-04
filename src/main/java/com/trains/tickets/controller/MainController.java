@@ -9,14 +9,12 @@ import com.trains.tickets.repository.UserRepository;
 import com.trains.tickets.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashSet;
@@ -24,7 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Controller
-public class mainController {
+public class MainController {
     @Value("${spring.mail.username}")
     private String username;
     private final RoleRepository roleRepository;
@@ -35,7 +33,7 @@ public class mainController {
     @Autowired
     private final StationService stationService;
 
-    public mainController(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, StationRepository stationRepository, StationService stationService) {
+    public MainController(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, StationRepository stationRepository, StationService stationService) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -45,7 +43,17 @@ public class mainController {
     }
 
     @GetMapping("/")
-    public String greeting(Map<String, Object> model) {
+    public String greeting(@AuthenticationPrincipal User user,
+                           Map<String, Object> model) {
+        model.put("user", user);
+        if(user != null) {
+            if (user.isAdmin()) {
+                model.put("adminRole", true);
+            }
+            if (user.isOperator()) {
+                model.put("operatorRole", true);
+            }
+        }
         return "tickets";
     }
 

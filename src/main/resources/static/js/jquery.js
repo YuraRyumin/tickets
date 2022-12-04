@@ -53,6 +53,7 @@ function ReturnTicketsTableByStations() {
                         table = table + "</tbody></table> " +
                             "<script type='text/javascript'>highlight_Table_Rows('route_table', 'hover_Row', 'clicked_Row');</script>";
                         $("#tableTrains").html(table);
+                        $("#tableTickets").html("");
                         $("#tableTicketsTwo").html("");
                         //}
                     }
@@ -96,6 +97,7 @@ function ReturnTicketsTableByStations() {
                         table = table + "</tbody></table> " +
                             "<script type='text/javascript'>highlight_Table_Rows('two_routes_table', 'hover_Row', 'clicked_Row');</script>";
                         $("#tableTrains").html(table);
+                        $("#tableTickets").html("");
                         $("#tableTicketsTwo").html("");
                         //}
                     }
