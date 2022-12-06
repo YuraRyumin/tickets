@@ -8,18 +8,18 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Character time;
+    private String time;
     @Column(name = "day_of_week")
     private Integer dayOfWeek;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_train")
     private Train train;
 
     public Schedule() {
     }
 
-    public Schedule(Character time, Integer dayOfWeek, Train train) {
+    public Schedule(String time, Integer dayOfWeek, Train train) {
         this.time = time;
         this.dayOfWeek = dayOfWeek;
         this.train = train;
@@ -33,11 +33,11 @@ public class Schedule {
         this.id = id;
     }
 
-    public Character getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Character time) {
+    public void setTime(String time) {
         this.time = time;
     }
 

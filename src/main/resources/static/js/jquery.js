@@ -17,10 +17,14 @@ function ReturnTicketsTableByStations() {
         var stationLast = selectLast.options[selectLast.selectedIndex].value;
     }
     if(stationFirst == stationLast){
-        $("#tableTrains").html("First station equals last station. Change your choice.");
+        $("#tableTrains").html("<h1>First station equals last station. Change your choice.</h1>");
+        $("#tableTickets").html("");
+        $("#tableTicketsTwo").html("");
     }
     else if(stationFirst == "" || stationLast == ""){
         $("#tableTrains").html("");
+        $("#tableTickets").html("");
+        $("#tableTicketsTwo").html("");
     } else {
         if(checkRun == "direct") {
             $.get('/getTableTickets',

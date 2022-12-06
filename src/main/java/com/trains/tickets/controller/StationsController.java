@@ -1,9 +1,10 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.StationRepository;
+import com.trains.tickets.service.StationService;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,15 +19,17 @@ import java.util.Map;
 //@PreAuthorize("hasAuthority('admin')")
 public class StationsController {
     private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public StationsController(StationRepository stationRepository) {
+    public StationsController(StationRepository stationRepository, StationService stationService) {
         this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @GetMapping
     public String stationList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("stations", stationRepository.findAll());
+        model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -41,7 +44,11 @@ public class StationsController {
     public String stationEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String station,
                                    Model model){
-        model.addAttribute("stations", stationRepository.findById(Integer.parseInt(station)));
+        if (station.equals("new")) {
+            model.addAttribute("stations", stationService.getEmptyDto());
+        } else {
+            model.addAttribute("stations", stationService.convertEntityToDto(stationRepository.findById(Integer.parseInt(station))));
+        }
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -49,7 +56,7 @@ public class StationsController {
         if(user.isOperator()) {
             model.addAttribute("operatorRole", true);
         }
-        return "stationEdit";
+        return "stationsEdit";
     }
     @PostMapping
     public String stationSave(@AuthenticationPrincipal User user,

@@ -4,6 +4,7 @@ import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.ServiceClass;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.ServiceClassRepository;
+import com.trains.tickets.service.ServiceClassService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,15 +19,17 @@ import java.util.Map;
 //@PreAuthorize("hasAuthority('admin')")
 public class ServiceClassesController {
     private final ServiceClassRepository serviceClassRepository;
+    private final ServiceClassService serviceClassService;
 
-    public ServiceClassesController(ServiceClassRepository serviceClassRepository) {
+    public ServiceClassesController(ServiceClassRepository serviceClassRepository, ServiceClassService serviceClassService) {
         this.serviceClassRepository = serviceClassRepository;
+        this.serviceClassService = serviceClassService;
     }
 
     @GetMapping
     public String serviceClassList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("serviceClasses", serviceClassRepository.findAll());
+        model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll()));
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -34,14 +37,18 @@ public class ServiceClassesController {
         if(user.isOperator()) {
             model.addAttribute("operatorRole", true);
         }
-        return "distancesList";
+        return "serviceClassesList";
     }
 
-    @GetMapping("{distance}")
+    @GetMapping("{serviceClass}")
     public String serviceClassEditForm(@AuthenticationPrincipal User user,
-                                   @PathVariable String distance,
+                                   @PathVariable String serviceClass,
                                    Model model){
-        model.addAttribute("serviceClass", serviceClassRepository.findById(Integer.parseInt(distance)));
+        if (serviceClass.equals("new")) {
+            model.addAttribute("serviceClass", serviceClassService.getEmptyDto());
+        } else {
+            model.addAttribute("serviceClass", serviceClassService.convertEntityToDto(serviceClassRepository.findById(Integer.parseInt(serviceClass))));
+        }
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -49,7 +56,7 @@ public class ServiceClassesController {
         if(user.isOperator()) {
             model.addAttribute("operatorRole", true);
         }
-        return "userEdit";
+        return "serviceClassesEdit";
     }
     @PostMapping
     public String serviceClassSave(@AuthenticationPrincipal User user,

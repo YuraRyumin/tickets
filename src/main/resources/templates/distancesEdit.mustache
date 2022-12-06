@@ -74,20 +74,20 @@
                         <tbody>
                         <tr>
                             <td>Station first</td>
-                            <td><input type="text" name="stationFirst" value="{{distances.stationFirst}}"></td>
+                            <td><input type="text" name="stationFirst" value="{{distance.stationFirst}}"></td>
                         </tr>
                         <tr>
                             <td>Station last</td>
-                            <td><input type="text" name="stationFirst" value="{{distances.stationLast}}"></td>
+                            <td><input type="text" name="stationFirst" value="{{distance.stationLast}}"></td>
                         </tr>
                         <tr>
                             <td>Kilometers</td>
-                            <td><input type="text" name="kilometers" value="{{distances.kilometers}}"></td>
+                            <td><input type="text" name="kilometers" value="{{distance.kilometers}}"></td>
                         </tr>
                         </tbody>
                     </table>
 
-                    <input type="hidden" value="{{distances.id}}" name="distanceId">
+                    <input type="hidden" value="{{distance.id}}" name="distanceId">
                     <input type="hidden" value="{{_csrf.token}}" name="_csrf">
                     <button type="submit">Save</button>
                 </form>

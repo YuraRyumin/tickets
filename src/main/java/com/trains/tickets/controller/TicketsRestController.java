@@ -48,6 +48,6 @@ public class TicketsRestController {
             @RequestParam String timeDeparture,
             @RequestParam String timeArrival
     ){
-        return stopsForMainDTORepository.findTicketsInfoAndPassanger(user.getPassenger().getId(), stationFirst, stationLast, timeDeparture, timeArrival);
+        return stopsForMainDTORepository.findTicketsInfoAndPassanger(user.getPassenger() == null ? null : user.getPassenger().getId(), stationFirst, stationLast, timeDeparture, timeArrival);
     }
 }

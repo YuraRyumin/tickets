@@ -1,6 +1,8 @@
 package com.trains.tickets.service;
 
+import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.Station;
+import com.trains.tickets.dto.PassengerDTO;
 import com.trains.tickets.dto.StationsForMainDTO;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +12,13 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class StationService {
-    private StationsForMainDTO convertEntityToDto(Station station) {
+    public Iterable<StationsForMainDTO> convertAllEntityToDto(Iterable<Station> stations){
+        return StreamSupport.stream(stations.spliterator(), false)
+                .map(this::convertEntityToDto)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public StationsForMainDTO convertEntityToDto(Station station) {
         StationsForMainDTO stationsForMainDTO = new StationsForMainDTO();
 
         stationsForMainDTO.setId(station.getId());
@@ -19,7 +27,7 @@ public class StationService {
         return stationsForMainDTO;
     }
 
-    public Iterable<StationsForMainDTO> convertEntityToDto(Iterable<Station> stations) {
+    public Iterable<StationsForMainDTO> convertAllEntitysToDto(Iterable<Station> stations) {
         return StreamSupport.stream(stations.spliterator(), false)
                 .map(station -> {StationsForMainDTO stationForMainDTO = new StationsForMainDTO();
                     stationForMainDTO.setId(station.getId());
@@ -27,5 +35,14 @@ public class StationService {
                     return  stationForMainDTO;})
                 //.sorted((h1, h2) -> h1.getName().compareTo(h2.getName()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public StationsForMainDTO getEmptyDto(){
+        StationsForMainDTO stationsForMainDTO = new StationsForMainDTO();
+
+        stationsForMainDTO.setId(0);
+        stationsForMainDTO.setName("");
+
+        return stationsForMainDTO;
     }
 }

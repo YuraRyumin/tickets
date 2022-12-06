@@ -15,8 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -65,18 +68,40 @@ public class UserService implements UserDetailsService {
         return "redirect:/login";
     }
 
-    private UserDTO convertEntityToDto(User user){
+    public Iterable<UserDTO> convertAllEntityToDto(Iterable<User> users){
+        return StreamSupport.stream(users.spliterator(), false)
+                .map(this::convertEntityToDto)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public UserDTO convertEntityToDto(User user){
         UserDTO userDTO = new UserDTO();
 
         userDTO.setId(user.getId());
         userDTO.setLogin(user.getLogin());
         userDTO.setEmail(user.getEmail());
         userDTO.setTelephone(user.getTelephone());
-        userDTO.setPassenger(user.getPassenger());
+        userDTO.setPassenger(user.getPassenger().getName() + " " + user.getPassenger().getSurname());
         userDTO.setPassword(user.getPassword());
         userDTO.setActive(user.isActive());
         userDTO.setActivationCode(user.getActivationCode());
-        userDTO.setRole(user.getRole());
+        userDTO.setRole(user.getRole().getName());
+
+        return userDTO;
+    }
+
+    public UserDTO getEmptyDto(){
+        UserDTO userDTO = new UserDTO();
+
+        userDTO.setId(0);
+        userDTO.setLogin("");
+        userDTO.setEmail("");
+        userDTO.setTelephone("");
+        userDTO.setPassenger("");
+        userDTO.setPassword("");
+        userDTO.setActive(true);
+        userDTO.setActivationCode("");
+        userDTO.setRole("");
 
         return userDTO;
     }

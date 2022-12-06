@@ -2,6 +2,7 @@ package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.UserRepository;
+import com.trains.tickets.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,15 +16,17 @@ import java.util.Map;
 @PreAuthorize("hasAuthority('admin')")
 public class UserController {
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
-        model.addAttribute("users", userRepository.findAll());
+        model.addAttribute("users", userService.convertAllEntityToDto(userRepository.findAll()));
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -38,7 +41,11 @@ public class UserController {
     public String userEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String userThis,
                                Model model){
-        model.addAttribute("userThis", userRepository.findById(Integer.parseInt(userThis)));
+        if (userThis.equals("new")) {
+            model.addAttribute("userThis", userService.getEmptyDto());
+        } else {
+            model.addAttribute("userThis", userService.convertEntityToDto(userRepository.findById(Integer.parseInt(userThis))));
+        }
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

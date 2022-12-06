@@ -1,41 +1,52 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Role;
-import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.Ticket;
 import com.trains.tickets.domain.User;
-import com.trains.tickets.repository.RoleRepository;
-import com.trains.tickets.repository.StationRepository;
-import com.trains.tickets.repository.TicketRepository;
-import com.trains.tickets.repository.UserRepository;
-import com.trains.tickets.service.StationService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import com.trains.tickets.repository.*;
+import com.trains.tickets.service.*;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/tickets")
 public class TicketsController {
     private final TicketRepository ticketRepository;
+    private final TicketService ticketService;
+    private final PassengerRepository passengerRepository;
+    private final PassengerService passengerService;
+    private final TrainRepository trainRepository;
+    private final TrainService trainService;
+    private final WagonRepository wagonRepository;
+    private final WagonService wagonService;
+    private final ScheduleRepository scheduleRepository;
+    private final ScheduleService scheduleService;
 
-    public TicketsController(TicketRepository ticketRepository) {
+    public TicketsController(TicketRepository ticketRepository, TicketService ticketService,
+                             PassengerRepository passengerRepository, PassengerService passengerService,
+                             TrainRepository trainRepository, TrainService trainService,
+                             WagonRepository wagonRepository, WagonService wagonService,
+                             ScheduleRepository scheduleRepository, ScheduleService scheduleService) {
         this.ticketRepository = ticketRepository;
+        this.ticketService = ticketService;
+        this.trainRepository = trainRepository;
+        this.trainService = trainService;
+        this.wagonRepository = wagonRepository;
+        this.wagonService = wagonService;
+        this.scheduleRepository = scheduleRepository;
+        this.scheduleService = scheduleService;
+        this.passengerRepository = passengerRepository;
+        this.passengerService = passengerService;
     }
 
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
-        model.addAttribute("tickets", ticketRepository.findAll());
+        model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAll()));
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -50,8 +61,17 @@ public class TicketsController {
     public String userEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String ticket,
                                Model model){
-        model.addAttribute("ticket", ticketRepository.findById(Integer.parseInt(ticket)));
+        if (ticket.equals("new")) {
+            model.addAttribute("ticket", ticketService.getEmptyDto());
+        } else {
+            model.addAttribute("ticket", ticketService.convertEntityToDto(ticketRepository.findById(Integer.parseInt(ticket))));
+        }
         model.addAttribute("user", user);
+        model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
+        model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+        model.addAttribute("schedules", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
+        model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

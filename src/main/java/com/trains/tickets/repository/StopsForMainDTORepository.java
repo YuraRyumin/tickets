@@ -35,7 +35,7 @@ public interface StopsForMainDTORepository extends JpaRepository<Schedule, Long>
     Set<StopsTwoTrainsProjection> findScheduleByTwoStations(String firstStation, String lastStation);
 
     @Query(value = "SELECT sched.id, stops1.nameFirst stationFirst, stops2.nameLast stationLast, stops1.time_end timeDeparture, stops2.time_begining timeArrival," +
-            "       passengers.name passengerName, passengers.surname passengerSurname, passengers.gender passengerGender, passengers.passport passengerPassport FROM schedule sched" +
+            "       COALESCE(passengers.name, '') passengerName, COALESCE(passengers.surname, '') passengerSurname, passengers.gender passengerGender, COALESCE(passengers.passport, '') passengerPassport FROM schedule sched" +
             "                LEFT JOIN (SELECT stops.id_schedule, stops.time_begining , stops.time_end, s1.name nameFirst FROM stops" +
             "                    LEFT JOIN stations s1 ON stops.id_station = s1.id) stops1 ON sched.id = stops1.id_schedule" +
             "                LEFT JOIN (SELECT stops.id_schedule, stops.time_begining, stops.time_end, s2.name nameLast FROM  stops" +

@@ -2,17 +2,21 @@ package com.trains.tickets.service;
 
 import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.Ticket;
-import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.PassengerDTO;
+import com.trains.tickets.dto.TicketDTO;
 import com.trains.tickets.dto.TicketForUserDTO;
-import com.trains.tickets.dto.UserDTO;
-import lombok.Data;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-@Data
+@Service
 public class TicketService {
-    private TicketForUserDTO convertEntityToDto(Ticket ticket){
+    public TicketForUserDTO convertEntityForMainToDto(Ticket ticket){
         TicketForUserDTO ticketForUserDTO = new TicketForUserDTO();
 
         Passenger passenger = ticket.getPassenger();
@@ -31,5 +35,39 @@ public class TicketService {
         ticketForUserDTO.setPrice(ticket.getPrice());
 
         return ticketForUserDTO;
+    }
+
+    public Iterable<TicketDTO> convertAllEntityToDto(Iterable<Ticket> tickets){
+        return StreamSupport.stream(tickets.spliterator(), false)
+                .map(this::convertEntityToDto)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public TicketDTO convertEntityToDto(Ticket ticket){
+        TicketDTO ticketDTO = new TicketDTO();
+
+        ticketDTO.setId(ticket.getId());
+        ticketDTO.setPassenger(ticket.getPassenger().getName() + " " + ticket.getPassenger().getSurname());
+        ticketDTO.setDateTicket(ticket.getDateTicket());
+        ticketDTO.setTrain(ticket.getTrain().getNumber());
+        ticketDTO.setWagon(ticket.getWagon().getName());
+        ticketDTO.setPrice(ticket.getPrice());
+        ticketDTO.setSchedule(ticket.getSchedule().getTime());
+
+        return ticketDTO;
+    }
+
+    public TicketDTO getEmptyDto(){
+        TicketDTO ticketDTO = new TicketDTO();
+
+        ticketDTO.setId(0);
+        ticketDTO.setPassenger("");
+        ticketDTO.setDateTicket(LocalDate.of(1, 1, 1));
+        ticketDTO.setTrain("");
+        ticketDTO.setWagon("");
+        ticketDTO.setPrice(0);
+        ticketDTO.setSchedule("");
+
+        return ticketDTO;
     }
 }

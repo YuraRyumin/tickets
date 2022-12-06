@@ -1,9 +1,9 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.TrainRepository;
+import com.trains.tickets.service.TrainService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,15 +18,17 @@ import java.util.Map;
 //@PreAuthorize("hasAuthority('admin')")
 public class TrainsController {
     private final TrainRepository trainRepository;
+    private final TrainService trainService;
 
-    public TrainsController(TrainRepository trainRepository) {
+    public TrainsController(TrainRepository trainRepository, TrainService trainService) {
         this.trainRepository = trainRepository;
+        this.trainService = trainService;
     }
 
     @GetMapping
     public String trainList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("trains", trainRepository.findAll());
+        model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll()));
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -41,7 +43,11 @@ public class TrainsController {
     public String trainEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String train,
                                    Model model){
-        model.addAttribute("train", trainRepository.findById(Integer.parseInt(train)));
+        if (train.equals("new")) {
+            model.addAttribute("train", trainService.getEmptyDto());
+        } else {
+            model.addAttribute("train", trainService.convertEntityToDto(trainRepository.findById(Integer.parseInt(train))));
+        }
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

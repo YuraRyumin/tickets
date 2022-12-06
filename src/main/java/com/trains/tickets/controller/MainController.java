@@ -60,9 +60,8 @@ public class MainController {
     @GetMapping("/main")
     public String main(@AuthenticationPrincipal User user,
                        Map<String, Object> model){
-        Iterable<Station> stations = stationRepository.findAll();
         model.put("user", user);
-        model.put("stations", stationService.convertEntityToDto(stations));
+        model.put("stations", stationService.convertAllEntitysToDto(stationRepository.findAll()));
         if(user.isAdmin()) {
             model.put("adminRole", true);
         }
@@ -76,9 +75,6 @@ public class MainController {
     public String add(@AuthenticationPrincipal User user,
                       @RequestParam String name,
                       Map<String, Object> model){
-
-        Iterable<Role> roleI = roleRepository.findAll();
-        model.put("roles", roleI);
         model.put("user", user);
         if(user.isAdmin()) {
             model.put("adminRole", true);
@@ -86,25 +82,10 @@ public class MainController {
         if(user.isOperator()) {
             model.put("operatorRole", true);
         }
-        //return "main";
         return "ticketsSearch";
     }
 
-    @PostMapping("filter")
-    public String filter(@AuthenticationPrincipal User user,
-                         @RequestParam String filter,
-                         Map<String, Object> model){
-        if(filter != null && !filter.isEmpty()) {
-            Set<Role> rolesSet = new HashSet<>();
-            rolesSet.add(roleRepository.findByName(filter));
-            model.put("roles", rolesSet);
-        } else {
-            Iterable<Role>  rolesI = roleRepository.findAll();
-            model.put("roles", rolesI);
-        }
-        model.put("user", user);
-        return "main";
-    }
+
 
     @PostMapping("changePass")
     public String post(@AuthenticationPrincipal User user,

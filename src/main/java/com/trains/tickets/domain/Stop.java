@@ -2,6 +2,7 @@ package com.trains.tickets.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "stops")
@@ -10,40 +11,48 @@ public class Stop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "time_begining")
-    private LocalDate timeBegining;
+    private LocalTime timeBegining;
     @Column(name = "time_end")
-    private LocalDate timeEnd;
-    @ManyToOne(fetch = FetchType.LAZY)
+    private LocalTime timeEnd;
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_schedule")
     private Schedule schedule;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_station")
     private Station station;
 
     public Stop() {
     }
 
-    public Stop(LocalDate timeBegining, LocalDate timeEnd, Schedule schedule, Station station) {
+    public Stop(LocalTime timeBegining, LocalTime timeEnd, Schedule schedule, Station station) {
         this.timeBegining = timeBegining;
         this.timeEnd = timeEnd;
         this.schedule = schedule;
         this.station = station;
     }
 
-    public LocalDate getTimeBegining() {
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public LocalTime getTimeBegining() {
         return timeBegining;
     }
 
-    public void setTimeBegining(LocalDate timeBegining) {
+    public void setTimeBegining(LocalTime timeBegining) {
         this.timeBegining = timeBegining;
     }
 
-    public LocalDate getTimeEnd() {
+    public LocalTime getTimeEnd() {
         return timeEnd;
     }
 
-    public void setTimeEnd(LocalDate timeEnd) {
+    public void setTimeEnd(LocalTime timeEnd) {
         this.timeEnd = timeEnd;
     }
 

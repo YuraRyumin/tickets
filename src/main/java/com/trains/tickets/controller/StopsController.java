@@ -3,7 +3,13 @@ package com.trains.tickets.controller;
 import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Stop;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.repository.ScheduleRepository;
+import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
+import com.trains.tickets.service.ScheduleService;
+import com.trains.tickets.service.StationService;
+import com.trains.tickets.service.StopService;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,15 +24,27 @@ import java.util.Map;
 //@PreAuthorize("hasAuthority('admin')")
 public class StopsController {
     private final StopRepository stopRepository;
+    private final StopService stopService;
+    private final ScheduleRepository scheduleRepository;
+    private final ScheduleService scheduleService;
+    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public StopsController(StopRepository stopRepository) {
+    public StopsController(StopRepository stopRepository, StopService stopService,
+                           ScheduleRepository scheduleRepository, ScheduleService scheduleService,
+                           StationRepository stationRepository, StationService stationService) {
         this.stopRepository = stopRepository;
+        this.stopService = stopService;
+        this.scheduleRepository = scheduleRepository;
+        this.scheduleService = scheduleService;
+        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @GetMapping
     public String stopList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("stops", stopRepository.findAll());
+        model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -41,8 +59,14 @@ public class StopsController {
     public String stopEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String stop,
                                    Model model){
-        model.addAttribute("stop", stopRepository.findById(Integer.parseInt(stop)));
+        if (stop.equals("new")) {
+            model.addAttribute("stop", stopService.getEmptyDto());
+        } else {
+            model.addAttribute("stop", stopService.convertEntityToDto(stopRepository.findById(Integer.parseInt(stop))));
+        }
         model.addAttribute("user", user);
+        model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
+        model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
