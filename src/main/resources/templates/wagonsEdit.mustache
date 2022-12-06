@@ -70,15 +70,43 @@
             <div align=center>
                 Wagon editor
                 <form action="/wagon" method="post">
-                    <table id='ticket_table' border = '1'>
+                    <table id='wagon_table' border = '1'>
                         <tbody>
+                        <tr>
+                            <td>Train</td>
+                            <td>
+                                <select class="js-select1" id="train" name="train" placeholder="Choose train">
+                                    {{#trains}}
+                                    {% if {{number}} == {{wagon.train}} %}
+                                    <option value="{{number}}" selected>{{number}}</option>
+                                    {% else %}
+                                    <option value="{{number}}" >{{number}}</option>
+                                    {% endif %}
+                                    {{/trains}}
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Service class</td>
+                            <td>
+                                <select class="js-select1" id="serviceClasses" name="serviceClasses" placeholder="Choose service class">
+                                    {{#serviceClasses}}
+                                    {% if {{name}} == {{wagon.serviceClasses}} %}
+                                    <option value="{{name}}" selected>{{name}}</option>
+                                    {% else %}
+                                    <option value="{{name}}" >{{name}}</option>
+                                    {% endif %}
+                                    {{/serviceClasses}}
+                                </select>
+                            </td>
+                        </tr>
                         <tr>
                             <td>Name</td>
                             <td><input type="text" name="name" value="{{wagon.name}}"></td>
                         </tr>
                         <tr>
                             <td>Seats</td>
-                            <td><input type="text" name="seats" value="{{wagon.seats}}"></td>
+                            <td><input type="number" name="seats" value="{{wagon.seats}}"></td>
                         </tr>
                         </tbody>
                     </table>

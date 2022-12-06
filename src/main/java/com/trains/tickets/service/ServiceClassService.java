@@ -18,6 +18,20 @@ public class ServiceClassService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public Iterable<ServiceClassDTO> convertAllEntityToDtoWithSelected(Iterable<ServiceClass> serviceClasses, ServiceClass selectedServiceClass){
+        return StreamSupport.stream(serviceClasses.spliterator(), false)
+                .map(serviceClass -> {
+                    ServiceClassDTO serviceClassDTO = convertEntityToDto(serviceClass);
+                    if (serviceClass.getName().equals(selectedServiceClass.getName())){
+                        serviceClassDTO.setSelected(true);
+                    } else {
+                        serviceClassDTO.setSelected(false);
+                    }
+                    return serviceClassDTO;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public ServiceClassDTO convertEntityToDto(ServiceClass serviceClass){
         ServiceClassDTO serviceClassDTO = new ServiceClassDTO();
 

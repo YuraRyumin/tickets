@@ -34,6 +34,21 @@ public class PassengerService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public Iterable<PassengerDTO> convertAllEntityToDtoWithSelected(Iterable<Passenger> passengers, Passenger selectedPassenger){
+        return StreamSupport.stream(passengers.spliterator(), false)
+                .map(passenger -> {
+                    PassengerDTO passengerDTO = convertEntityToDto(passenger);
+                    if (passenger.getSurname().equals(selectedPassenger.getSurname()) &&
+                            passenger.getName().equals(selectedPassenger.getName())){
+                        passengerDTO.setSelected(true);
+                    } else {
+                        passengerDTO.setSelected(false);
+                    }
+                    return passengerDTO;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public PassengerDTO convertEntityToDto(Passenger passenger){
         PassengerDTO passengerDTO = new PassengerDTO();
 
@@ -43,6 +58,7 @@ public class PassengerService {
         passengerDTO.setPassport(passenger.getPassport());
         passengerDTO.setGender(passenger.getGender());
         passengerDTO.setDateOfBirth(passenger.getDateOfBirth());
+        passengerDTO.setFullName(passenger.getName() + " " + passenger.getSurname());
 
         return passengerDTO;
     }

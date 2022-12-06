@@ -74,19 +74,41 @@
                         <tbody>
                         <tr>
                             <td>Time begining</td>
-                            <td><input type="text" name="timeBegining" value="{{stop.timeBegining}}"></td>
+                            <td><input type="time" name="timeBegining" value="{{stop.timeBegining}}"></td>
                         </tr>
                         <tr>
                             <td>Time end</td>
-                            <td><input type="text" name="timeEnd" value="{{stop.timeEnd}}"></td>
+                            <td><input type="time" name="timeEnd" value="{{stop.timeEnd}}"></td>
                         </tr>
                         <tr>
                             <td>Schedule</td>
-                            <td><input type="text" name="schedule" value="{{stop.schedule}}"></td>
+                            <td>
+                                <select class="js-select1" id="schedule" name="schedule" placeholder="Choose schedule">
+                                    {{#schedule}}
+                                        {{#selected}}
+                                            <option value="{{time}}" selected>{{time}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{time}}" >{{time}}</option>
+                                        {{/selected}}
+                                    {{/schedule}}
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td>Station</td>
-                            <td><input type="text" name="station" value="{{stop.station}}"></td>
+                            <td>
+                                <select class="js-select1" id="station" name="station" placeholder="Choose station">
+                                    {{#stations}}
+                                        {{#selected}}
+                                            <option value="{{name}}" selected>{{name}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{name}}" >{{name}}</option>
+                                        {{/selected}}
+                                    {{/stations}}
+                                </select>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

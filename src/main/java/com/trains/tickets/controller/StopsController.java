@@ -61,12 +61,16 @@ public class StopsController {
                                    Model model){
         if (stop.equals("new")) {
             model.addAttribute("stop", stopService.getEmptyDto());
+            model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+            model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
         } else {
-            model.addAttribute("stop", stopService.convertEntityToDto(stopRepository.findById(Integer.parseInt(stop))));
+            Stop selectedStop = stopRepository.findById(Integer.parseInt(stop));
+            model.addAttribute("stop", stopService.convertEntityToDto(selectedStop));
+            model.addAttribute("stations", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedStop.getStation()));
+            model.addAttribute("schedule", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedStop.getSchedule()));
         }
         model.addAttribute("user", user);
-        model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
-        model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

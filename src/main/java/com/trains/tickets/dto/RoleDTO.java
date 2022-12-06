@@ -6,4 +6,5 @@ import lombok.Data;
 public class RoleDTO {
     private Integer id;
     private String name;
+    private boolean selected;
 }

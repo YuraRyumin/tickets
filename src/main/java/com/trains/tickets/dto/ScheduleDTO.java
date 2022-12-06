@@ -8,4 +8,5 @@ public class ScheduleDTO {
     private String time;
     private Integer dayOfWeek;
     private String train;
+    private boolean selected;
 }

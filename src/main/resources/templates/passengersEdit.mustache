@@ -86,11 +86,18 @@
                         </tr>
                         <tr>
                             <td>Gender</td>
-                            <td><input type="text" name="gender" value="{{passenger.gender}}"></td>
+                            <td>
+                                <select class="js-select1" id="gender" name="gender" placeholder="Choose gender">
+                                    <option value="MALE" selected>MALE</option>
+                                    <option value="FEMALE" selected>FEMALE</option>
+                                </select>
+
+                                <input type="text" name="gender" value="{{passenger.gender}}">
+                            </td>
                         </tr>
                         <tr>
                             <td>Date of birth</td>
-                            <td><input type="text" name="dateOfBirth" value="{{passenger.dateOfBirth}}"></td>
+                            <td><input type="date" name="dateOfBirth" value="{{passenger.dateOfBirth}}"></td>
                         </tr>
                         </tbody>
                     </table>

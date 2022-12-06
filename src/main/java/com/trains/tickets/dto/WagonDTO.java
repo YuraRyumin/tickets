@@ -9,4 +9,5 @@ public class WagonDTO {
     private String serviceClasses;
     private String name;
     private Integer seats;
+    private boolean selected;
 }

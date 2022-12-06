@@ -11,4 +11,6 @@ public class PassengerDTO {
     private String passport;
     private String gender;
     private LocalDate dateOfBirth;
+    private String fullName;
+    private boolean selected;
 }

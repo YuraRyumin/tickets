@@ -85,13 +85,13 @@
                     <tbody>
                     {{#tickets}}
                     <tr>
-                        <td>{{passenger.name}} {{passenger.surname}}</td>
+                        <td>{{passenger}}</td>
                         <td>{{dateTicket}}</td>
-                        <td>{{train.number}}</td>
-                        <td>{{wagon.name}}</td>
+                        <td>{{train}}</td>
+                        <td>{{wagon}}</td>
                         <td></td>
                         <td>{{price}}</td>
-                        <td>{{schedule.name}}</td>
+                        <td>{{schedule}}</td>
                         <td><a href="/tickets/{{id}}">edit</a></td>
                     </tr>
                     {{/tickets}}

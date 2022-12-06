@@ -78,7 +78,18 @@
                         </tr>
                         <tr>
                             <td>Role</td>
-                            <td><input type="text" name="role" value="{{userThis.role}}"></td>
+                            <td>
+                                <select class="js-select1" id="role" name="role" placeholder="Choose role">
+                                    {{#roles}}
+                                        {{#selected}}
+                                            <option value="{{name}}" selected>{{name}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{name}}" >{{name}}</option>
+                                        {{/selected}}
+                                    {{/roles}}
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td>E-mail</td>
@@ -94,10 +105,21 @@
                         </tr>
                         <tr>
                             <td>Passenger</td>
-                            <td><input type="text" name="passenger" value="{{userThis.passenger}}"></td>
+                            <td>
+                                <select class="js-select1" id="passenger" name="passenger" placeholder="Choose passenger">
+                                    {{#passengers}}
+                                        {{#selected}}
+                                            <option value="{{fullName}}" selected>{{fullName}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{fullName}}" >{{fullName}}</option>
+                                        {{/selected}}
+                                    {{/passengers}}
+                                </select>
+                            </td>
                         </tr>
                         <tr>
-                            <td>Activ</td>
+                            <td>Activation code</td>
                             <td><input type="text" name="activationCode" value="{{userThis.active}}"></td>
                         </tr>
                         </tbody>

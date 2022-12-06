@@ -17,6 +17,21 @@ public class TrainService {
                 .map(this::convertEntityToDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
+
+    public Iterable<TrainDTO> convertAllEntityToDtoWithSelected(Iterable<Train> trains, Train selectedTrain){
+        return StreamSupport.stream(trains.spliterator(), false)
+                .map(train -> {
+                    TrainDTO trainDTO = convertEntityToDto(train);
+                    if (train.getNumber().equals(selectedTrain.getNumber())){
+                        trainDTO.setSelected(true);
+                    } else {
+                        trainDTO.setSelected(false);
+                    }
+                    return trainDTO;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public TrainDTO convertEntityToDto(Train train){
         TrainDTO trainDTO = new TrainDTO();
 

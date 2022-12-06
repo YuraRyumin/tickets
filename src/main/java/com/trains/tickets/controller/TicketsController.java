@@ -63,14 +63,20 @@ public class TicketsController {
                                Model model){
         if (ticket.equals("new")) {
             model.addAttribute("ticket", ticketService.getEmptyDto());
+            model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
+            model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+            model.addAttribute("schedules", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
+            model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
         } else {
-            model.addAttribute("ticket", ticketService.convertEntityToDto(ticketRepository.findById(Integer.parseInt(ticket))));
+            Ticket selectedTicket = ticketRepository.findById(Integer.parseInt(ticket));
+            model.addAttribute("ticket", ticketService.convertEntityToDto(selectedTicket));
+            model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedTicket.getTrain()));
+            model.addAttribute("wagons", wagonService.convertAllEntityToDtoWithSelected(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedTicket.getWagon()));
+            model.addAttribute("schedules", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedTicket.getSchedule()));
+            model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedTicket.getPassenger()));
         }
         model.addAttribute("user", user);
-        model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
-        model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-        model.addAttribute("schedules", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
-        model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+
 
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

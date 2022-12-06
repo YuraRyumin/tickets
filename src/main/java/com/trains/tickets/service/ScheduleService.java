@@ -18,6 +18,20 @@ public class ScheduleService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public Iterable<ScheduleDTO> convertAllEntityToDtoWithSelected(Iterable<Schedule> schedules, Schedule selectedSchedule){
+        return StreamSupport.stream(schedules.spliterator(), false)
+                .map(schedule -> {
+                    ScheduleDTO scheduleDTO = convertEntityToDto(schedule);
+                    if (schedule.getTime().equals(selectedSchedule.getTime())){
+                        scheduleDTO.setSelected(true);
+                    } else {
+                        scheduleDTO.setSelected(false);
+                    }
+                    return scheduleDTO;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public ScheduleDTO convertEntityToDto(Schedule schedule){
         ScheduleDTO scheduleDTO = new ScheduleDTO();
 

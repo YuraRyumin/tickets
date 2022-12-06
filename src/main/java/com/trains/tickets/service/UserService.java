@@ -81,7 +81,11 @@ public class UserService implements UserDetailsService {
         userDTO.setLogin(user.getLogin());
         userDTO.setEmail(user.getEmail());
         userDTO.setTelephone(user.getTelephone());
-        userDTO.setPassenger(user.getPassenger().getName() + " " + user.getPassenger().getSurname());
+        if(user.getPassenger() == null){
+            userDTO.setPassenger("");
+        } else {
+            userDTO.setPassenger(user.getPassenger().getName() + " " + user.getPassenger().getSurname());
+        }
         userDTO.setPassword(user.getPassword());
         userDTO.setActive(user.isActive());
         userDTO.setActivationCode(user.getActivationCode());

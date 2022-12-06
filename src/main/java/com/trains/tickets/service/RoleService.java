@@ -18,6 +18,20 @@ public class RoleService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public Iterable<RoleDTO> convertAllEntityToDtoWithSelected(Iterable<Role> roles, Role selectedRole){
+        return StreamSupport.stream(roles.spliterator(), false)
+                .map(role -> {
+                    RoleDTO roleDTO = convertEntityToDto(role);
+                    if (role.getName().equals(selectedRole.getName())){
+                        roleDTO.setSelected(true);
+                    } else {
+                        roleDTO.setSelected(false);
+                    }
+                    return roleDTO;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public RoleDTO convertEntityToDto(Role role){
         RoleDTO roleDTO = new RoleDTO();
 

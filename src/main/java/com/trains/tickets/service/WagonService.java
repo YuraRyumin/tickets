@@ -18,6 +18,20 @@ public class WagonService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public Iterable<WagonDTO> convertAllEntityToDtoWithSelected(Iterable<Wagon> wagons, Wagon selectedWagon){
+        return StreamSupport.stream(wagons.spliterator(), false)
+                .map(wagon -> {
+                    WagonDTO wagonDTO = convertEntityToDto(wagon);
+                    if (wagon.getName().equals(selectedWagon.getName())){
+                        wagonDTO.setSelected(true);
+                    } else {
+                        wagonDTO.setSelected(false);
+                    }
+                    return wagonDTO;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public WagonDTO convertEntityToDto(Wagon wagon){
         WagonDTO wagonDTO = new WagonDTO();
 

@@ -54,11 +54,16 @@ public class DistancesController {
                                Model model) {
         if (distance.equals("new")) {
             model.addAttribute("distance", distancesService.getEmptyDto());
+            model.addAttribute("stationsFirst", stationService.convertAllEntitysToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+            model.addAttribute("stationsLast", stationService.convertAllEntitysToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
         } else {
-            model.addAttribute("distance", distancesService.convertEntityToDto(distanceRepository.findById(Integer.parseInt(distance))));
+            Distance selectedDistance = distanceRepository.findById(Integer.parseInt(distance));
+            model.addAttribute("distance", distancesService.convertEntityToDto(selectedDistance));
+            model.addAttribute("stationsFirst", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedDistance.getStationFirst()));
+            model.addAttribute("stationsLast", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedDistance.getStationLast()));
         }
         model.addAttribute("user", user);
-        model.addAttribute("stations", stationService.convertAllEntitysToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

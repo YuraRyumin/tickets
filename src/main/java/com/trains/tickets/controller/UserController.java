@@ -1,8 +1,13 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
+import com.trains.tickets.repository.PassengerRepository;
+import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
+import com.trains.tickets.service.PassengerService;
+import com.trains.tickets.service.RoleService;
 import com.trains.tickets.service.UserService;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,10 +22,18 @@ import java.util.Map;
 public class UserController {
     private final UserRepository userRepository;
     private final UserService userService;
+    private final RoleRepository roleRepository;
+    private final RoleService roleService;
+    private final PassengerRepository passengerRepository;
+    private final PassengerService passengerService;
 
-    public UserController(UserRepository userRepository, UserService userService) {
+    public UserController(UserRepository userRepository, UserService userService, RoleRepository roleRepository, RoleService roleService, PassengerRepository passengerRepository, PassengerService passengerService) {
         this.userRepository = userRepository;
         this.userService = userService;
+        this.roleRepository = roleRepository;
+        this.roleService = roleService;
+        this.passengerRepository = passengerRepository;
+        this.passengerService = passengerService;
     }
 
     @GetMapping
@@ -43,10 +56,16 @@ public class UserController {
                                Model model){
         if (userThis.equals("new")) {
             model.addAttribute("userThis", userService.getEmptyDto());
+            model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
+            model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
         } else {
-            model.addAttribute("userThis", userService.convertEntityToDto(userRepository.findById(Integer.parseInt(userThis))));
+            User selectedUser = userRepository.findById(Integer.parseInt(userThis));
+            model.addAttribute("userThis", userService.convertEntityToDto(selectedUser));
+            model.addAttribute("roles", roleService.convertAllEntityToDtoWithSelected(roleRepository.findAll(), selectedUser.getRole()));
+            model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedUser.getPassenger()));
         }
         model.addAttribute("user", user);
+
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

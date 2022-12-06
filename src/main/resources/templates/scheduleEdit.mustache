@@ -74,15 +74,37 @@
                         <tbody>
                         <tr>
                             <td>Time</td>
-                            <td><input type="text" name="time" value="{{schedule.time}}"></td>
+                            <td><input type="time" name="time" value="{{schedule.time}}"></td>
                         </tr>
                         <tr>
                             <td>Day of week</td>
-                            <td><input type="text" name="dayOfWeek" value="{{schedule.dayOfWeek}}"></td>
+                            <td>
+                                <select class="js-select1" id="dayOfWeek" name="dayOfWeek" placeholder="Choose day of week">
+                                    <option value=1 selected>Monday</option>
+                                    <option value=2 selected>Tuesday</option>
+                                    <option value=3 selected>Wednesday</option>
+                                    <option value=4 selected>Thursday</option>
+                                    <option value=5 selected>Friday</option>
+                                    <option value=6 selected>Saturday</option>
+                                    <option value=7 selected>Sunday</option>
+                                </select>
+                                <input type="number" name="dayOfWeek" value="{{schedule.dayOfWeek}}">
+                            </td>
                         </tr>
                         <tr>
                             <td>Train</td>
-                            <td><input type="text" name="train" value="{{schedule.train}}"></td>
+                            <td>
+                                <select class="js-select1" id="train" name="train" placeholder="Choose train">
+                                    {{#trains}}
+                                        {{#selected}}
+                                            <option value="{{number}}" selected>{{number}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{number}}" >{{number}}</option>
+                                        {{/selected}}
+                                    {{/trains}}
+                                </select>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

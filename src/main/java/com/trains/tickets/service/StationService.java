@@ -18,6 +18,20 @@ public class StationService {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    public Iterable<StationsForMainDTO> convertAllEntityToDtoWithSelected(Iterable<Station> stations, Station selectedStation){
+        return StreamSupport.stream(stations.spliterator(), false)
+                .map(station -> {
+                    StationsForMainDTO stationDTO = convertEntityToDto(station);
+                    if (station.getName().equals(selectedStation.getName())){
+                        stationDTO.setSelected(true);
+                    } else {
+                        stationDTO.setSelected(false);
+                    }
+                    return stationDTO;
+                })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public StationsForMainDTO convertEntityToDto(Station station) {
         StationsForMainDTO stationsForMainDTO = new StationsForMainDTO();
 

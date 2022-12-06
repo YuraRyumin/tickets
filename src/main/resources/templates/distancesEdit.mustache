@@ -74,15 +74,37 @@
                         <tbody>
                         <tr>
                             <td>Station first</td>
-                            <td><input type="text" name="stationFirst" value="{{distance.stationFirst}}"></td>
+                            <td>
+                                <select class="js-select1" id="stationFirst" name="stationFirst" placeholder="Choose station">
+                                    {{#stationsFirst}}
+                                        {{#selected}}
+                                            <option value="{{name}}" selected>{{name}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{name}}" >{{name}}</option>
+                                        {{/selected}}
+                                    {{/stationsFirst}}
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td>Station last</td>
-                            <td><input type="text" name="stationFirst" value="{{distance.stationLast}}"></td>
+                            <td>
+                                <select class="js-select1" id="stationLast" name="stationLast" placeholder="Choose station">
+                                    {{#stationsLast}}
+                                        {{#selected}}
+                                            <option value="{{name}}" selected>{{name}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{name}}" >{{name}}</option>
+                                        {{/selected}}
+                                    {{/stationsLast}}
+                                </select>
+                            </td>
                         </tr>
                         <tr>
                             <td>Kilometers</td>
-                            <td><input type="text" name="kilometers" value="{{distance.kilometers}}"></td>
+                            <td><input type="number" name="kilometers" value="{{distance.kilometers}}"></td>
                         </tr>
                         </tbody>
                     </table>

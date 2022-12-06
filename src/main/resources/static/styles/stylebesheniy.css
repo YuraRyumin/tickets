@@ -344,7 +344,7 @@ table th { background-color: lightblue; }
 .hover_Row { background-color: lightblue; }
 .clicked_Row { background-color: lightgreen; }
 
-select {
+select[class="js-select2"] {
     background-color: rgb(128, 130, 133);
     box-shadow: inset -100px -100px 0 rgb(128, 130, 133); /*Prevent yellow autofill color*/
     color: white;

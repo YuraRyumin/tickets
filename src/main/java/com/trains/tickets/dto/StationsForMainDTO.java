@@ -6,4 +6,5 @@ import lombok.Data;
 public class StationsForMainDTO {
     private Integer id;
     private String name;
+    private boolean selected;
 }

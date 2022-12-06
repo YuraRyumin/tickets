@@ -74,27 +74,71 @@
                 <tbody>
                 <tr>
                     <td>Passenger</td>
-                    <td><input type="text" name="passenger" value="{{ticket.passenger}}"></td>
+                    <td>
+                        <select class="js-select1" id="passenger" name="passenger" placeholder="Choose passenger">
+                            {{#passengers}}
+                                {{#selected}}
+                                    <option value="{{fullName}}" selected>{{fullName}}</option>
+                                {{/selected}}
+                                {{^selected}}
+                                    <option value="{{fullName}}" >{{fullName}}</option>
+                                {{/selected}}
+                            {{/passengers}}
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Date ticket</td>
-                    <td><input type="text" name="dateTicket" value="{{ticket.dateTicket}}"></td>
+                    <td><input type="date" name="dateTicket" value="{{ticket.dateTicket}}"></td>
                 </tr>
                 <tr>
                     <td>Train</td>
-                    <td><input type="text" name="train" value="{{ticket.train}}"></td>
+                    <td>
+                        <select class="js-select1" id="train" name="train" placeholder="Choose train">
+                            {{#trains}}
+                                {{#selected}}
+                                    <option value="{{number}}" selected>{{number}}</option>
+                                {{/selected}}
+                                {{^selected}}
+                                    <option value="{{number}}" >{{number}}</option>
+                                {{/selected}}
+                            {{/trains}}
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Wagon</td>
-                    <td><input type="text" name="wagon" value="{{ticket.wagon}}"></td>
+                    <td>
+                        <select class="js-select1" id="wagon" name="wagon" placeholder="Choose wagon">
+                            {{#wagons}}
+                                {{#selected}}
+                                    <option value="{{name}}" selected>{{name}}</option>
+                                {{/selected}}
+                                {{^selected}}
+                                    <option value="{{name}}" >{{name}}</option>
+                                {{/selected}}
+                            {{/wagons}}
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Price</td>
-                    <td><input type="text" name="price" value="{{ticket.price}}"></td>
+                    <td><input type="number" name="price" value="{{ticket.price}}"></td>
                 </tr>
                 <tr>
                     <td>Schedule</td>
-                    <td><input type="text" name="schedule" value="{{ticket.schedule}}"></td>
+                    <td>
+                        <select class="js-select1" id="schedule" name="schedule" placeholder="Choose schedule">
+                            {{#schedule}}
+                                {{#selected}}
+                                    <option value="{{time}}" selected>{{time}}</option>
+                                {{/selected}}
+                                {{^selected}}
+                                    <option value="{{time}}" >{{time}}</option>
+                                {{/selected}}
+                            {{/schedule}}
+                        </select>
+                    </td>
                 </tr>
                 </tbody>
             </table>

@@ -58,13 +58,16 @@ public class WagonsController {
                                    Model model){
         if (wagon.equals("new")) {
             model.addAttribute("wagon", wagonService.getEmptyDto());
+            model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
+            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
         } else {
-            model.addAttribute("wagon", wagonService.convertEntityToDto(wagonRepository.findById(Integer.parseInt(wagon))));
+            Wagon selectedWagon = wagonRepository.findById(Integer.parseInt(wagon));
+            model.addAttribute("wagon", wagonService.convertEntityToDto(selectedWagon));
+            model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedWagon.getTrain()));
+            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
         }
 
         model.addAttribute("user", user);
-        model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
-        model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
 
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

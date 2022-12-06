@@ -7,4 +7,5 @@ public class TrainDTO {
     private Integer id;
     private String number;
     private Integer seats;
+    private boolean selected;
 }

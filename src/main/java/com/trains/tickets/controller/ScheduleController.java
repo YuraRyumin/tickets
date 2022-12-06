@@ -54,11 +54,14 @@ public class ScheduleController {
                                Model model){
         if (schedule.equals("new")) {
             model.addAttribute("schedule", scheduleService.getEmptyDto());
+            model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
         } else {
-            model.addAttribute("schedule", scheduleService.convertEntityToDto(scheduleRepository.findById(Integer.parseInt(schedule))));
+            Schedule selectedSchedule = scheduleRepository.findById(Integer.parseInt(schedule));
+            model.addAttribute("schedule", scheduleService.convertEntityToDto(selectedSchedule));
+            model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedSchedule.getTrain()));
         }
         model.addAttribute("user", user);
-        model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
+
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
