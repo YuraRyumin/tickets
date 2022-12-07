@@ -60,12 +60,34 @@ public class ServiceClassesController {
     }
     @PostMapping
     public String serviceClassSave(@AuthenticationPrincipal User user,
-                               @RequestParam String login,
+                               @RequestParam String name,
+                               @RequestParam Float prisePerKm,
+                               @RequestParam Integer serviceClassId,
                                @RequestParam Map<String, String> form,
-                               @RequestParam("serviceClassId") ServiceClass serviceClassChanged,
+                               //@RequestParam("serviceClassId") ServiceClass serviceClassChanged,
                                Model model){
-        //distanceChanged.setLogin(login);
-        serviceClassRepository.save(serviceClassChanged);
+        if (serviceClassId.equals(0)) {
+            ServiceClass serviceClassChanged = new ServiceClass(
+                    name,
+                    prisePerKm
+            );
+            serviceClassRepository.save(serviceClassChanged);
+        } else {
+            ServiceClass serviceClassChanged = serviceClassRepository.findById(serviceClassId);
+            boolean wasChanged = false;
+            if(!serviceClassChanged.getName().equals(name)){
+                serviceClassChanged.setName(name);
+                wasChanged = true;
+            }
+            if(!serviceClassChanged.getPrisePerKm().equals(prisePerKm)){
+                serviceClassChanged.setPrisePerKm(prisePerKm);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                serviceClassRepository.save(serviceClassChanged);
+            }
+        }
+
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

@@ -7,11 +7,10 @@ import com.trains.tickets.projection.TicketInfoProjection;
 import com.trains.tickets.repository.StopsForMainDTORepository;
 import com.trains.tickets.repository.UserRepository;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Set;
 
 @RestController

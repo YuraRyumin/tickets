@@ -31,11 +31,13 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Passenger passenger, LocalDate dateTicket, Train train, Wagon wagon) {
+    public Ticket(Passenger passenger, LocalDate dateTicket, Train train, Wagon wagon, Integer price, Schedule schedule) {
         this.passenger = passenger;
         this.dateTicket = dateTicket;
         this.train = train;
         this.wagon = wagon;
+        this.price = price;
+        this.schedule = schedule;
     }
 
     public Integer getPrice() {

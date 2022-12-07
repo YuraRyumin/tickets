@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Controller
@@ -59,12 +60,57 @@ public class PassengersController {
     }
     @PostMapping
     public String userSave(@AuthenticationPrincipal User user,
-                           @RequestParam String login,
+                           @RequestParam String name,
+                           @RequestParam String surname,
+                           @RequestParam String passport,
+                           @RequestParam String gender,
+                           @RequestParam String dateOfBirth,
+                           @RequestParam Integer passengerId,
                            @RequestParam Map<String, String> form,
-                           @RequestParam("passengerId") Passenger passengerChanged,
+                           //@RequestParam("passengerId") Passenger passengerChanged,
                            Model model){
-        //distanceChanged.setLogin(login);
-        passengerRepository.save(passengerChanged);
+        String[] fullDate = dateOfBirth.split("-");
+        Integer dayOfBirth = Integer.valueOf(fullDate[2]);
+        Integer monthOfBirth = Integer.valueOf(fullDate[1]);
+        Integer yearOfBirth = Integer.valueOf(fullDate[0]);
+        LocalDate localDateOfBirth = LocalDate.of(yearOfBirth,monthOfBirth,dayOfBirth);
+        System.out.println(dateOfBirth);
+        if (passengerId.equals(0)) {
+            Passenger passengerChanged = new Passenger(
+                    name,
+                    surname,
+                    passport,
+                    gender,
+                    localDateOfBirth
+            );
+            passengerRepository.save(passengerChanged);
+        } else {
+            Passenger passengerChanged = passengerRepository.findById(passengerId);
+            boolean wasChanged = false;
+            if(!passengerChanged.getName().equals(name)){
+                passengerChanged.setName(name);
+                wasChanged = true;
+            }
+            if(!passengerChanged.getSurname().equals(surname)){
+                passengerChanged.setSurname(surname);
+                wasChanged = true;
+            }
+            if(!passengerChanged.getPassport().equals(passport)){
+                passengerChanged.setPassport(passport);
+                wasChanged = true;
+            }
+            if(!passengerChanged.getGender().equals(gender)){
+                passengerChanged.setGender(gender);
+                wasChanged = true;
+            }
+            if(!passengerChanged.getDateOfBirth().equals(localDateOfBirth)){
+                passengerChanged.setDateOfBirth(localDateOfBirth);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                passengerRepository.save(passengerChanged);
+            }
+        }
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

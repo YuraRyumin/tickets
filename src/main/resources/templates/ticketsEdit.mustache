@@ -69,7 +69,7 @@
         <div class="col">
     <div align=center>
         Ticket editor
-        <form action="/ticket" method="post">
+        <form action="/tickets" method="post">
             <table id='ticket_table' border = '1'>
                 <tbody>
                 <tr>
@@ -129,14 +129,14 @@
                     <td>Schedule</td>
                     <td>
                         <select class="js-select1" id="schedule" name="schedule" placeholder="Choose schedule">
-                            {{#schedule}}
+                            {{#schedules}}
                                 {{#selected}}
                                     <option value="{{time}}" selected>{{time}}</option>
                                 {{/selected}}
                                 {{^selected}}
                                     <option value="{{time}}" >{{time}}</option>
                                 {{/selected}}
-                            {{/schedule}}
+                            {{/schedules}}
                         </select>
                     </td>
                 </tr>

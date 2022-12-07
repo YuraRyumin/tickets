@@ -2,6 +2,7 @@ package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Schedule;
+import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.ScheduleRepository;
 import com.trains.tickets.repository.TrainRepository;
@@ -72,12 +73,41 @@ public class ScheduleController {
     }
     @PostMapping
     public String scheduleSave(@AuthenticationPrincipal User user,
-                           @RequestParam String login,
+                           @RequestParam String time,
+                           @RequestParam Integer dayOfWeek,
+                           @RequestParam String train,
+                           @RequestParam Integer scheduleId,
                            @RequestParam Map<String, String> form,
-                           @RequestParam("scheduleId") Schedule scheduleChanged,
+                           //@RequestParam("scheduleId") Schedule scheduleChanged,
                            Model model){
-        //distanceChanged.setLogin(login);
-        scheduleRepository.save(scheduleChanged);
+        if (scheduleId.equals(0)) {
+            Schedule scheduleChanged = new Schedule(
+                    time,
+                    dayOfWeek,
+                    trainRepository.findByNumber(train)
+            );
+            scheduleRepository.save(scheduleChanged);
+        } else {
+            Schedule scheduleChanged = scheduleRepository.findById(scheduleId);
+            boolean wasChanged = false;
+            if (!scheduleChanged.getTime().equals(time)) {
+                scheduleChanged.setTime(time);
+                wasChanged = true;
+            }
+            if (!scheduleChanged.getDayOfWeek().equals(dayOfWeek)) {
+                scheduleChanged.setDayOfWeek(dayOfWeek);
+                wasChanged = true;
+            }
+            Train trainNew = trainRepository.findByNumber(train);
+            if (!scheduleChanged.getTrain().equals(trainNew)) {
+                scheduleChanged.setTrain(trainNew);
+                wasChanged = true;
+            }
+            if (wasChanged){
+                scheduleRepository.save(scheduleChanged);
+            }
+        }
+
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

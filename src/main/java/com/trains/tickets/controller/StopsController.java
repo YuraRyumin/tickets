@@ -1,8 +1,6 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Distance;
-import com.trains.tickets.domain.Stop;
-import com.trains.tickets.domain.User;
+import com.trains.tickets.domain.*;
 import com.trains.tickets.repository.ScheduleRepository;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
 import java.util.Map;
 
 @Controller
@@ -81,12 +80,57 @@ public class StopsController {
     }
     @PostMapping
     public String stopSave(@AuthenticationPrincipal User user,
-                               @RequestParam String login,
+                               @RequestParam String timeBegining,
+                               @RequestParam String timeEnd,
+                               @RequestParam String schedule,
+                               @RequestParam String station,
+                               @RequestParam Integer stopId,
                                @RequestParam Map<String, String> form,
-                               @RequestParam("stopId") Stop stopChanged,
+                               //@RequestParam("stopId") Stop stopChanged,
                                Model model){
-        //distanceChanged.setLogin(login);
-        stopRepository.save(stopChanged);
+        String[] fullTimeBegining = timeBegining.split(":");
+        Integer hourOfBegining = Integer.valueOf(fullTimeBegining[0]);
+        Integer minuteOfBegining = Integer.valueOf(fullTimeBegining[1]);
+        LocalTime localTimeBegining = LocalTime.of(hourOfBegining, minuteOfBegining, 0);
+        String[] fullTimeEnd = timeEnd.split(":");
+        Integer hourOfEnd = Integer.valueOf(fullTimeEnd[0]);
+        Integer minuteOfEnd = Integer.valueOf(fullTimeEnd[1]);
+        LocalTime localTimeEnd = LocalTime.of(hourOfEnd, minuteOfEnd, 0);
+
+        if (stopId.equals(0)) {
+            Stop stopChanged = new Stop(
+                localTimeBegining,
+                localTimeEnd,
+                scheduleRepository.findByTime(schedule),
+                stationRepository.findByName(station)
+            );
+            stopRepository.save(stopChanged);
+        } else {
+            Stop stopChanged = stopRepository.findById(stopId);
+            boolean wasChanged = false;
+            if(!stopChanged.getTimeBegining().equals(localTimeBegining)){
+                stopChanged.setTimeBegining(localTimeBegining);
+                wasChanged = true;
+            }
+            if(!stopChanged.getTimeEnd().equals(localTimeEnd)){
+                stopChanged.setTimeEnd(localTimeEnd);
+                wasChanged = true;
+            }
+            Schedule scheduleNew = scheduleRepository.findByTime(schedule);
+            if(!stopChanged.getSchedule().equals(scheduleNew)){
+                stopChanged.setSchedule(scheduleNew);
+                wasChanged = true;
+            }
+            Station stationNew = stationRepository.findByName(station);
+            if(!stopChanged.getStation().equals(stationNew)){
+                stopChanged.setStation(stationNew);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                stopRepository.save(stopChanged);
+            }
+        }
+
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

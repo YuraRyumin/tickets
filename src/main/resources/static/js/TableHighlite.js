@@ -62,20 +62,20 @@ function SetDivOneTicket(table_Id, elem) {
                 for (i = 0; i < data.length; i++) {
                     let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
                     ticketsInfo = ticketsInfo +
-                        "<tr><td>Station first</td><td>" + data[i].stationFirst + "</td></tr>" +
-                        "<tr><td>Time departure</td><td>" + data[i].timeDeparture + "</td></tr>" +
-                        "<tr><td>Station last</td><td>" + data[i].stationLast + "</td></tr>" +
-                        "<tr><td>Time arrival</td><td>" + data[i].timeArrival + "</td></tr>" +
-                        "<tr><td>Passenger name</td><td><input type='textPassengerName' name='login' value=" + data[i].passengerName + "></td></tr>" +
-                        "<tr><td>Passenger surname</td><td><input type='textPassengerSurname' name='login' value=" + data[i].passengerSurname + "></td></tr>" +
-                        "<tr><td>Passenger gender</td><td><select id='passengerGender' name='passengerGender' placeholder='Choose gender'>" +
+                        "<tr><td>Station first</td><td><input type='text' id='stationFirstFirstTicket' name='stationFirstFirstTicket' readonly value=" + data[i].stationFirst + "></td></tr>" +
+                        "<tr><td>Time departure</td><td><input type='text' id='timeDepartureFirstTicket' name='timeDepartureFirstTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
+                        "<tr><td>Station last</td><td><input type='text' id='stationLastFirstTicket' name='stationLastFirstTicket' readonly value=" + data[i].stationLast + "></td></tr>" +
+                        "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalFirstTicket' name='timeArrivalFirstTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
+                        "<tr><td>Passenger name</td><td><input type='text' id='passengerNameFirstTicket' name='passengerNameFirstTicket' value=" + data[i].passengerName + "></td></tr>" +
+                        "<tr><td>Passenger surname</td><td><input type='text' id='passengerSurnameFirstTicket' name='passengerSurnameFirstTicket' value=" + data[i].passengerSurname + "></td></tr>" +
+                        "<tr><td>Passenger gender</td><td><select id='passengerGenderFirstTicket' name='passengerGenderFirstTicket' placeholder='Choose gender'>" +
                         "<option value=" + data[i].passengerGender + ">" + data[i].passengerGender + "</option>" +
                         opositeGender +
                         "</select></td></tr>" +
                         "<tr><td>Passenger passport</td><td><input type='textPassengerPassport' name='login' value=" + data[i].passengerPassport + "></td></tr>";
                 }
 
-                ticketsInfo = ticketsInfo + "</tbody></table> <div align='center'><button type='button'>Confirm</button></div>";
+                ticketsInfo = ticketsInfo + "</tbody></table> <div align='center'><button type='submit'>Confirm</button></div>";
                 $("#tableTickets").html(ticketsInfo);
                 $("#tableTicketsTwo").html("");
             }
@@ -108,13 +108,13 @@ function SetDivTwoTicket(table_Id, elem) {
                 for (i = 0; i < data.length; i++) {
                     let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
                     ticketsInfo = ticketsInfo +
-                        "<tr><td>Station first</td><td>" + data[i].stationFirst + "</td></tr>" +
-                        "<tr><td>Time departure</td><td>" + data[i].timeDeparture + "</td></tr>" +
-                        "<tr><td>Station last</td><td>" + data[i].stationLast + "</td></tr>" +
-                        "<tr><td>Time arrival</td><td>" + data[i].timeArrival + "</td></tr>" +
-                        "<tr><td>Passenger name</td><td><input type='textPassengerName' name='login' value=" + data[i].passengerName + "></td></tr>" +
-                        "<tr><td>Passenger surname</td><td><input type='textPassengerSurname' name='login' value=" + data[i].passengerSurname + "></td></tr>" +
-                        "<tr><td>Passenger gender</td><td><select id='passengerGender' name='passengerGender' placeholder='Choose gender'>" +
+                        "<tr><td>Station first</td><td><input type='text' id='stationFirstFirstTicket' name='stationFirstFirstTicket' readonly value=" + data[i].stationFirst + "></td></tr>" +
+                        "<tr><td>Time departure</td><td><input type='text' id='timeDepartureFirstTicket' name='timeDepartureFirstTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
+                        "<tr><td>Station last</td><td><input type='text' id='stationLastFirstTicket' name='stationLastFirstTicket' readonly value=" + data[i].stationLast + "></td></tr>" +
+                        "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalFirstTicket' name='timeArrivalFirstTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
+                        "<tr><td>Passenger name</td><td><input type='text' id='passengerNameFirstTicket' name='passengerNameFirstTicket' value=" + data[i].passengerName + "></td></tr>" +
+                        "<tr><td>Passenger surname</td><td><input type='text' id='passengerSurnameFirstTicket' name='passengerSurnameFirstTicket' value=" + data[i].passengerSurname + "></td></tr>" +
+                        "<tr><td>Passenger gender</td><td><select id='passengerGenderFirstTicket' name='passengerGenderFirstTicket' placeholder='Choose gender'>" +
                         "<option value=" + data[i].passengerGender + ">" + data[i].passengerGender + "</option>" +
                         opositeGender +
                         "</select></td></tr>" +
@@ -140,20 +140,20 @@ function SetDivTwoTicket(table_Id, elem) {
                 for (i = 0; i < data.length; i++) {
                     let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
                     ticketsInfo = ticketsInfo +
-                        "<tr><td>Station first</td><td>" + data[i].stationFirst + "</td></tr>" +
-                        "<tr><td>Time departure</td><td>" + data[i].timeDeparture + "</td></tr>" +
-                        "<tr><td>Station last</td><td>" + data[i].stationLast + "</td></tr>" +
-                        "<tr><td>Time arrival</td><td>" + data[i].timeArrival + "</td></tr>" +
-                        "<tr><td>Passenger name</td><td><input type='textPassengerName' name='login' value=" + data[i].passengerName + "></td></tr>" +
-                        "<tr><td>Passenger surname</td><td><input type='textPassengerSurname' name='login' value=" + data[i].passengerSurname + "></td></tr>" +
-                        "<tr><td>Passenger gender</td><td><select id='passengerGender' name='passengerGender' placeholder='Choose gender'>" +
+                        "<tr><td>Station first</td><td><input type='text' id='stationFirstSecondTicket' name='stationFirstSecondTicket' readonly value=" + data[i].stationFirst + "></td></tr>" +
+                        "<tr><td>Time departure</td><td><input type='text' id='timeDepartureSecondTicket' name='timeDepartureSecondTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
+                        "<tr><td>Station last</td><td><input type='text' id='stationLastSecondTicket' name='stationLastSecondTicket' readonly value=" + data[i].stationLast + "></td></tr>" +
+                        "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalSecondTicket' name='timeArrivalSecondTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
+                        "<tr><td>Passenger name</td><td><input type='text' id='passengerNameSecondTicket' name='passengerNameSecondTicket' value=" + data[i].passengerName + "></td></tr>" +
+                        "<tr><td>Passenger surname</td><td><input type='text' id='passengerSurnameSecondTicket' name='passengerSurnameSecondTicket' value=" + data[i].passengerSurname + "></td></tr>" +
+                        "<tr><td>Passenger gender</td><td><select id='passengerGenderSecondTicket' name='passengerGenderSecondTicket' placeholder='Choose gender'>" +
                         "<option value=" + data[i].passengerGender + ">" + data[i].passengerGender + "</option>" +
                         opositeGender +
                         "</select></td></tr>" +
                         "<tr><td>Passenger passport</td><td><input type='textPassengerPassport' name='login' value=" + data[i].passengerPassport + "></td></tr>";
                 }
 
-                ticketsInfo = ticketsInfo + "</tbody></table> <div align='center'><button type='button'>Confirm</button></div>";
+                ticketsInfo = ticketsInfo + "</tbody></table> <div align='center'><button type='submit'>Confirm</button></div>";
                 $("#tableTicketsTwo").html(ticketsInfo);
             }
         });

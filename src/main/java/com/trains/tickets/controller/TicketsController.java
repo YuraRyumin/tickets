@@ -1,7 +1,6 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Ticket;
-import com.trains.tickets.domain.User;
+import com.trains.tickets.domain.*;
 import com.trains.tickets.repository.*;
 import com.trains.tickets.service.*;
 import org.springframework.data.domain.Sort;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Controller
@@ -89,12 +89,72 @@ public class TicketsController {
 
     @PostMapping
     public String userSave(@AuthenticationPrincipal User user,
-                           @RequestParam String login,
+                           @RequestParam String passenger,
+                           @RequestParam String dateTicket,
+                           @RequestParam String train,
+                           @RequestParam String wagon,
+                           @RequestParam Integer price,
+                           @RequestParam String schedule,
+                           @RequestParam Integer ticketId,
                            @RequestParam Map<String, String> form,
-                           @RequestParam("ticketId") Ticket ticketChanged,
+                           //@RequestParam("ticketId") Ticket ticketChanged,
                            Model model){
-        //ticketRepository.setLogin(login);
-        ticketRepository.save(ticketChanged);
+        String[] fullName = passenger.split("\\s");
+        String nameOfPassenger = fullName[0];
+        String surnameOfPassenger = fullName[1];
+
+        String[] fullDate = dateTicket.split("-");
+        Integer dayOfTicket = Integer.valueOf(fullDate[2]);
+        Integer monthOfTicket = Integer.valueOf(fullDate[1]);
+        Integer yearOfTicket = Integer.valueOf(fullDate[0]);
+        LocalDate localDateOfTicket = LocalDate.of(yearOfTicket, monthOfTicket, dayOfTicket);
+
+        Passenger passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
+        Train trainNew = trainRepository.findByNumber(train);
+        Wagon wagonNew = wagonRepository.findByName(wagon);
+        Schedule scheduleNew = scheduleRepository.findByTime(schedule);
+        if (ticketId.equals(0)) {
+            Ticket ticketChanged = new Ticket(
+                 passengerNew,
+                 localDateOfTicket,
+                 trainNew,
+                 wagonNew,
+                 price,
+                 scheduleNew
+            );
+            ticketRepository.save(ticketChanged);
+        } else {
+            Ticket ticketChanged = ticketRepository.findById(ticketId);
+            boolean wasChanged = false;
+            if(!ticketChanged.getPassenger().equals(passengerNew)){
+                ticketChanged.setPassenger(passengerNew);
+                wasChanged = true;
+            }
+            if(!ticketChanged.getDateTicket().equals(localDateOfTicket)){
+                ticketChanged.setDateTicket(localDateOfTicket);
+                wasChanged = true;
+            }
+            if(!ticketChanged.getTrain().equals(trainNew)){
+                ticketChanged.setTrain(trainNew);
+                wasChanged = true;
+            }
+            if(!ticketChanged.getWagon().equals(wagonNew)){
+                ticketChanged.setWagon(wagonNew);
+                wasChanged = true;
+            }
+            if(!ticketChanged.getPrice().equals(price)){
+                ticketChanged.setPrice(price);
+                wasChanged = true;
+            }
+            if(!ticketChanged.getSchedule().equals(scheduleNew)){
+                ticketChanged.setSchedule(scheduleNew);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                ticketRepository.save(ticketChanged);
+            }
+        }
+
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

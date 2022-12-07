@@ -59,12 +59,34 @@ public class TrainsController {
     }
     @PostMapping
     public String trainSave(@AuthenticationPrincipal User user,
-                               @RequestParam String login,
-                               @RequestParam Map<String, String> form,
-                               @RequestParam("distanceId") Train trainChanged,
+                                @RequestParam String number,
+                                @RequestParam Integer seats,
+                                @RequestParam Integer trainId,
+                                @RequestParam Map<String, String> form,
+                                //@RequestParam("trainId") Train trainChanged,
                                Model model){
-        //distanceChanged.setLogin(login);
-        trainRepository.save(trainChanged);
+        if (trainId.equals(0)) {
+            Train trainChanged = new Train(
+                number,
+                seats
+            );
+            trainRepository.save(trainChanged);
+        } else {
+            Train trainChanged = trainRepository.findById(trainId);
+            boolean wasChanged = false;
+            if(!trainChanged.getNumber().equals(number)){
+                trainChanged.setNumber(number);
+                wasChanged = true;
+            }
+            if(!trainChanged.getSeats().equals(seats)){
+                trainChanged.setSeats(seats);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                trainRepository.save(trainChanged);
+            }
+        }
+
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

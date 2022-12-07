@@ -60,12 +60,22 @@ public class StationsController {
     }
     @PostMapping
     public String stationSave(@AuthenticationPrincipal User user,
-                               @RequestParam String login,
+                               @RequestParam String name,
+                               @RequestParam Integer stationId,
                                @RequestParam Map<String, String> form,
-                               @RequestParam("stationId") Station stationChanged,
+                               //@RequestParam("stationId") Station stationChanged,
                                Model model){
-        //distanceChanged.setLogin(login);
-        stationRepository.save(stationChanged);
+        if(stationId.equals(0)){
+            Station stationChanged = new Station(name);
+            stationRepository.save(stationChanged);
+        } else {
+            Station stationChanged = stationRepository.findById(stationId);
+            if(!stationChanged.getName().equals(name)){
+                stationChanged.setName(name);
+                stationRepository.save(stationChanged);
+            }
+        }
+
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

@@ -69,7 +69,7 @@
         <div class="col">
             <div align=center>
                 Wagon editor
-                <form action="/wagon" method="post">
+                <form action="/wagons" method="post">
                     <table id='wagon_table' border = '1'>
                         <tbody>
                         <tr>
@@ -91,11 +91,12 @@
                             <td>
                                 <select class="js-select1" id="serviceClasses" name="serviceClasses" placeholder="Choose service class">
                                     {{#serviceClasses}}
-                                    {% if {{name}} == {{wagon.serviceClasses}} %}
-                                    <option value="{{name}}" selected>{{name}}</option>
-                                    {% else %}
-                                    <option value="{{name}}" >{{name}}</option>
-                                    {% endif %}
+                                        {{#selected}}
+                                            <option value="{{name}}" selected>{{name}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                            <option value="{{name}}" >{{name}}</option>
+                                        {{/selected}}
                                     {{/serviceClasses}}
                                 </select>
                             </td>

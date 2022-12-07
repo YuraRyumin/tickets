@@ -1,5 +1,7 @@
 package com.trains.tickets.controller;
 
+import com.trains.tickets.domain.ServiceClass;
+import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.domain.Wagon;
 import com.trains.tickets.repository.ServiceClassRepository;
@@ -64,7 +66,7 @@ public class WagonsController {
             Wagon selectedWagon = wagonRepository.findById(Integer.parseInt(wagon));
             model.addAttribute("wagon", wagonService.convertEntityToDto(selectedWagon));
             model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedWagon.getTrain()));
-            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDtoWithSelected(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedWagon.getServiceClasses()));
         }
 
         model.addAttribute("user", user);
@@ -79,12 +81,47 @@ public class WagonsController {
     }
     @PostMapping
     public String wagonSave(@AuthenticationPrincipal User user,
-                               @RequestParam String login,
-                               @RequestParam Map<String, String> form,
-                               @RequestParam("wagonId") Wagon wagonChanged,
-                               Model model){
-        //distanceChanged.setLogin(login);
-        wagonRepository.save(wagonChanged);
+                            @RequestParam String train,
+                            @RequestParam String serviceClasses,
+                            @RequestParam String name,
+                            @RequestParam Integer seats,
+                            @RequestParam Integer wagonId,
+                            @RequestParam Map<String, String> form,
+                            //@RequestParam("wagonId") Wagon wagonChanged,
+                            Model model){
+        ServiceClass serviceClassNew = serviceClassRepository.findByName(serviceClasses);
+        Train trainNew = trainRepository.findByNumber(train);
+        if(wagonId.equals(0)){
+            Wagon wagonChanged = new Wagon(
+                    trainNew,
+                    serviceClassNew,
+                    name,
+                    seats
+            );
+            wagonRepository.save(wagonChanged);
+        } else {
+            Wagon wagonChanged = wagonRepository.findById(wagonId);
+            boolean wasChanged = false;
+            if(!wagonChanged.getTrain().equals(trainNew)){
+                wagonChanged.setTrain(trainNew);
+                wasChanged = true;
+            }
+            if(!wagonChanged.getServiceClasses().equals(serviceClassNew)){
+                wagonChanged.setServiceClasses(serviceClassNew);
+                wasChanged = true;
+            }
+            if(!wagonChanged.getName().equals(name)){
+                wagonChanged.setName(name);
+                wasChanged = true;
+            }
+            if(!wagonChanged.getSeats().equals(seats)){
+                wagonChanged.setSeats(seats);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                wagonRepository.save(wagonChanged);
+            }
+        }
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);

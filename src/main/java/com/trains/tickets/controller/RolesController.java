@@ -3,7 +3,9 @@ package com.trains.tickets.controller;
 import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.RoleRepository;
+import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.service.RoleService;
+import com.trains.tickets.service.StationService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -59,11 +61,21 @@ public class RolesController {
     @PostMapping
     public String roleSave(@AuthenticationPrincipal User user,
                            @RequestParam String name,
+                           @RequestParam Integer roleId,
                            @RequestParam Map<String, String> form,
-                           @RequestParam("roleId") Role roleChanged,
+                           //@RequestParam("roleId") Role roleChanged,
                            Model model){
-        roleChanged.setName(name);
-        roleRepository.save(roleChanged);
+        if (roleId.equals(0)) {
+            Role roleChanged = new Role(name);
+            roleRepository.save(roleChanged);
+        } else {
+            Role roleChanged = roleRepository.findById(roleId);
+            if(!roleChanged.getName().equals(name)){
+                roleChanged.setName(name);
+                roleRepository.save(roleChanged);
+            }
+        }
+
         model.addAttribute("user", user);
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -71,6 +83,6 @@ public class RolesController {
         if(user.isOperator()) {
             model.addAttribute("operatorRole", true);
         }
-        return "redirect:/distance";
+        return "redirect:/roles";
     }
 }
