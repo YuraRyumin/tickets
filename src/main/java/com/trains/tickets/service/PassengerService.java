@@ -38,11 +38,15 @@ public class PassengerService {
         return StreamSupport.stream(passengers.spliterator(), false)
                 .map(passenger -> {
                     PassengerDTO passengerDTO = convertEntityToDto(passenger);
-                    if (passenger.getSurname().equals(selectedPassenger.getSurname()) &&
-                            passenger.getName().equals(selectedPassenger.getName())){
-                        passengerDTO.setSelected(true);
-                    } else {
+                    if(selectedPassenger == null){
                         passengerDTO.setSelected(false);
+                    } else {
+                        if (passenger.getSurname().equals(selectedPassenger.getSurname()) &&
+                                passenger.getName().equals(selectedPassenger.getName())) {
+                            passengerDTO.setSelected(true);
+                        } else {
+                            passengerDTO.setSelected(false);
+                        }
                     }
                     return passengerDTO;
                 })

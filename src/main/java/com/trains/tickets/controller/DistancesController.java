@@ -5,10 +5,9 @@ import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.DistanceRepository;
 import com.trains.tickets.repository.StationRepository;
-import com.trains.tickets.repository.UserRepository;
 import com.trains.tickets.service.DistancesService;
 import com.trains.tickets.service.StationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.trains.tickets.service.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,19 +26,21 @@ public class DistancesController {
     private final DistancesService distancesService;
     private final StationService stationService;
     private final StationRepository stationRepository;
+    private final UserService userService;
 
-    public DistancesController(DistanceRepository distanceRepository, DistancesService distancesService, StationService stationService, StationRepository stationRepository) {
+    public DistancesController(DistanceRepository distanceRepository, DistancesService distancesService, StationService stationService, StationRepository stationRepository, UserService userService) {
         this.distanceRepository = distanceRepository;
         this.distancesService = distancesService;
         this.stationService = stationService;
         this.stationRepository = stationRepository;
+        this.userService = userService;
     }
 
     @GetMapping
     public String distanceList(@AuthenticationPrincipal User user,
                            Model model){
         model.addAttribute("distances", distancesService.convertAllEntityToDto(distanceRepository.findAll()));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -63,7 +64,7 @@ public class DistancesController {
             model.addAttribute("stationsFirst", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedDistance.getStationFirst()));
             model.addAttribute("stationsLast", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedDistance.getStationLast()));
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -113,7 +114,7 @@ public class DistancesController {
                     //distanceChanged.setLogin(login);
         //distanceRepository.save(distanceChanged);
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

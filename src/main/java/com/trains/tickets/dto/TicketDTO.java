@@ -13,4 +13,6 @@ public class TicketDTO {
     private String wagon;
     private Integer price;
     private String schedule;
+    private String user;
+    private Integer seat;
 }

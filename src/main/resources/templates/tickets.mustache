@@ -12,56 +12,71 @@
     <title>Trains</title>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="/">Tickets to trains</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link" href="/main">Search tickets</a>
-              </li>
-              {{#operatorRole}}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Operator console
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/distances">Distances</a></li>
-                  <li><a class="dropdown-item" href="/passengers">Passengers</a></li>
-                  <li><a class="dropdown-item" href="/schedule">Schedule</a></li>
-                  <li><a class="dropdown-item" href="/serviceClasses">Service classes</a></li>
-                  <li><a class="dropdown-item" href="/stations">Stations</a></li>
-                  <li><a class="dropdown-item" href="/stops">Stops</a></li>
-                  <li><a class="dropdown-item" href="/tickets">Tickets</a></li>
-                  <li><a class="dropdown-item" href="/trains">Trains</a></li>
-                  <li><a class="dropdown-item" href="/wagons">Wagons</a></li>
-                </ul>
-              </li>
-              {{/operatorRole}}
-              {{#adminRole}}
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Admin console
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="/user">Users</a></li>
-                  <li><a class="dropdown-item" href="/roles">Roles</a></li>
-                </ul>
-              </li>
-              {{/adminRole}}
+  <nav class="navbar navbar-expand-lg bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Tickets to trains</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/main">Search tickets</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/news">Our news</a>
+          </li>
+          {{#operatorRole}}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Operator console
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/distances">Distances</a></li>
+              <li><a class="dropdown-item" href="/passengers">Passengers</a></li>
+              <li><a class="dropdown-item" href="/schedule">Schedule</a></li>
+              <li><a class="dropdown-item" href="/serviceClasses">Service classes</a></li>
+              <li><a class="dropdown-item" href="/stations">Stations</a></li>
+              <li><a class="dropdown-item" href="/stops">Stops</a></li>
+              <li><a class="dropdown-item" href="/tickets">Tickets</a></li>
+              <li><a class="dropdown-item" href="/trains">Trains</a></li>
+              <li><a class="dropdown-item" href="/wagons">Wagons</a></li>
             </ul>
-            {{#user}}
-            <form action="logout" method="post">
-              <button class="btn btn-outline-danger" type="submit">{{login}} &#xf08b;</button>
-              <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
-            </form>
-            {{/user}}
-          </div>
-        </div>
-      </nav>
+          </li>
+          {{/operatorRole}}
+          {{#adminRole}}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Admin console
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/user">Users</a></li>
+              <li><a class="dropdown-item" href="/roles">Roles</a></li>
+            </ul>
+          </li>
+          {{/adminRole}}
+        </ul>
+
+        {{#user}}
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{login}}&#160&#160&#160&#160&#160
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/privatePage/{{uuid}}">Private page</a></li>
+              <li><form action="/logout" method="post">
+                <button class="btn btn-outline-danger" type="submit">{{login}} &#xf08b;</button>
+                <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+              </form></li>
+            </ul>
+          </li>
+        </ul>
+        {{/user}}
+
+      </div>
+    </div>
+  </nav>
     <div class="container">
         <div class="row">
           <div class="col-2">

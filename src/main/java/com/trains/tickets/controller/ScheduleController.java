@@ -1,6 +1,5 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.User;
@@ -8,6 +7,7 @@ import com.trains.tickets.repository.ScheduleRepository;
 import com.trains.tickets.repository.TrainRepository;
 import com.trains.tickets.service.ScheduleService;
 import com.trains.tickets.service.TrainService;
+import com.trains.tickets.service.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,20 +26,22 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final TrainRepository trainRepository;
     private final TrainService trainService;
+    private final UserService userService;
 
     public ScheduleController(ScheduleRepository scheduleRepository, ScheduleService scheduleService,
-                              TrainRepository trainRepository, TrainService trainService) {
+                              TrainRepository trainRepository, TrainService trainService, UserService userService) {
         this.scheduleRepository = scheduleRepository;
         this.scheduleService = scheduleService;
         this.trainRepository = trainRepository;
         this.trainService = trainService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String scheduleList(@AuthenticationPrincipal User user,
                                Model model){
         model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -61,7 +63,7 @@ public class ScheduleController {
             model.addAttribute("schedule", scheduleService.convertEntityToDto(selectedSchedule));
             model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedSchedule.getTrain()));
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -108,7 +110,7 @@ public class ScheduleController {
             }
         }
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

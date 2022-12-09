@@ -4,6 +4,7 @@ import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.service.StationService;
+import com.trains.tickets.service.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,17 +21,19 @@ import java.util.Map;
 public class StationsController {
     private final StationRepository stationRepository;
     private final StationService stationService;
+    private final UserService userService;
 
-    public StationsController(StationRepository stationRepository, StationService stationService) {
+    public StationsController(StationRepository stationRepository, StationService stationService, UserService userService) {
         this.stationRepository = stationRepository;
         this.stationService = stationService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String stationList(@AuthenticationPrincipal User user,
                                Model model){
         model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -49,7 +52,7 @@ public class StationsController {
         } else {
             model.addAttribute("stations", stationService.convertEntityToDto(stationRepository.findById(Integer.parseInt(station))));
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -76,7 +79,7 @@ public class StationsController {
             }
         }
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

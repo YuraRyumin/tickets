@@ -4,6 +4,7 @@ import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.projection.StopsDirectProjection;
 import com.trains.tickets.projection.StopsTwoTrainsProjection;
 import com.trains.tickets.projection.TicketInfoProjection;
+import com.trains.tickets.projection.WagonInfoProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -34,15 +35,18 @@ public interface StopsForMainDTORepository extends JpaRepository<Schedule, Long>
             nativeQuery = true)
     Set<StopsTwoTrainsProjection> findScheduleByTwoStations(String firstStation, String lastStation);
 
-    @Query(value = "SELECT sched.id, stops1.nameFirst stationFirst, stops2.nameLast stationLast, stops1.time_end timeDeparture, stops2.time_begining timeArrival," +
-            "       COALESCE(passengers.name, '') passengerName, COALESCE(passengers.surname, '') passengerSurname, passengers.gender passengerGender, COALESCE(passengers.passport, '') passengerPassport FROM schedule sched" +
+    @Query(value = "SELECT sched.id  scheduleID, sched.time schedule, stops1.nameFirst stationFirst, stops2.nameLast stationLast, stops1.time_end timeDeparture, stops2.time_begining timeArrival," +
+            "       COALESCE(passengers.name, '') passengerName, COALESCE(passengers.surname, '') passengerSurname, passengers.gender passengerGender, COALESCE(passengers.passport, '') passengerPassport, trains.number trainNumber, trains.id trainId FROM schedule sched" +
             "                LEFT JOIN (SELECT stops.id_schedule, stops.time_begining , stops.time_end, s1.name nameFirst FROM stops" +
             "                    LEFT JOIN stations s1 ON stops.id_station = s1.id) stops1 ON sched.id = stops1.id_schedule" +
             "                LEFT JOIN (SELECT stops.id_schedule, stops.time_begining, stops.time_end, s2.name nameLast FROM  stops" +
             "                    LEFT JOIN stations s2 ON stops.id_station = s2.id)  stops2 ON sched.id = stops2.id_schedule" +
+            "                LEFT JOIN trains on trains.id = sched.id_train" +
             "                LEFT JOIN (SELECT passengers.name, passengers.surname, passengers.passport, passengers.gender FROM  passengers" +
-            "                           WHERE passengers.id = ?1)  passengers ON true\n" +
+            "                           WHERE passengers.id = ?1)  passengers ON true" +
             "             WHERE stops1.nameFirst = ?2 && stops2.nameLast =  ?3 && stops1.time_end = ?4 && stops2.time_begining = ?5 && stops1.time_begining < stops2.time_begining", nativeQuery = true)
     Set<TicketInfoProjection> findTicketsInfoAndPassanger(Integer idPassenger, String firstStation, String lastStation,
                                                           String timeDeparture, String timeArrival);
+
+
 }

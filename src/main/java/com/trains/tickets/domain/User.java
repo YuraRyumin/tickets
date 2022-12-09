@@ -30,11 +30,12 @@ public class User implements UserDetails {
     @JoinColumn(name = "id_role")
     private Role role;
     private boolean active;
+    private String uuid;
 
     public User() {
     }
 
-    public User(String email, String telephone, String login, String password, Passenger passenger, Role role, boolean active, String activationCode) {
+    public User(String email, String telephone, String login, String password, Passenger passenger, Role role, boolean active, String activationCode, String uuid) {
         this.email = email;
         this.telephone = telephone;
         this.login = login;
@@ -43,6 +44,15 @@ public class User implements UserDetails {
         this.role = role;
         this.active = active;
         this.activationCode = activationCode;
+        this.uuid = uuid;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public Integer getId() {

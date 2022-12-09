@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="/styles/stylebesheniy.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="/styles/bootstrap.min.css">
+        <link rel="stylesheet" href="/styles/my.style.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-lg bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Tickets to trains</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/main">Search tickets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/news">Our news</a>
+                    </li>
+                    {{#operatorRole}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Operator console
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/distances">Distances</a></li>
+                            <li><a class="dropdown-item" href="/passengers">Passengers</a></li>
+                            <li><a class="dropdown-item" href="/schedule">Schedule</a></li>
+                            <li><a class="dropdown-item" href="/serviceClasses">Service classes</a></li>
+                            <li><a class="dropdown-item" href="/stations">Stations</a></li>
+                            <li><a class="dropdown-item" href="/stops">Stops</a></li>
+                            <li><a class="dropdown-item" href="/tickets">Tickets</a></li>
+                            <li><a class="dropdown-item" href="/trains">Trains</a></li>
+                            <li><a class="dropdown-item" href="/wagons">Wagons</a></li>
+                        </ul>
+                    </li>
+                    {{/operatorRole}}
+                    {{#adminRole}}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Admin console
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/user">Users</a></li>
+                            <li><a class="dropdown-item" href="/roles">Roles</a></li>
+                        </ul>
+                    </li>
+                    {{/adminRole}}
+                </ul>
+
+                {{#user}}
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{login}}&#160&#160&#160&#160&#160
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/privatePage/{{uuid}}">Private page</a></li>
+                            <li><form action="/logout" method="post">
+                                <button class="btn btn-outline-danger" type="submit">{{login}} &#xf08b;</button>
+                                <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+                            </form></li>
+                        </ul>
+                    </li>
+                </ul>
+                {{/user}}
+
+            </div>
+        </div>
+    </nav>
+        <br>
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                </div>
+                <div class="col">
+                    <div align=center>
+                        <form action="/private" method="post">
+                            <table id='private_table' border = '1'>
+                                <tbody>
+                                <tr>
+                                    <td>UUID</td>
+                                    <td><input type="text" readonly name="name" value="{{uuid}}"></td>
+                                </tr>
+                                <tr>
+                                    <td>E-mail</td>
+                                    <td><input type="text" readonly name="name" value="{{email}}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Telephone</td>
+                                    <td><input type="text" readonly name="name" value="{{telephone}}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Passenger</td>
+                                    <td><input type="text" readonly name="name" value="{{passenger}}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Role</td>
+                                    <td><input type="text" readonly name="name" value="{{role}}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <br>
+
+                            List of tickets
+                            <table id='ticket_table' border = '1'>
+                                <thead>
+                                <tr>
+                                    <th>Passenger</th>
+                                    <th>Date of ticket</th>
+                                    <th>Train</th>
+                                    <th>Wagon</th>
+                                    <th>Seat</th>
+                                    <th>Price</th>
+                                    <th>Schedule</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#tickets}}
+                                <tr>
+                                    <td>{{passenger}}</td>
+                                    <td>{{dateTicket}}</td>
+                                    <td>{{train}}</td>
+                                    <td>{{wagon}}</td>
+                                    <td></td>
+                                    <td>{{price}}</td>
+                                    <td>{{schedule}}</td>
+                                </tr>
+                                {{/tickets}}
+                                </tbody>
+                            </table>
+                            {{#news}}
+                            <br><br>
+                            <h4>Published news:</h4>
+                            <h5><a data-toggle="collapse" href="#{{id}}" aria-expanded="false" aria-controls="{{id}}">{{header}} ({{date}})</a></h5>
+                            <div class="collapse" id="{{id}}">
+                                <p>{{body}}</p>
+                                <br>
+                                {{date}}
+                                /
+                                {{user}}
+                                <hr>
+                            </div>
+                            {{/news}}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script rel="javascript" type="text/javascript" src="/js/jquery.js"></script>
+        <script rel="javascript" type="text/javascript" src="/js/TableHighlite.js"></script>
+        <script src="/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

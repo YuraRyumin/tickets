@@ -28,16 +28,39 @@ public class Ticket {
     @JoinColumn(name = "id_schedule")
     private Schedule schedule;
 
+    private Integer seat;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_user")
+    private User user;
+
     public Ticket() {
     }
 
-    public Ticket(Passenger passenger, LocalDate dateTicket, Train train, Wagon wagon, Integer price, Schedule schedule) {
+    public Ticket(Passenger passenger, LocalDate dateTicket, Train train, Wagon wagon, Integer price, Schedule schedule, Integer seat, User user) {
         this.passenger = passenger;
         this.dateTicket = dateTicket;
         this.train = train;
         this.wagon = wagon;
         this.price = price;
         this.schedule = schedule;
+        this.seat = seat;
+        this.user = user;
+    }
+
+    public Integer getSeat() {
+        return seat;
+    }
+
+    public void setSeat(Integer seat) {
+        this.seat = seat;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Integer getPrice() {

@@ -9,6 +9,7 @@ import com.trains.tickets.repository.TrainRepository;
 import com.trains.tickets.repository.WagonRepository;
 import com.trains.tickets.service.ServiceClassService;
 import com.trains.tickets.service.TrainService;
+import com.trains.tickets.service.UserService;
 import com.trains.tickets.service.WagonService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,21 +31,23 @@ public class WagonsController {
     private final TrainService trainService;
     private final ServiceClassRepository serviceClassRepository;
     private final ServiceClassService serviceClassService;
+    private final UserService userService;
 
-    public WagonsController(WagonRepository wagonRepository, WagonService wagonService, TrainRepository trainRepository, TrainService trainService, ServiceClassRepository serviceClassRepository, ServiceClassService serviceClassService) {
+    public WagonsController(WagonRepository wagonRepository, WagonService wagonService, TrainRepository trainRepository, TrainService trainService, ServiceClassRepository serviceClassRepository, ServiceClassService serviceClassService, UserService userService) {
         this.wagonRepository = wagonRepository;
         this.wagonService = wagonService;
         this.trainRepository = trainRepository;
         this.trainService = trainService;
         this.serviceClassRepository = serviceClassRepository;
         this.serviceClassService = serviceClassService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String wagonsList(@AuthenticationPrincipal User user,
                                Model model){
         model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll()));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -69,7 +72,7 @@ public class WagonsController {
             model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDtoWithSelected(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedWagon.getServiceClasses()));
         }
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -122,7 +125,7 @@ public class WagonsController {
                 wagonRepository.save(wagonChanged);
             }
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

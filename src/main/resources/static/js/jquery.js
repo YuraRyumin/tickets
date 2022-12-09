@@ -59,7 +59,9 @@ function ReturnTicketsTableByStations() {
                         $("#tableTrains").html(table);
                         $("#tableTickets").html("");
                         $("#tableTicketsTwo").html("");
-                        //}
+                        $("#tableTicketsPassangerInfo").html("");
+                        $("#tableTicketsOneTrain").html("");
+                        $("#tableTicketsPassangerInfoOneTrain").html("");
                     }
                 });
         } else {
@@ -103,6 +105,9 @@ function ReturnTicketsTableByStations() {
                         $("#tableTrains").html(table);
                         $("#tableTickets").html("");
                         $("#tableTicketsTwo").html("");
+                        $("#tableTicketsPassangerInfo").html("");
+                        $("#tableTicketsOneTrain").html("");
+                        $("#tableTicketsPassangerInfoOneTrain").html("");
                         //}
                     }
                 });

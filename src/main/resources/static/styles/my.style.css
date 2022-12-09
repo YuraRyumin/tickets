@@ -12,3 +12,27 @@ body{
 .navbar-brand:hover, .nav-link:hover, .nav-item:hover{
     color: var(--color3);
 }
+
+#tableTickets, #tableTicketsTwo, #tableTicketsPassangerInfo{
+    width:30%;
+    float:left;
+}
+
+#tableTicketsOneTrain, #tableTicketsPassangerInfoOneTrain{
+    width:50%;
+    float:left;
+}
+
+input[id="dateTicket"] {
+    background-color: rgb(128, 130, 133);
+    box-shadow: inset -100px -100px 0 rgb(128, 130, 133);
+    color: white;
+    width: 300px;
+    height: 45px;
+    border: 0;
+}
+
+hr {
+    background-color: var(--color3);
+    height: 3px;
+}

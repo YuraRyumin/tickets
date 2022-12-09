@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/user")
@@ -48,7 +49,7 @@ public class UserController {
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
         model.addAttribute("users", userService.convertAllEntityToDto(userRepository.findAll()));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -72,7 +73,7 @@ public class UserController {
             model.addAttribute("roles", roleService.convertAllEntityToDtoWithSelected(roleRepository.findAll(), selectedUser.getRole()));
             model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedUser.getPassenger()));
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -110,7 +111,8 @@ public class UserController {
                 passengerNew,
                 roleNew,
                 true,
-                activationCode
+                activationCode,
+                UUID.randomUUID().toString()
             );
             if(user.getEmail() != ""){
                 String message = String.format(
@@ -140,25 +142,31 @@ public class UserController {
 //                userChanged.setPassword(passwordEncoder.encode(password));
 //                wasChanged = true;
 //            }
-            if(!userChanged.getPassenger().equals(passengerNew)){
-                userChanged.setPassenger(passengerNew);
+            if (userChanged.getUuid().equals("") || userChanged.getUuid() == null){
+                userChanged.setUuid(UUID.randomUUID().toString());
                 wasChanged = true;
             }
+//            if(!userChanged.getPassenger() == null || !passengerNew == null) {
+//                if (!userChanged.getPassenger().equals(passengerNew)) {
+//                    userChanged.setPassenger(passengerNew);
+//                    wasChanged = true;
+//                }
+//            }
             if(!userChanged.getRole().equals(roleNew)){
                 userChanged.setRole(roleNew);
                 wasChanged = true;
             }
             userChanged.setActive(true);
-            if(!userChanged.getActivationCode().equals(activationCode)){
-                userChanged.setActivationCode(activationCode);
-                wasChanged = true;
-            }
+//            if(!userChanged.getActivationCode().equals(activationCode)){
+//                userChanged.setActivationCode(activationCode);
+//                wasChanged = true;
+//            }
             if(wasChanged){
                 userRepository.save(userChanged);
             }
         }
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

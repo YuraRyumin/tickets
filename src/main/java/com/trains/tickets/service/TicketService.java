@@ -53,6 +53,8 @@ public class TicketService {
         ticketDTO.setWagon(ticket.getWagon().getName());
         ticketDTO.setPrice(ticket.getPrice());
         ticketDTO.setSchedule(ticket.getSchedule().getTime());
+        ticketDTO.setSeat(ticket.getSeat());
+        ticketDTO.setUser(ticket.getUser().getLogin());
 
         return ticketDTO;
     }
@@ -67,6 +69,8 @@ public class TicketService {
         ticketDTO.setWagon("");
         ticketDTO.setPrice(0);
         ticketDTO.setSchedule("");
+        ticketDTO.setSeat(0);
+        ticketDTO.setUser("");
 
         return ticketDTO;
     }

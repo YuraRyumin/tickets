@@ -15,6 +15,8 @@ public class UserDTO {
     private String password;
     private String activationCode;
     private String passenger;
+    private String uuid;
     private String role;
     private boolean active;
+    private boolean selected;
 }

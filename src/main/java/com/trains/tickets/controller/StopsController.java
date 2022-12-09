@@ -7,6 +7,7 @@ import com.trains.tickets.repository.StopRepository;
 import com.trains.tickets.service.ScheduleService;
 import com.trains.tickets.service.StationService;
 import com.trains.tickets.service.StopService;
+import com.trains.tickets.service.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,23 +29,25 @@ public class StopsController {
     private final ScheduleService scheduleService;
     private final StationRepository stationRepository;
     private final StationService stationService;
+    private final UserService userService;
 
     public StopsController(StopRepository stopRepository, StopService stopService,
                            ScheduleRepository scheduleRepository, ScheduleService scheduleService,
-                           StationRepository stationRepository, StationService stationService) {
+                           StationRepository stationRepository, StationService stationService, UserService userService) {
         this.stopRepository = stopRepository;
         this.stopService = stopService;
         this.scheduleRepository = scheduleRepository;
         this.scheduleService = scheduleService;
         this.stationRepository = stationRepository;
         this.stationService = stationService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String stopList(@AuthenticationPrincipal User user,
                                Model model){
         model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -68,7 +71,7 @@ public class StopsController {
             model.addAttribute("stations", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedStop.getStation()));
             model.addAttribute("schedule", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedStop.getSchedule()));
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
@@ -131,7 +134,7 @@ public class StopsController {
             }
         }
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }

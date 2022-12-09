@@ -25,12 +25,14 @@ public class TicketsController {
     private final WagonService wagonService;
     private final ScheduleRepository scheduleRepository;
     private final ScheduleService scheduleService;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     public TicketsController(TicketRepository ticketRepository, TicketService ticketService,
                              PassengerRepository passengerRepository, PassengerService passengerService,
                              TrainRepository trainRepository, TrainService trainService,
                              WagonRepository wagonRepository, WagonService wagonService,
-                             ScheduleRepository scheduleRepository, ScheduleService scheduleService) {
+                             ScheduleRepository scheduleRepository, ScheduleService scheduleService, UserRepository userRepository, UserService userService) {
         this.ticketRepository = ticketRepository;
         this.ticketService = ticketService;
         this.trainRepository = trainRepository;
@@ -41,13 +43,15 @@ public class TicketsController {
         this.scheduleService = scheduleService;
         this.passengerRepository = passengerRepository;
         this.passengerService = passengerService;
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
         model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAll()));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -67,6 +71,7 @@ public class TicketsController {
             model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
             model.addAttribute("schedules", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
             model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+            model.addAttribute("users", userService.convertAllEntityToDto(userRepository.findAll(Sort.by(Sort.Direction.ASC, "login"))));
         } else {
             Ticket selectedTicket = ticketRepository.findById(Integer.parseInt(ticket));
             model.addAttribute("ticket", ticketService.convertEntityToDto(selectedTicket));
@@ -74,8 +79,9 @@ public class TicketsController {
             model.addAttribute("wagons", wagonService.convertAllEntityToDtoWithSelected(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedTicket.getWagon()));
             model.addAttribute("schedules", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedTicket.getSchedule()));
             model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedTicket.getPassenger()));
+            model.addAttribute("users", userService.convertAllEntityToDtoWithSelected(userRepository.findAll(Sort.by(Sort.Direction.ASC, "login")), selectedTicket.getUser()));
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
 
         if(user.isAdmin()) {
@@ -88,7 +94,7 @@ public class TicketsController {
     }
 
     @PostMapping
-    public String userSave(@AuthenticationPrincipal User user,
+    public String ticketSave(@AuthenticationPrincipal User userThis,
                            @RequestParam String passenger,
                            @RequestParam String dateTicket,
                            @RequestParam String train,
@@ -96,6 +102,8 @@ public class TicketsController {
                            @RequestParam Integer price,
                            @RequestParam String schedule,
                            @RequestParam Integer ticketId,
+                           @RequestParam Integer seat,
+                           @RequestParam String user,
                            @RequestParam Map<String, String> form,
                            //@RequestParam("ticketId") Ticket ticketChanged,
                            Model model){
@@ -109,6 +117,7 @@ public class TicketsController {
         Integer yearOfTicket = Integer.valueOf(fullDate[0]);
         LocalDate localDateOfTicket = LocalDate.of(yearOfTicket, monthOfTicket, dayOfTicket);
 
+        User userNew = userRepository.findByLogin(user);
         Passenger passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
         Train trainNew = trainRepository.findByNumber(train);
         Wagon wagonNew = wagonRepository.findByName(wagon);
@@ -120,7 +129,9 @@ public class TicketsController {
                  trainNew,
                  wagonNew,
                  price,
-                 scheduleNew
+                 scheduleNew,
+                 seat,
+                 userThis
             );
             ticketRepository.save(ticketChanged);
         } else {
@@ -150,16 +161,24 @@ public class TicketsController {
                 ticketChanged.setSchedule(scheduleNew);
                 wasChanged = true;
             }
+            if(!ticketChanged.getSeat().equals(seat)){
+                ticketChanged.setSeat(seat);
+                wasChanged = true;
+            }
+            if(!ticketChanged.getUser().equals(userNew.getLogin())){
+                ticketChanged.setUser(userNew);
+                wasChanged = true;
+            }
             if(wasChanged){
                 ticketRepository.save(ticketChanged);
             }
         }
 
-        model.addAttribute("user", user);
-        if(user.isAdmin()) {
+        model.addAttribute("user", userService.convertEntityToDtoForNav(userThis));
+        if(userThis.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
-        if(user.isOperator()) {
+        if(userThis.isOperator()) {
             model.addAttribute("operatorRole", true);
         }
         return "redirect:/tickets";

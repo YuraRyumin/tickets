@@ -3,7 +3,9 @@ package com.trains.tickets.service;
 import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.PassengerDTO;
+import com.trains.tickets.dto.RoleDTO;
 import com.trains.tickets.dto.UserDTO;
+import com.trains.tickets.dto.UserForNavDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.StationRepository;
@@ -68,10 +70,37 @@ public class UserService implements UserDetailsService {
         return "redirect:/login";
     }
 
+    public Iterable<UserDTO> convertAllEntityToDtoWithSelected(Iterable<User> users, User selectedUser){
+        return StreamSupport.stream(users.spliterator(), false)
+                .map(user -> {
+                    UserDTO userDTO = convertEntityToDto(user);
+                    if (user.getLogin().equals(selectedUser.getLogin())){
+                        userDTO.setSelected(true);
+                    } else {
+                        userDTO.setSelected(false);
+                    }
+                    return userDTO;
+                    })
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
     public Iterable<UserDTO> convertAllEntityToDto(Iterable<User> users){
         return StreamSupport.stream(users.spliterator(), false)
                 .map(this::convertEntityToDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public UserForNavDTO convertEntityToDtoForNav(User user) {
+        if(user == null){
+            return null;
+        } else {
+            UserForNavDTO userForNavDTO = new UserForNavDTO();
+
+            userForNavDTO.setLogin(user.getLogin());
+            userForNavDTO.setUuid(user.getUuid());
+
+            return userForNavDTO;
+        }
     }
 
     public UserDTO convertEntityToDto(User user){

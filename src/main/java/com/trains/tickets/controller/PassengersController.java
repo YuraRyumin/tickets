@@ -4,6 +4,7 @@ import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.service.PassengerService;
+import com.trains.tickets.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -20,17 +21,19 @@ import java.util.Map;
 public class PassengersController {
     private final PassengerRepository passengerRepository;
     private final PassengerService passengerService;
+    private final UserService userService;
 
-    public PassengersController(PassengerRepository passengerRepository, PassengerService passengerService) {
+    public PassengersController(PassengerRepository passengerRepository, PassengerService passengerService, UserService userService) {
         this.passengerRepository = passengerRepository;
         this.passengerService = passengerService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String PassengersList(@AuthenticationPrincipal User user,
                                Model model){
         model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll()));
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -49,7 +52,7 @@ public class PassengersController {
         } else {
             model.addAttribute("passenger", passengerService.convertEntityToDto(passengerRepository.findById(Integer.parseInt(passenger))));
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
@@ -111,7 +114,7 @@ public class PassengersController {
                 passengerRepository.save(passengerChanged);
             }
         }
-        model.addAttribute("user", user);
+        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user.isAdmin()) {
             model.addAttribute("adminRole", true);
         }
