@@ -1,6 +1,7 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
@@ -47,13 +48,22 @@ public class RegistrationController {
 
     @GetMapping("/activate/{code}")
     public String activate(Model model, @PathVariable String code){
-        boolean isActivated = userService.activateUser(code);
+        try{
+            boolean isActivated = userService.activateUser(code);
 
-        if(isActivated){
-            model.addAttribute("message", "User successfully activated");
-        } else{
-            model.addAttribute("message", "Activation cod not found");
+            if(isActivated){
+                model.addAttribute("message", "User successfully activated");
+            } else{
+                model.addAttribute("message", "Activation cod not found");
+            }
+            return "login";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        return "login";
     }
 }

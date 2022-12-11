@@ -3,6 +3,7 @@ package com.trains.tickets.controller;
 import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.ScheduleRepository;
 import com.trains.tickets.repository.TrainRepository;
 import com.trains.tickets.service.ScheduleService;
@@ -40,38 +41,58 @@ public class ScheduleController {
     @GetMapping
     public String scheduleList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
+            return "scheduleList";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "scheduleList";
     }
 
     @GetMapping("{schedule}")
     public String scheduleEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String schedule,
                                Model model){
-        if (schedule.equals("new")) {
-            model.addAttribute("schedule", scheduleService.getEmptyDto());
-            model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
-        } else {
-            Schedule selectedSchedule = scheduleRepository.findById(Integer.parseInt(schedule));
-            model.addAttribute("schedule", scheduleService.convertEntityToDto(selectedSchedule));
-            model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedSchedule.getTrain()));
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (schedule.equals("new")) {
+                model.addAttribute("schedule", scheduleService.getEmptyDto());
+                model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
+            } else {
+                Schedule selectedSchedule = scheduleRepository.findById(Integer.parseInt(schedule));
+                if(selectedSchedule == null){
+                    throw  new NullPointerException("Schedule not found!");
+                }
+                model.addAttribute("schedule", scheduleService.convertEntityToDto(selectedSchedule));
+                model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedSchedule.getTrain()));
+            }
+            return "scheduleEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "scheduleEdit";
     }
     @PostMapping
     public String scheduleSave(@AuthenticationPrincipal User user,
@@ -82,41 +103,49 @@ public class ScheduleController {
                            @RequestParam Map<String, String> form,
                            //@RequestParam("scheduleId") Schedule scheduleChanged,
                            Model model){
-        if (scheduleId.equals(0)) {
-            Schedule scheduleChanged = new Schedule(
-                    time,
-                    dayOfWeek,
-                    trainRepository.findByNumber(train)
-            );
-            scheduleRepository.save(scheduleChanged);
-        } else {
-            Schedule scheduleChanged = scheduleRepository.findById(scheduleId);
-            boolean wasChanged = false;
-            if (!scheduleChanged.getTime().equals(time)) {
-                scheduleChanged.setTime(time);
-                wasChanged = true;
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
             }
-            if (!scheduleChanged.getDayOfWeek().equals(dayOfWeek)) {
-                scheduleChanged.setDayOfWeek(dayOfWeek);
-                wasChanged = true;
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
             }
-            Train trainNew = trainRepository.findByNumber(train);
-            if (!scheduleChanged.getTrain().equals(trainNew)) {
-                scheduleChanged.setTrain(trainNew);
-                wasChanged = true;
-            }
-            if (wasChanged){
+            if (scheduleId.equals(0)) {
+                Schedule scheduleChanged = new Schedule(
+                        time,
+                        dayOfWeek,
+                        trainRepository.findByNumber(train)
+                );
                 scheduleRepository.save(scheduleChanged);
+            } else {
+                Schedule scheduleChanged = scheduleRepository.findById(scheduleId);
+                boolean wasChanged = false;
+                if (!scheduleChanged.getTime().equals(time)) {
+                    scheduleChanged.setTime(time);
+                    wasChanged = true;
+                }
+                if (!scheduleChanged.getDayOfWeek().equals(dayOfWeek)) {
+                    scheduleChanged.setDayOfWeek(dayOfWeek);
+                    wasChanged = true;
+                }
+                Train trainNew = trainRepository.findByNumber(train);
+                if (!scheduleChanged.getTrain().equals(trainNew)) {
+                    scheduleChanged.setTrain(trainNew);
+                    wasChanged = true;
+                }
+                if (wasChanged){
+                    scheduleRepository.save(scheduleChanged);
+                }
             }
+            return "redirect:/schedule";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/schedule";
     }
 }

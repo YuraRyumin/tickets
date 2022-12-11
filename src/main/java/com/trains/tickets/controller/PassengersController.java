@@ -2,6 +2,7 @@ package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.service.PassengerService;
 import com.trains.tickets.service.UserService;
@@ -32,34 +33,52 @@ public class PassengersController {
     @GetMapping
     public String PassengersList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll()));
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll()));
+            return "passengersList";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "passengersList";
     }
 
     @GetMapping("{passenger}")
     public String PassengerEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String passenger,
                                Model model){
-        if (passenger.equals("new")) {
-            model.addAttribute("passenger", passengerService.getEmptyDto());
-        } else {
-            model.addAttribute("passenger", passengerService.convertEntityToDto(passengerRepository.findById(Integer.parseInt(passenger))));
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (passenger.equals("new")) {
+                model.addAttribute("passenger", passengerService.getEmptyDto());
+            } else {
+                model.addAttribute("passenger", passengerService.convertEntityToDto(passengerRepository.findById(Integer.parseInt(passenger))));
+            }
+            return "passengersEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "passengersEdit";
     }
     @PostMapping
     public String userSave(@AuthenticationPrincipal User user,
@@ -72,55 +91,64 @@ public class PassengersController {
                            @RequestParam Map<String, String> form,
                            //@RequestParam("passengerId") Passenger passengerChanged,
                            Model model){
-        String[] fullDate = dateOfBirth.split("-");
-        Integer dayOfBirth = Integer.valueOf(fullDate[2]);
-        Integer monthOfBirth = Integer.valueOf(fullDate[1]);
-        Integer yearOfBirth = Integer.valueOf(fullDate[0]);
-        LocalDate localDateOfBirth = LocalDate.of(yearOfBirth,monthOfBirth,dayOfBirth);
-        System.out.println(dateOfBirth);
-        if (passengerId.equals(0)) {
-            Passenger passengerChanged = new Passenger(
-                    name,
-                    surname,
-                    passport,
-                    gender,
-                    localDateOfBirth
-            );
-            passengerRepository.save(passengerChanged);
-        } else {
-            Passenger passengerChanged = passengerRepository.findById(passengerId);
-            boolean wasChanged = false;
-            if(!passengerChanged.getName().equals(name)){
-                passengerChanged.setName(name);
-                wasChanged = true;
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
             }
-            if(!passengerChanged.getSurname().equals(surname)){
-                passengerChanged.setSurname(surname);
-                wasChanged = true;
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
             }
-            if(!passengerChanged.getPassport().equals(passport)){
-                passengerChanged.setPassport(passport);
-                wasChanged = true;
-            }
-            if(!passengerChanged.getGender().equals(gender)){
-                passengerChanged.setGender(gender);
-                wasChanged = true;
-            }
-            if(!passengerChanged.getDateOfBirth().equals(localDateOfBirth)){
-                passengerChanged.setDateOfBirth(localDateOfBirth);
-                wasChanged = true;
-            }
-            if(wasChanged){
+            String[] fullDate = dateOfBirth.split("-");
+            Integer dayOfBirth = Integer.valueOf(fullDate[2]);
+            Integer monthOfBirth = Integer.valueOf(fullDate[1]);
+            Integer yearOfBirth = Integer.valueOf(fullDate[0]);
+            LocalDate localDateOfBirth = LocalDate.of(yearOfBirth,monthOfBirth,dayOfBirth);
+            System.out.println(dateOfBirth);
+            if (passengerId.equals(0)) {
+                Passenger passengerChanged = new Passenger(
+                        name,
+                        surname,
+                        passport,
+                        gender,
+                        localDateOfBirth
+                );
                 passengerRepository.save(passengerChanged);
+            } else {
+                Passenger passengerChanged = passengerRepository.findById(passengerId);
+                boolean wasChanged = false;
+                if(!passengerChanged.getName().equals(name)){
+                    passengerChanged.setName(name);
+                    wasChanged = true;
+                }
+                if(!passengerChanged.getSurname().equals(surname)){
+                    passengerChanged.setSurname(surname);
+                    wasChanged = true;
+                }
+                if(!passengerChanged.getPassport().equals(passport)){
+                    passengerChanged.setPassport(passport);
+                    wasChanged = true;
+                }
+                if(!passengerChanged.getGender().equals(gender)){
+                    passengerChanged.setGender(gender);
+                    wasChanged = true;
+                }
+                if(!passengerChanged.getDateOfBirth().equals(localDateOfBirth)){
+                    passengerChanged.setDateOfBirth(localDateOfBirth);
+                    wasChanged = true;
+                }
+                if(wasChanged){
+                    passengerRepository.save(passengerChanged);
+                }
             }
+            return "redirect:/passengers";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/passengers";
     }
 }

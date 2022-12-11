@@ -2,6 +2,7 @@ package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.TrainRepository;
 import com.trains.tickets.service.TrainService;
 import com.trains.tickets.service.UserService;
@@ -31,34 +32,52 @@ public class TrainsController {
     @GetMapping
     public String trainList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll()));
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll()));
+            return "trainsList";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "trainsList";
     }
 
     @GetMapping("{train}")
     public String trainEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String train,
                                    Model model){
-        if (train.equals("new")) {
-            model.addAttribute("train", trainService.getEmptyDto());
-        } else {
-            model.addAttribute("train", trainService.convertEntityToDto(trainRepository.findById(Integer.parseInt(train))));
+        try {
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (train.equals("new")) {
+                model.addAttribute("train", trainService.getEmptyDto());
+            } else {
+                model.addAttribute("train", trainService.convertEntityToDto(trainRepository.findById(Integer.parseInt(train))));
+            }
+            return "trainsEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "trainsEdit";
     }
     @PostMapping
     public String trainSave(@AuthenticationPrincipal User user,
@@ -68,35 +87,46 @@ public class TrainsController {
                                 @RequestParam Map<String, String> form,
                                 //@RequestParam("trainId") Train trainChanged,
                                Model model){
-        if (trainId.equals(0)) {
-            Train trainChanged = new Train(
-                number,
-                seats
-            );
-            trainRepository.save(trainChanged);
-        } else {
-            Train trainChanged = trainRepository.findById(trainId);
-            boolean wasChanged = false;
-            if(!trainChanged.getNumber().equals(number)){
-                trainChanged.setNumber(number);
-                wasChanged = true;
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
             }
-            if(!trainChanged.getSeats().equals(seats)){
-                trainChanged.setSeats(seats);
-                wasChanged = true;
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
             }
-            if(wasChanged){
+            if (trainId.equals(0)) {
+                Train trainChanged = new Train(
+                    number,
+                    seats
+                );
                 trainRepository.save(trainChanged);
+            } else {
+                Train trainChanged = trainRepository.findById(trainId);
+                if (trainChanged == null){
+                    throw  new NullPointerException("Train not found!");
+                }
+                boolean wasChanged = false;
+                if(!trainChanged.getNumber().equals(number)){
+                    trainChanged.setNumber(number);
+                    wasChanged = true;
+                }
+                if(!trainChanged.getSeats().equals(seats)){
+                    trainChanged.setSeats(seats);
+                    wasChanged = true;
+                }
+                if(wasChanged){
+                    trainRepository.save(trainChanged);
+                }
             }
+            return "redirect:/trains";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/trains";
     }
 }

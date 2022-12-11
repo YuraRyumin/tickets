@@ -1,6 +1,7 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.*;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.ScheduleRepository;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
@@ -61,25 +62,37 @@ public class StopsController {
     public String stopEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String stop,
                                    Model model){
-        if (stop.equals("new")) {
-            model.addAttribute("stop", stopService.getEmptyDto());
-            model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-            model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
-        } else {
-            Stop selectedStop = stopRepository.findById(Integer.parseInt(stop));
-            model.addAttribute("stop", stopService.convertEntityToDto(selectedStop));
-            model.addAttribute("stations", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedStop.getStation()));
-            model.addAttribute("schedule", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedStop.getSchedule()));
-        }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+        try{
+            if (stop.equals("new")) {
+                model.addAttribute("stop", stopService.getEmptyDto());
+                model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+                model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
+            } else {
+                Stop selectedStop = stopRepository.findById(Integer.parseInt(stop));
+                if(selectedStop == null){
+                    throw  new NullPointerException("Stop not found!");
+                }
+                model.addAttribute("stop", stopService.convertEntityToDto(selectedStop));
+                model.addAttribute("stations", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedStop.getStation()));
+                model.addAttribute("schedule", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedStop.getSchedule()));
+            }
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            return "stopsEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "stopsEdit";
     }
     @PostMapping
     public String stopSave(@AuthenticationPrincipal User user,
@@ -91,56 +104,63 @@ public class StopsController {
                                @RequestParam Map<String, String> form,
                                //@RequestParam("stopId") Stop stopChanged,
                                Model model){
-        String[] fullTimeBegining = timeBegining.split(":");
-        Integer hourOfBegining = Integer.valueOf(fullTimeBegining[0]);
-        Integer minuteOfBegining = Integer.valueOf(fullTimeBegining[1]);
-        LocalTime localTimeBegining = LocalTime.of(hourOfBegining, minuteOfBegining, 0);
-        String[] fullTimeEnd = timeEnd.split(":");
-        Integer hourOfEnd = Integer.valueOf(fullTimeEnd[0]);
-        Integer minuteOfEnd = Integer.valueOf(fullTimeEnd[1]);
-        LocalTime localTimeEnd = LocalTime.of(hourOfEnd, minuteOfEnd, 0);
-
-        if (stopId.equals(0)) {
-            Stop stopChanged = new Stop(
-                localTimeBegining,
-                localTimeEnd,
-                scheduleRepository.findByTime(schedule),
-                stationRepository.findByName(station)
-            );
-            stopRepository.save(stopChanged);
-        } else {
-            Stop stopChanged = stopRepository.findById(stopId);
-            boolean wasChanged = false;
-            if(!stopChanged.getTimeBegining().equals(localTimeBegining)){
-                stopChanged.setTimeBegining(localTimeBegining);
-                wasChanged = true;
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
             }
-            if(!stopChanged.getTimeEnd().equals(localTimeEnd)){
-                stopChanged.setTimeEnd(localTimeEnd);
-                wasChanged = true;
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
             }
-            Schedule scheduleNew = scheduleRepository.findByTime(schedule);
-            if(!stopChanged.getSchedule().equals(scheduleNew)){
-                stopChanged.setSchedule(scheduleNew);
-                wasChanged = true;
-            }
-            Station stationNew = stationRepository.findByName(station);
-            if(!stopChanged.getStation().equals(stationNew)){
-                stopChanged.setStation(stationNew);
-                wasChanged = true;
-            }
-            if(wasChanged){
+            String[] fullTimeBegining = timeBegining.split(":");
+            Integer hourOfBegining = Integer.valueOf(fullTimeBegining[0]);
+            Integer minuteOfBegining = Integer.valueOf(fullTimeBegining[1]);
+            LocalTime localTimeBegining = LocalTime.of(hourOfBegining, minuteOfBegining, 0);
+            String[] fullTimeEnd = timeEnd.split(":");
+            Integer hourOfEnd = Integer.valueOf(fullTimeEnd[0]);
+            Integer minuteOfEnd = Integer.valueOf(fullTimeEnd[1]);
+            LocalTime localTimeEnd = LocalTime.of(hourOfEnd, minuteOfEnd, 0);
+            if (stopId.equals(0)) {
+                Stop stopChanged = new Stop(
+                    localTimeBegining,
+                    localTimeEnd,
+                    scheduleRepository.findByTime(schedule),
+                    stationRepository.findByName(station)
+                );
                 stopRepository.save(stopChanged);
+            } else {
+                Stop stopChanged = stopRepository.findById(stopId);
+                boolean wasChanged = false;
+                if(!stopChanged.getTimeBegining().equals(localTimeBegining)){
+                    stopChanged.setTimeBegining(localTimeBegining);
+                    wasChanged = true;
+                }
+                if(!stopChanged.getTimeEnd().equals(localTimeEnd)){
+                    stopChanged.setTimeEnd(localTimeEnd);
+                    wasChanged = true;
+                }
+                Schedule scheduleNew = scheduleRepository.findByTime(schedule);
+                if(!stopChanged.getSchedule().equals(scheduleNew)){
+                    stopChanged.setSchedule(scheduleNew);
+                    wasChanged = true;
+                }
+                Station stationNew = stationRepository.findByName(station);
+                if(!stopChanged.getStation().equals(stationNew)){
+                    stopChanged.setStation(stationNew);
+                    wasChanged = true;
+                }
+                if(wasChanged){
+                    stopRepository.save(stopChanged);
+                }
             }
+            return "redirect:/stops";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/stops";
     }
 }

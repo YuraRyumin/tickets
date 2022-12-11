@@ -2,6 +2,7 @@ package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.ServiceClass;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.ServiceClassRepository;
 import com.trains.tickets.service.ServiceClassService;
 import com.trains.tickets.service.UserService;
@@ -31,34 +32,52 @@ public class ServiceClassesController {
     @GetMapping
     public String serviceClassList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll()));
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll()));
+            return "serviceClassesList";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "serviceClassesList";
     }
 
     @GetMapping("{serviceClass}")
     public String serviceClassEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String serviceClass,
                                    Model model){
-        if (serviceClass.equals("new")) {
-            model.addAttribute("serviceClass", serviceClassService.getEmptyDto());
-        } else {
-            model.addAttribute("serviceClass", serviceClassService.convertEntityToDto(serviceClassRepository.findById(Integer.parseInt(serviceClass))));
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (serviceClass.equals("new")) {
+                model.addAttribute("serviceClass", serviceClassService.getEmptyDto());
+            } else {
+                model.addAttribute("serviceClass", serviceClassService.convertEntityToDto(serviceClassRepository.findById(Integer.parseInt(serviceClass))));
+            }
+            return "serviceClassesEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "serviceClassesEdit";
     }
     @PostMapping
     public String serviceClassSave(@AuthenticationPrincipal User user,
@@ -68,35 +87,43 @@ public class ServiceClassesController {
                                @RequestParam Map<String, String> form,
                                //@RequestParam("serviceClassId") ServiceClass serviceClassChanged,
                                Model model){
-        if (serviceClassId.equals(0)) {
-            ServiceClass serviceClassChanged = new ServiceClass(
-                    name,
-                    prisePerKm
-            );
-            serviceClassRepository.save(serviceClassChanged);
-        } else {
-            ServiceClass serviceClassChanged = serviceClassRepository.findById(serviceClassId);
-            boolean wasChanged = false;
-            if(!serviceClassChanged.getName().equals(name)){
-                serviceClassChanged.setName(name);
-                wasChanged = true;
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
             }
-            if(!serviceClassChanged.getPrisePerKm().equals(prisePerKm)){
-                serviceClassChanged.setPrisePerKm(prisePerKm);
-                wasChanged = true;
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
             }
-            if(wasChanged){
+            if (serviceClassId.equals(0)) {
+                ServiceClass serviceClassChanged = new ServiceClass(
+                        name,
+                        prisePerKm
+                );
                 serviceClassRepository.save(serviceClassChanged);
+            } else {
+                ServiceClass serviceClassChanged = serviceClassRepository.findById(serviceClassId);
+                boolean wasChanged = false;
+                if(!serviceClassChanged.getName().equals(name)){
+                    serviceClassChanged.setName(name);
+                    wasChanged = true;
+                }
+                if(!serviceClassChanged.getPrisePerKm().equals(prisePerKm)){
+                    serviceClassChanged.setPrisePerKm(prisePerKm);
+                    wasChanged = true;
+                }
+                if(wasChanged){
+                    serviceClassRepository.save(serviceClassChanged);
+                }
             }
+            return "redirect:/serviceClasses";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/serviceClasses";
     }
 }

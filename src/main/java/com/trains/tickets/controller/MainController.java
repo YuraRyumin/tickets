@@ -1,9 +1,12 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
+import com.trains.tickets.repository.NewsRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.UserRepository;
+import com.trains.tickets.service.NewsService;
 import com.trains.tickets.service.StationService;
 import com.trains.tickets.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,11 +30,12 @@ public class MainController {
     private final StationRepository stationRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender mailSender;
-
     private final StationService stationService;
     private final UserService userService;
+    private final NewsRepository newsRepository;
+    private final NewsService newsService;
 
-    public MainController(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, StationRepository stationRepository, StationService stationService, UserService userService) {
+    public MainController(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, JavaMailSender mailSender, StationRepository stationRepository, StationService stationService, UserService userService, NewsRepository newsRepository, NewsService newsService) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -39,6 +43,8 @@ public class MainController {
         this.stationRepository = stationRepository;
         this.stationService = stationService;
         this.userService = userService;
+        this.newsRepository = newsRepository;
+        this.newsService = newsService;
     }
 
     @GetMapping("/")
@@ -59,31 +65,74 @@ public class MainController {
     @GetMapping("/main")
     public String main(@AuthenticationPrincipal User user,
                        Map<String, Object> model){
-        model.put("user", userService.convertEntityToDtoForNav(user));
-        model.put("stations", stationService.convertAllEntitysToDto(stationRepository.findAll()));
-        model.put("dateNow", LocalDate.now());
-        if(user.isAdmin()) {
-            model.put("adminRole", true);
+        try{
+            model.put("user", userService.convertEntityToDtoForNav(user));
+            model.put("dateNow", LocalDate.now());
+            if(user.isAdmin()) {
+                model.put("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.put("operatorRole", true);
+            }
+            model.put("stations", stationService.convertAllEntitysToDto(stationRepository.findAll()));
+            return "ticketsSearch";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.put("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.put("operatorRole", true);
-        }
-        return "ticketsSearch";
     }
+
+//    @GetMapping("/news")
+//    public String news(@AuthenticationPrincipal User user,
+//                       Map<String, Object> model){
+//        try{
+//            if(user != null) {
+//                model.put("user", userService.convertEntityToDtoForNav(user));
+//                if (user.isAdmin()) {
+//                    model.put("adminRole", true);
+//                }
+//                if (user.isOperator()) {
+//                    model.put("operatorRole", true);
+//                }
+//            }
+//            model.put("news", newsService.convertAllEntityToDto(newsRepository.findAll(Sort.by(Sort.Direction.DESC, "date"))));
+//            return "news";
+//        } catch (Exception e){
+//            ErrorDTO errorDTO = new ErrorDTO();
+//            errorDTO.setCode(e.getClass().getName());
+//            errorDTO.setMessage(e.getMessage());
+//            errorDTO.setBody(String.valueOf(e.getCause()));
+//            model.put("error", errorDTO);
+//            return "error";
+//        }
+//    }
 
     @PostMapping("/main")
     public String add(@AuthenticationPrincipal User user,
                       @RequestParam String name,
                       Map<String, Object> model){
-        model.put("user", userService.convertEntityToDtoForNav(user));
-        model.put("dateNow", LocalDate.now());
-        if(user.isAdmin()) {
-            model.put("adminRole", true);
+        try{
+            model.put("user", userService.convertEntityToDtoForNav(user));
+            model.put("dateNow", LocalDate.now());
+            if(user.isAdmin()) {
+                model.put("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.put("operatorRole", true);
+            }
+            return "ticketsSearch";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.put("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.put("operatorRole", true);
-        }
-        return "ticketsSearch";
     }
 
 
@@ -101,14 +150,23 @@ public class MainController {
 //        mailSender.send(mailMessage);
 //        model.put("user", user);
         //return "main";
-        model.put("user", userService.convertEntityToDtoForNav(user));
-        model.put("dateNow", LocalDate.now());
-        if(user.isAdmin()) {
-            model.put("adminRole", true);
+        try{
+            model.put("user", userService.convertEntityToDtoForNav(user));
+            model.put("dateNow", LocalDate.now());
+            if(user.isAdmin()) {
+                model.put("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.put("operatorRole", true);
+            }
+            return "ticketsSearch";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.put("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.put("operatorRole", true);
-        }
-        return "ticketsSearch";
     }
 }

@@ -58,6 +58,7 @@ public class UserService implements UserDetailsService {
         user.setPassenger(passengerRepository.findByPassport("2222222222"));
         user.setRole(roleRepository.findByName("user"));
         user.setActivationCode(UUID.randomUUID().toString());
+        user.setUuid(UUID.randomUUID().toString());
         userRepository.save(user);
         if(user.getEmail() != ""){
             String message = String.format(
@@ -119,6 +120,7 @@ public class UserService implements UserDetailsService {
         userDTO.setActive(user.isActive());
         userDTO.setActivationCode(user.getActivationCode());
         userDTO.setRole(user.getRole().getName());
+        userDTO.setUuid(user.getUuid());
 
         return userDTO;
     }

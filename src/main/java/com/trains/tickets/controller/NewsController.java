@@ -1,6 +1,7 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.NewsRepository;
 import com.trains.tickets.service.NewsService;
 import com.trains.tickets.service.UserService;
@@ -27,16 +28,25 @@ public class NewsController {
     @GetMapping
     public String newsList(@AuthenticationPrincipal User user,
                            Model model){
-        model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAll(Sort.by(Sort.Direction.DESC, "date"))));
-        if(user != null) {
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if (user.isAdmin()) {
-                model.addAttribute("adminRole", true);
+        try{
+            if(user != null) {
+                model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+                if (user.isAdmin()) {
+                    model.addAttribute("adminRole", true);
+                }
+                if (user.isOperator()) {
+                    model.addAttribute("operatorRole", true);
+                }
             }
-            if (user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
+            model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAll(Sort.by(Sort.Direction.DESC, "date"))));
+            return "allNews";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        return "news";
     }
 }

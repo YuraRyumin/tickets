@@ -36,3 +36,10 @@ hr {
     background-color: var(--color3);
     height: 3px;
 }
+
+a{
+    color: black;
+}
+a:visited{
+    color: black;
+}

@@ -1,6 +1,7 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.NewsRepository;
 import com.trains.tickets.repository.TicketRepository;
 import com.trains.tickets.service.NewsService;
@@ -34,42 +35,60 @@ public class PrivatePageController {
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            return "ticketsList";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "ticketsList";
     }
 
     @GetMapping("{uuid}")
     public String userEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String uuid,
                                Model model){
-        model.addAttribute("uuid", uuid);
-        model.addAttribute("email", user.getEmail());
-        model.addAttribute("telephone", user.getTelephone());
-        if(user.getRole().equals(null)){
-            model.addAttribute("role", "");
-        } else {
-            model.addAttribute("role", user.getRole().getName());
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            model.addAttribute("uuid", uuid);
+            model.addAttribute("email", user.getEmail());
+            model.addAttribute("telephone", user.getTelephone());
+            if(user.getRole().equals(null)){
+                model.addAttribute("role", "");
+            } else {
+                model.addAttribute("role", user.getRole().getName());
+            }
+            if(user.getPassenger().equals(null)){
+                model.addAttribute("passenger", "");
+            } else {
+                model.addAttribute("passenger", user.getPassenger().getName() + " " + user.getPassenger().getSurname());
+            }
+            model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAllByUserLogin(user.getLogin())));
+            model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAllByUserUuid(user.getUuid())));
+            return "privatePage";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.getPassenger().equals(null)){
-            model.addAttribute("passenger", "");
-        } else {
-            model.addAttribute("passenger", user.getPassenger().getName() + " " + user.getPassenger().getSurname());
-        }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAllByUserLogin(user.getLogin())));
-        model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAllByUserUuid(user.getUuid())));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "privatePage";
     }
 }

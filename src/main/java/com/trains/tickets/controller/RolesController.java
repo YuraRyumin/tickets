@@ -2,6 +2,7 @@ package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.service.RoleService;
 import com.trains.tickets.service.UserService;
@@ -30,34 +31,52 @@ public class RolesController {
     @GetMapping
     public String rolesList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
+            return "roleList";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "roleList";
     }
 
     @GetMapping("{role}")
     public String roleEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String role,
                                Model model){
-        if (role.equals("new")) {
-            model.addAttribute("role", roleService.getEmptyDto());
-        } else {
-            model.addAttribute("role", roleService.convertEntityToDto(roleRepository.findById(Integer.parseInt(role))));
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (role.equals("new")) {
+                model.addAttribute("role", roleService.getEmptyDto());
+            } else {
+                model.addAttribute("role", roleService.convertEntityToDto(roleRepository.findById(Integer.parseInt(role))));
+            }
+            return "roleEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "roleEdit";
     }
     @PostMapping
     public String roleSave(@AuthenticationPrincipal User user,
@@ -66,24 +85,32 @@ public class RolesController {
                            @RequestParam Map<String, String> form,
                            //@RequestParam("roleId") Role roleChanged,
                            Model model){
-        if (roleId.equals(0)) {
-            Role roleChanged = new Role(name);
-            roleRepository.save(roleChanged);
-        } else {
-            Role roleChanged = roleRepository.findById(roleId);
-            if(!roleChanged.getName().equals(name)){
-                roleChanged.setName(name);
-                roleRepository.save(roleChanged);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
             }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (roleId.equals(0)) {
+                Role roleChanged = new Role(name);
+                roleRepository.save(roleChanged);
+            } else {
+                Role roleChanged = roleRepository.findById(roleId);
+                if(!roleChanged.getName().equals(name)){
+                    roleChanged.setName(name);
+                    roleRepository.save(roleChanged);
+                }
+            }
+            return "redirect:/roles";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/roles";
     }
 }

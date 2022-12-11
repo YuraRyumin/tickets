@@ -2,6 +2,7 @@ package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.service.StationService;
 import com.trains.tickets.service.UserService;
@@ -47,19 +48,28 @@ public class StationsController {
     public String stationEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String station,
                                    Model model){
-        if (station.equals("new")) {
-            model.addAttribute("stations", stationService.getEmptyDto());
-        } else {
-            model.addAttribute("stations", stationService.convertEntityToDto(stationRepository.findById(Integer.parseInt(station))));
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (station.equals("new")) {
+                model.addAttribute("stations", stationService.getEmptyDto());
+            } else {
+                model.addAttribute("stations", stationService.convertEntityToDto(stationRepository.findById(Integer.parseInt(station))));
+            }
+            return "stationsEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "stationsEdit";
     }
     @PostMapping
     public String stationSave(@AuthenticationPrincipal User user,
@@ -68,24 +78,32 @@ public class StationsController {
                                @RequestParam Map<String, String> form,
                                //@RequestParam("stationId") Station stationChanged,
                                Model model){
-        if(stationId.equals(0)){
-            Station stationChanged = new Station(name);
-            stationRepository.save(stationChanged);
-        } else {
-            Station stationChanged = stationRepository.findById(stationId);
-            if(!stationChanged.getName().equals(name)){
-                stationChanged.setName(name);
-                stationRepository.save(stationChanged);
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
             }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if(stationId.equals(0)){
+                Station stationChanged = new Station(name);
+                stationRepository.save(stationChanged);
+            } else {
+                Station stationChanged = stationRepository.findById(stationId);
+                if(!stationChanged.getName().equals(name)){
+                    stationChanged.setName(name);
+                    stationRepository.save(stationChanged);
+                }
+            }
+            return "redirect:/stations";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/stations";
     }
 }

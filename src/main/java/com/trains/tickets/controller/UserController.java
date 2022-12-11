@@ -3,6 +3,7 @@ package com.trains.tickets.controller;
 import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
@@ -63,25 +64,38 @@ public class UserController {
     public String userEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String userThis,
                                Model model){
-        if (userThis.equals("new")) {
-            model.addAttribute("userThis", userService.getEmptyDto());
-            model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
-            model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-        } else {
-            User selectedUser = userRepository.findById(Integer.parseInt(userThis));
-            model.addAttribute("userThis", userService.convertEntityToDto(selectedUser));
-            model.addAttribute("roles", roleService.convertAllEntityToDtoWithSelected(roleRepository.findAll(), selectedUser.getRole()));
-            model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedUser.getPassenger()));
-        }
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+        try {
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
 
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+            if (user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if (user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            if (userThis.equals("new")) {
+                model.addAttribute("userThis", userService.getEmptyDto());
+                model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
+                model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+            } else {
+                User selectedUser = userRepository.findByUuid(userThis);
+                if(selectedUser == null){
+                    throw  new NullPointerException("User not found!");
+                }
+                model.addAttribute("userThis", userService.convertEntityToDto(selectedUser));
+                model.addAttribute("roles", roleService.convertAllEntityToDtoWithSelected(roleRepository.findAll(), selectedUser.getRole()));
+                model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedUser.getPassenger()));
+            }
+
+            return "userEdit";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "userEdit";
     }
 
     @PostMapping
@@ -97,82 +111,90 @@ public class UserController {
             @RequestParam Map<String, String> form,
             //@RequestParam("userId") User userChanged,
             Model model){
-        String[] fullName = passenger.split("\\s");
-        String nameOfPassenger = fullName[0];
-        String surnameOfPassenger = fullName[1];
-        Passenger passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
-        Role roleNew = roleRepository.findByName(role);
-        if (userId.equals(0)) {
-            User userChanged = new User(
-                email,
-                telephone,
-                login,
-                passwordEncoder.encode(password),
-                passengerNew,
-                roleNew,
-                true,
-                activationCode,
-                UUID.randomUUID().toString()
-            );
-            if(user.getEmail() != ""){
-                String message = String.format(
-                        "Hello, %s! \n" +
-                                "Welcom to Trains. Please visit next link: http://localhost:8080/activate/%s",
-                        user.getLogin(), user.getActivationCode()
+        try{
+            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
+            if(user.isAdmin()) {
+                model.addAttribute("adminRole", true);
+            }
+            if(user.isOperator()) {
+                model.addAttribute("operatorRole", true);
+            }
+            String[] fullName = passenger.split("\\s");
+            String nameOfPassenger = fullName[0];
+            String surnameOfPassenger = fullName[1];
+            Passenger passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
+            Role roleNew = roleRepository.findByName(role);
+            if (userId.equals(0)) {
+                User userChanged = new User(
+                    email,
+                    telephone,
+                    login,
+                    passwordEncoder.encode(password),
+                    passengerNew,
+                    roleNew,
+                    true,
+                    activationCode,
+                    UUID.randomUUID().toString()
                 );
-                mailSender.send(user.getEmail(), "Activation", message);
-            }
-            userRepository.save(userChanged);
-        } else {
-            User userChanged = userRepository.findById(userId);
-            boolean wasChanged = false;
-            if(!userChanged.getEmail().equals(email)){
-                userChanged.setEmail(email);
-                wasChanged = true;
-            }
-            if(!userChanged.getTelephone().equals(telephone)){
-                userChanged.setTelephone(telephone);
-                wasChanged = true;
-            }
-            if(!userChanged.getLogin().equals(login)){
-                userChanged.setLogin(login);
-                wasChanged = true;
-            }
-//            if(!userChanged.getPassenger().equals(passwordEncoder.encode(password))){
-//                userChanged.setPassword(passwordEncoder.encode(password));
-//                wasChanged = true;
-//            }
-            if (userChanged.getUuid().equals("") || userChanged.getUuid() == null){
-                userChanged.setUuid(UUID.randomUUID().toString());
-                wasChanged = true;
-            }
-//            if(!userChanged.getPassenger() == null || !passengerNew == null) {
-//                if (!userChanged.getPassenger().equals(passengerNew)) {
-//                    userChanged.setPassenger(passengerNew);
-//                    wasChanged = true;
-//                }
-//            }
-            if(!userChanged.getRole().equals(roleNew)){
-                userChanged.setRole(roleNew);
-                wasChanged = true;
-            }
-            userChanged.setActive(true);
-//            if(!userChanged.getActivationCode().equals(activationCode)){
-//                userChanged.setActivationCode(activationCode);
-//                wasChanged = true;
-//            }
-            if(wasChanged){
+                if(user.getEmail() != ""){
+                    String message = String.format(
+                            "Hello, %s! \n" +
+                                    "Welcom to Trains. Please visit next link: http://localhost:8080/activate/%s",
+                            user.getLogin(), user.getActivationCode()
+                    );
+                    mailSender.send(user.getEmail(), "Activation", message);
+                }
                 userRepository.save(userChanged);
+            } else {
+                User userChanged = userRepository.findById(userId);
+                boolean wasChanged = false;
+                if(!userChanged.getEmail().equals(email)){
+                    userChanged.setEmail(email);
+                    wasChanged = true;
+                }
+                if(!userChanged.getTelephone().equals(telephone)){
+                    userChanged.setTelephone(telephone);
+                    wasChanged = true;
+                }
+                if(!userChanged.getLogin().equals(login)){
+                    userChanged.setLogin(login);
+                    wasChanged = true;
+                }
+    //            if(!userChanged.getPassenger().equals(passwordEncoder.encode(password))){
+    //                userChanged.setPassword(passwordEncoder.encode(password));
+    //                wasChanged = true;
+    //            }
+                if (userChanged.getUuid().equals("") || userChanged.getUuid() == null){
+                    userChanged.setUuid(UUID.randomUUID().toString());
+                    wasChanged = true;
+                }
+    //            if(!userChanged.getPassenger() == null || !passengerNew == null) {
+    //                if (!userChanged.getPassenger().equals(passengerNew)) {
+    //                    userChanged.setPassenger(passengerNew);
+    //                    wasChanged = true;
+    //                }
+    //            }
+                if(!userChanged.getRole().equals(roleNew)){
+                    userChanged.setRole(roleNew);
+                    wasChanged = true;
+                }
+                userChanged.setActive(true);
+    //            if(!userChanged.getActivationCode().equals(activationCode)){
+    //                userChanged.setActivationCode(activationCode);
+    //                wasChanged = true;
+    //            }
+                if(wasChanged){
+                    userRepository.save(userChanged);
+                }
             }
+            return "redirect:/user";
+        } catch (Exception e){
+            ErrorDTO errorDTO = new ErrorDTO();
+            errorDTO.setCode(e.getClass().getName());
+            errorDTO.setMessage(e.getMessage());
+            errorDTO.setBody(String.valueOf(e.getCause()));
+            model.addAttribute("error", errorDTO);
+            return "error";
         }
-
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
-        }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "redirect:/user";
     }
 }
