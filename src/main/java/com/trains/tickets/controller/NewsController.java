@@ -1,8 +1,8 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.NewsRepository;
+import com.trains.tickets.service.MainService;
 import com.trains.tickets.service.NewsService;
 import com.trains.tickets.service.UserService;
 import org.springframework.data.domain.Sort;
@@ -17,35 +17,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class NewsController {
     private final NewsRepository newsRepository;
     private final NewsService newsService;
-    private final UserService userService;
+    private final MainService mainService;
 
-    public NewsController(NewsRepository newsRepository, NewsService newsService, UserService userService) {
+    public NewsController(NewsRepository newsRepository, NewsService newsService, MainService mainService) {
         this.newsRepository = newsRepository;
         this.newsService = newsService;
-        this.userService = userService;
+        this.mainService = mainService;
     }
 
     @GetMapping
     public String newsList(@AuthenticationPrincipal User user,
                            Model model){
         try{
-            if(user != null) {
-                model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-                if (user.isAdmin()) {
-                    model.addAttribute("adminRole", true);
-                }
-                if (user.isOperator()) {
-                    model.addAttribute("operatorRole", true);
-                }
-            }
+            mainService.putUserInfoToModel(user, model);
             model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAll(Sort.by(Sort.Direction.DESC, "date"))));
             return "allNews";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }

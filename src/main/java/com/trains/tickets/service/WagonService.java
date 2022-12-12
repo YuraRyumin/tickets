@@ -1,10 +1,15 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.Passenger;
+import com.trains.tickets.domain.ServiceClass;
+import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.Wagon;
-import com.trains.tickets.dto.PassengerDTO;
 import com.trains.tickets.dto.WagonDTO;
+import com.trains.tickets.repository.ServiceClassRepository;
+import com.trains.tickets.repository.TrainRepository;
+import com.trains.tickets.repository.WagonRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
@@ -12,6 +17,20 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class WagonService {
+    private final TrainRepository trainRepository;
+    private final TrainService trainService;
+    private final ServiceClassRepository serviceClassRepository;
+    private final ServiceClassService serviceClassService;
+    private final WagonRepository wagonRepository;
+
+    public WagonService(TrainRepository trainRepository, TrainService trainService, ServiceClassRepository serviceClassRepository, ServiceClassService serviceClassService, WagonRepository wagonRepository) {
+        this.trainRepository = trainRepository;
+        this.trainService = trainService;
+        this.serviceClassRepository = serviceClassRepository;
+        this.serviceClassService = serviceClassService;
+        this.wagonRepository = wagonRepository;
+    }
+
     public Iterable<WagonDTO> convertAllEntityToDto(Iterable<Wagon> wagons){
         return StreamSupport.stream(wagons.spliterator(), false)
                 .map(this::convertEntityToDto)
@@ -54,5 +73,60 @@ public class WagonService {
         wagonDTO.setName("");
 
         return wagonDTO;
+    }
+
+    public void putInfoAboutWagonToModel(String wagon, Model model){
+        if (wagon.equals("new")) {
+            model.addAttribute("wagon", getEmptyDto());
+            model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
+            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+        } else {
+            Wagon selectedWagon = wagonRepository.findById(Integer.parseInt(wagon));
+            if(selectedWagon == null){
+                throw  new NullPointerException("Wagon not found!");
+            }
+            model.addAttribute("wagon", convertEntityToDto(selectedWagon));
+            model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedWagon.getTrain()));
+            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDtoWithSelected(serviceClassRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedWagon.getServiceClasses()));
+        }
+    }
+
+    public void saveWagon(String train, String serviceClasses, String name, Integer seats, Integer wagonId){
+        ServiceClass serviceClassNew = serviceClassRepository.findByName(serviceClasses);
+        Train trainNew = trainRepository.findByNumber(train);
+        if(wagonId.equals(0)){
+            Wagon wagonChanged = new Wagon(
+                    trainNew,
+                    serviceClassNew,
+                    name,
+                    seats
+            );
+            wagonRepository.save(wagonChanged);
+        } else {
+            Wagon wagonChanged = wagonRepository.findById(wagonId);
+            if(wagonChanged == null){
+                throw  new NullPointerException("Wagon not found!");
+            }
+            boolean wasChanged = false;
+            if(!wagonChanged.getTrain().equals(trainNew)){
+                wagonChanged.setTrain(trainNew);
+                wasChanged = true;
+            }
+            if(!wagonChanged.getServiceClasses().equals(serviceClassNew)){
+                wagonChanged.setServiceClasses(serviceClassNew);
+                wasChanged = true;
+            }
+            if(!wagonChanged.getName().equals(name)){
+                wagonChanged.setName(name);
+                wasChanged = true;
+            }
+            if(!wagonChanged.getSeats().equals(seats)){
+                wagonChanged.setSeats(seats);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                wagonRepository.save(wagonChanged);
+            }
+        }
     }
 }

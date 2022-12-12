@@ -1,10 +1,10 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.Station;
-import com.trains.tickets.dto.PassengerDTO;
 import com.trains.tickets.dto.StationsForMainDTO;
+import com.trains.tickets.repository.StationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +12,12 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class StationService {
+    private final StationRepository stationRepository;
+
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
+    }
+
     public Iterable<StationsForMainDTO> convertAllEntityToDto(Iterable<Station> stations){
         return StreamSupport.stream(stations.spliterator(), false)
                 .map(this::convertEntityToDto)
@@ -47,7 +53,6 @@ public class StationService {
                     stationForMainDTO.setId(station.getId());
                     stationForMainDTO.setName(station.getName());
                     return  stationForMainDTO;})
-                //.sorted((h1, h2) -> h1.getName().compareTo(h2.getName()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
@@ -58,5 +63,26 @@ public class StationService {
         stationsForMainDTO.setName("");
 
         return stationsForMainDTO;
+    }
+
+    public void putInfoAboutStationToModel(String station, Model model){
+        if (station.equals("new")) {
+            model.addAttribute("stations", getEmptyDto());
+        } else {
+            model.addAttribute("stations", convertEntityToDto(stationRepository.findById(Integer.parseInt(station))));
+        }
+    }
+
+    public void saveStation(String name, Integer stationId){
+        if(stationId.equals(0)){
+            Station stationChanged = new Station(name);
+            stationRepository.save(stationChanged);
+        } else {
+            Station stationChanged = stationRepository.findById(stationId);
+            if(!stationChanged.getName().equals(name)){
+                stationChanged.setName(name);
+                stationRepository.save(stationChanged);
+            }
+        }
     }
 }

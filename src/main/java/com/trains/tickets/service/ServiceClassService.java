@@ -1,10 +1,10 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.ServiceClass;
-import com.trains.tickets.dto.PassengerDTO;
 import com.trains.tickets.dto.ServiceClassDTO;
+import com.trains.tickets.repository.ServiceClassRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
@@ -12,6 +12,12 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class ServiceClassService {
+    private final ServiceClassRepository serviceClassRepository;
+
+    public ServiceClassService(ServiceClassRepository serviceClassRepository) {
+        this.serviceClassRepository = serviceClassRepository;
+    }
+
     public Iterable<ServiceClassDTO> convertAllEntityToDto(Iterable<ServiceClass> serviceClasses){
         return StreamSupport.stream(serviceClasses.spliterator(), false)
                 .map(this::convertEntityToDto)
@@ -50,5 +56,39 @@ public class ServiceClassService {
         serviceClassDTO.setPrisePerKm((float) 0);
 
         return serviceClassDTO;
+    }
+
+    public void putInfoAboutServiceClassToModel(String serviceClass, Model model){
+        if (serviceClass.equals("new")) {
+            model.addAttribute("serviceClass", getEmptyDto());
+        } else {
+            model.addAttribute("serviceClass", convertEntityToDto(serviceClassRepository.findById(Integer.parseInt(serviceClass))));
+        }
+    }
+
+    public void saveServiceClass(String name,
+                                 Float prisePerKm,
+                                 Integer serviceClassId){
+        if (serviceClassId.equals(0)) {
+            ServiceClass serviceClassChanged = new ServiceClass(
+                    name,
+                    prisePerKm
+            );
+            serviceClassRepository.save(serviceClassChanged);
+        } else {
+            ServiceClass serviceClassChanged = serviceClassRepository.findById(serviceClassId);
+            boolean wasChanged = false;
+            if(!serviceClassChanged.getName().equals(name)){
+                serviceClassChanged.setName(name);
+                wasChanged = true;
+            }
+            if(!serviceClassChanged.getPrisePerKm().equals(prisePerKm)){
+                serviceClassChanged.setPrisePerKm(prisePerKm);
+                wasChanged = true;
+            }
+            if(wasChanged){
+                serviceClassRepository.save(serviceClassChanged);
+            }
+        }
     }
 }

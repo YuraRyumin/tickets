@@ -1,9 +1,8 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.Role;
-import com.trains.tickets.dto.PassengerDTO;
 import com.trains.tickets.dto.RoleDTO;
+import com.trains.tickets.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashSet;
@@ -12,6 +11,12 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class RoleService {
+    private final RoleRepository roleRepository;
+
+    public RoleService(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
+
     public Iterable<RoleDTO> convertAllEntityToDto(Iterable<Role> roles){
         return StreamSupport.stream(roles.spliterator(), false)
                 .map(this::convertEntityToDto)
@@ -48,5 +53,18 @@ public class RoleService {
         roleDTO.setName("");
 
         return roleDTO;
+    }
+
+    public void saveRole(String name, Integer roleId){
+        if (roleId.equals(0)) {
+            Role roleChanged = new Role(name);
+            roleRepository.save(roleChanged);
+        } else {
+            Role roleChanged = roleRepository.findById(roleId);
+            if(!roleChanged.getName().equals(name)){
+                roleChanged.setName(name);
+                roleRepository.save(roleChanged);
+            }
+        }
     }
 }

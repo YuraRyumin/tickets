@@ -1,11 +1,13 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.WagonDTO;
+import com.trains.tickets.dto.StopsForArrivalsDTO;
 import com.trains.tickets.projection.*;
+import com.trains.tickets.repository.StopRepository;
 import com.trains.tickets.repository.StopsForMainDTORepository;
 import com.trains.tickets.repository.UserRepository;
 import com.trains.tickets.repository.WagonRepository;
+import com.trains.tickets.service.StopService;
 import com.trains.tickets.service.WagonService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +20,16 @@ public class TicketsRestController {
     private final StopsForMainDTORepository stopsForMainDTORepository;
     private final WagonRepository wagonRepository;
     private final WagonService wagonService;
+    private final StopService stopService;
+    private final StopRepository stopRepository;
 
-    public TicketsRestController(UserRepository userRepository, StopsForMainDTORepository stopsForMainDTORepository, WagonRepository wagonRepository, WagonService wagonService) {
+    public TicketsRestController(UserRepository userRepository, StopsForMainDTORepository stopsForMainDTORepository, WagonRepository wagonRepository, WagonService wagonService, StopService stopService, StopRepository stopRepository) {
         this.userRepository = userRepository;
         this.stopsForMainDTORepository = stopsForMainDTORepository;
         this.wagonRepository = wagonRepository;
         this.wagonService = wagonService;
+        this.stopService = stopService;
+        this.stopRepository = stopRepository;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getTableTickets")
@@ -62,10 +68,15 @@ public class TicketsRestController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getSeats")
     public Set<SeatsProjection> getSeats(
-            @RequestParam Integer scheduleId,
+            @RequestParam String schedule,
             @RequestParam Integer wagonId,
             @RequestParam String dateTicket
     ){
-        return wagonRepository.findSeatsByTrainAndSchedule(scheduleId, wagonId, dateTicket);
+        return wagonRepository.findSeatsByTrainAndSchedule(schedule, wagonId, dateTicket);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getArrivalsInfo")
+    public Iterable<StopsForArrivalsDTO> getArrivalsInfo(@RequestParam String station){
+        return stopService.convertAllEntityToDtoForArrival(stopRepository.findAllByStationName(station));
     }
 }

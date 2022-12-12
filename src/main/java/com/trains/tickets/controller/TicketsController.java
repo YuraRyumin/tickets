@@ -1,72 +1,35 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.*;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.*;
 import com.trains.tickets.service.*;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.Map;
-
 @Controller
 @RequestMapping("/tickets")
 public class TicketsController {
+    private final MainService mainService;
     private final TicketRepository ticketRepository;
     private final TicketService ticketService;
-    private final PassengerRepository passengerRepository;
-    private final PassengerService passengerService;
-    private final TrainRepository trainRepository;
-    private final TrainService trainService;
-    private final WagonRepository wagonRepository;
-    private final WagonService wagonService;
-    private final ScheduleRepository scheduleRepository;
-    private final ScheduleService scheduleService;
-    private final UserRepository userRepository;
-    private final UserService userService;
 
-    public TicketsController(TicketRepository ticketRepository, TicketService ticketService,
-                             PassengerRepository passengerRepository, PassengerService passengerService,
-                             TrainRepository trainRepository, TrainService trainService,
-                             WagonRepository wagonRepository, WagonService wagonService,
-                             ScheduleRepository scheduleRepository, ScheduleService scheduleService, UserRepository userRepository, UserService userService) {
+    public TicketsController(MainService mainService, TicketRepository ticketRepository, TicketService ticketService) {
+        this.mainService = mainService;
         this.ticketRepository = ticketRepository;
         this.ticketService = ticketService;
-        this.trainRepository = trainRepository;
-        this.trainService = trainService;
-        this.wagonRepository = wagonRepository;
-        this.wagonService = wagonService;
-        this.scheduleRepository = scheduleRepository;
-        this.scheduleService = scheduleService;
-        this.passengerRepository = passengerRepository;
-        this.passengerService = passengerService;
-        this.userRepository = userRepository;
-        this.userService = userService;
     }
 
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
+            mainService.putUserInfoToModel(user, model);
             model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAll()));
             return "ticketsList";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -76,39 +39,11 @@ public class TicketsController {
                                @PathVariable String ticket,
                                Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            if (ticket.equals("new")) {
-                model.addAttribute("ticket", ticketService.getEmptyDto());
-                model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number"))));
-                model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-                model.addAttribute("schedules", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
-                model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-                model.addAttribute("users", userService.convertAllEntityToDto(userRepository.findAll(Sort.by(Sort.Direction.ASC, "login"))));
-            } else {
-                Ticket selectedTicket = ticketRepository.findById(Integer.parseInt(ticket));
-                if(selectedTicket == null){
-                    throw  new NullPointerException("Ticket not found!");
-                }
-                model.addAttribute("ticket", ticketService.convertEntityToDto(selectedTicket));
-                model.addAttribute("trains", trainService.convertAllEntityToDtoWithSelected(trainRepository.findAll(Sort.by(Sort.Direction.ASC, "number")), selectedTicket.getTrain()));
-                model.addAttribute("wagons", wagonService.convertAllEntityToDtoWithSelected(wagonRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedTicket.getWagon()));
-                model.addAttribute("schedules", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedTicket.getSchedule()));
-                model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedTicket.getPassenger()));
-                model.addAttribute("users", userService.convertAllEntityToDtoWithSelected(userRepository.findAll(Sort.by(Sort.Direction.ASC, "login")), selectedTicket.getUser()));
-            }
+            mainService.putUserInfoToModel(user, model);
+            ticketService.putInfoAboutTicketToModel(ticket, model);
             return "ticketsEdit";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -124,90 +59,13 @@ public class TicketsController {
                            @RequestParam Integer ticketId,
                            @RequestParam Integer seat,
                            @RequestParam String user,
-                           @RequestParam Map<String, String> form,
-                           //@RequestParam("ticketId") Ticket ticketChanged,
                            Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(userThis));
-            if(userThis.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(userThis.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            String[] fullName = passenger.split("\\s");
-            String nameOfPassenger = fullName[0];
-            String surnameOfPassenger = fullName[1];
-
-            String[] fullDate = dateTicket.split("-");
-            Integer dayOfTicket = Integer.valueOf(fullDate[2]);
-            Integer monthOfTicket = Integer.valueOf(fullDate[1]);
-            Integer yearOfTicket = Integer.valueOf(fullDate[0]);
-            LocalDate localDateOfTicket = LocalDate.of(yearOfTicket, monthOfTicket, dayOfTicket);
-
-            User userNew = userRepository.findByLogin(user);
-            Passenger passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
-            Train trainNew = trainRepository.findByNumber(train);
-            Wagon wagonNew = wagonRepository.findByName(wagon);
-            Schedule scheduleNew = scheduleRepository.findByTime(schedule);
-            if (ticketId.equals(0)) {
-                Ticket ticketChanged = new Ticket(
-                     passengerNew,
-                     localDateOfTicket,
-                     trainNew,
-                     wagonNew,
-                     price,
-                     scheduleNew,
-                     seat,
-                     userThis
-                );
-                ticketRepository.save(ticketChanged);
-            } else {
-                Ticket ticketChanged = ticketRepository.findById(ticketId);
-                boolean wasChanged = false;
-                if(!ticketChanged.getPassenger().equals(passengerNew)){
-                    ticketChanged.setPassenger(passengerNew);
-                    wasChanged = true;
-                }
-                if(!ticketChanged.getDateTicket().equals(localDateOfTicket)){
-                    ticketChanged.setDateTicket(localDateOfTicket);
-                    wasChanged = true;
-                }
-                if(!ticketChanged.getTrain().equals(trainNew)){
-                    ticketChanged.setTrain(trainNew);
-                    wasChanged = true;
-                }
-                if(!ticketChanged.getWagon().equals(wagonNew)){
-                    ticketChanged.setWagon(wagonNew);
-                    wasChanged = true;
-                }
-                if(!ticketChanged.getPrice().equals(price)){
-                    ticketChanged.setPrice(price);
-                    wasChanged = true;
-                }
-                if(!ticketChanged.getSchedule().equals(scheduleNew)){
-                    ticketChanged.setSchedule(scheduleNew);
-                    wasChanged = true;
-                }
-                if(!ticketChanged.getSeat().equals(seat)){
-                    ticketChanged.setSeat(seat);
-                    wasChanged = true;
-                }
-                if(!ticketChanged.getUser().equals(userNew.getLogin())){
-                    ticketChanged.setUser(userNew);
-                    wasChanged = true;
-                }
-                if(wasChanged){
-                    ticketRepository.save(ticketChanged);
-                }
-            }
+            mainService.putUserInfoToModel(userThis, model);
+            ticketService.saveTicket(passenger, dateTicket, train, wagon, price, schedule, ticketId, seat, user, userThis);
             return "redirect:/tickets";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }

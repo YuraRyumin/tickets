@@ -1,12 +1,9 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.NewsRepository;
 import com.trains.tickets.repository.TicketRepository;
-import com.trains.tickets.service.NewsService;
-import com.trains.tickets.service.TicketService;
-import com.trains.tickets.service.UserService;
+import com.trains.tickets.service.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,33 +20,27 @@ public class PrivatePageController {
     private final NewsRepository newsRepository;
     private final NewsService newsService;
     private final UserService userService;
+    private final MainService mainService;
+    private final PrivatePageService privatePageService;
 
-    public PrivatePageController(TicketRepository ticketRepository, TicketService ticketService, NewsRepository newsRepository, NewsService newsService, UserService userService) {
+    public PrivatePageController(TicketRepository ticketRepository, TicketService ticketService, NewsRepository newsRepository, NewsService newsService, UserService userService, MainService mainService, PrivatePageService privatePageService) {
         this.ticketRepository = ticketRepository;
         this.ticketService = ticketService;
         this.newsRepository = newsRepository;
         this.newsService = newsService;
         this.userService = userService;
+        this.mainService = mainService;
+        this.privatePageService = privatePageService;
     }
 
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
+            mainService.putUserInfoToModel(user, model);
             return "ticketsList";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -59,35 +50,11 @@ public class PrivatePageController {
                                @PathVariable String uuid,
                                Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            model.addAttribute("uuid", uuid);
-            model.addAttribute("email", user.getEmail());
-            model.addAttribute("telephone", user.getTelephone());
-            if(user.getRole().equals(null)){
-                model.addAttribute("role", "");
-            } else {
-                model.addAttribute("role", user.getRole().getName());
-            }
-            if(user.getPassenger().equals(null)){
-                model.addAttribute("passenger", "");
-            } else {
-                model.addAttribute("passenger", user.getPassenger().getName() + " " + user.getPassenger().getSurname());
-            }
-            model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAllByUserLogin(user.getLogin())));
-            model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAllByUserUuid(user.getUuid())));
+            mainService.putUserInfoToModel(user, model);
+            privatePageService.putInfoAboutPrivatePageToModel(user, model, uuid);
             return "privatePage";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }

@@ -4,6 +4,7 @@ import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.RoleRepository;
+import com.trains.tickets.service.MainService;
 import com.trains.tickets.service.RoleService;
 import com.trains.tickets.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,32 +22,24 @@ public class RolesController {
     private final RoleRepository roleRepository;
     private final RoleService roleService;
     private final UserService userService;
+    private final MainService mainService;
 
-    public RolesController(RoleRepository roleRepository, RoleService roleService, UserService userService) {
+    public RolesController(RoleRepository roleRepository, RoleService roleService, UserService userService, MainService mainService) {
         this.roleRepository = roleRepository;
         this.roleService = roleService;
         this.userService = userService;
+        this.mainService = mainService;
     }
 
     @GetMapping
     public String rolesList(@AuthenticationPrincipal User user,
                                Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
+            mainService.putUserInfoToModel(user, model);
             model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
             return "roleList";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -56,13 +49,7 @@ public class RolesController {
                                @PathVariable String role,
                                Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
+            mainService.putUserInfoToModel(user, model);
             if (role.equals("new")) {
                 model.addAttribute("role", roleService.getEmptyDto());
             } else {
@@ -70,11 +57,7 @@ public class RolesController {
             }
             return "roleEdit";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -86,30 +69,11 @@ public class RolesController {
                            //@RequestParam("roleId") Role roleChanged,
                            Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            if (roleId.equals(0)) {
-                Role roleChanged = new Role(name);
-                roleRepository.save(roleChanged);
-            } else {
-                Role roleChanged = roleRepository.findById(roleId);
-                if(!roleChanged.getName().equals(name)){
-                    roleChanged.setName(name);
-                    roleRepository.save(roleChanged);
-                }
-            }
+            mainService.putUserInfoToModel(user, model);
+            roleService.saveRole(name, roleId);
             return "redirect:/roles";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }

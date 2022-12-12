@@ -1,9 +1,8 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.StationRepository;
+import com.trains.tickets.service.MainService;
 import com.trains.tickets.service.StationService;
 import com.trains.tickets.service.UserService;
 import org.springframework.data.domain.Sort;
@@ -23,25 +22,26 @@ public class StationsController {
     private final StationRepository stationRepository;
     private final StationService stationService;
     private final UserService userService;
+    private final MainService mainService;
 
-    public StationsController(StationRepository stationRepository, StationService stationService, UserService userService) {
+    public StationsController(StationRepository stationRepository, StationService stationService, UserService userService, MainService mainService) {
         this.stationRepository = stationRepository;
         this.stationService = stationService;
         this.userService = userService;
+        this.mainService = mainService;
     }
 
     @GetMapping
     public String stationList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            mainService.putUserInfoToModel(user, model);
+            model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+            return "stationsList";
+        } catch (Exception e){
+            mainService.putExceptionInfoToModel(e, model);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "stationsList";
     }
 
     @GetMapping("{station}")
@@ -49,25 +49,11 @@ public class StationsController {
                                    @PathVariable String station,
                                    Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            if (station.equals("new")) {
-                model.addAttribute("stations", stationService.getEmptyDto());
-            } else {
-                model.addAttribute("stations", stationService.convertEntityToDto(stationRepository.findById(Integer.parseInt(station))));
-            }
+            mainService.putUserInfoToModel(user, model);
+            stationService.putInfoAboutStationToModel(station, model);
             return "stationsEdit";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -75,34 +61,13 @@ public class StationsController {
     public String stationSave(@AuthenticationPrincipal User user,
                                @RequestParam String name,
                                @RequestParam Integer stationId,
-                               @RequestParam Map<String, String> form,
-                               //@RequestParam("stationId") Station stationChanged,
                                Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            if(stationId.equals(0)){
-                Station stationChanged = new Station(name);
-                stationRepository.save(stationChanged);
-            } else {
-                Station stationChanged = stationRepository.findById(stationId);
-                if(!stationChanged.getName().equals(name)){
-                    stationChanged.setName(name);
-                    stationRepository.save(stationChanged);
-                }
-            }
+            mainService.putUserInfoToModel(user, model);
+            stationService.saveStation(name, stationId);
             return "redirect:/stations";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }

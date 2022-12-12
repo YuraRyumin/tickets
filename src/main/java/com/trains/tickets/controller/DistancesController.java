@@ -1,61 +1,38 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Distance;
-import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.DistanceRepository;
-import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.service.DistancesService;
-import com.trains.tickets.service.StationService;
-import com.trains.tickets.service.UserService;
-import org.springframework.data.domain.Sort;
+import com.trains.tickets.service.MainService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @Controller
 @RequestMapping("/distances")
 @PreAuthorize("hasAuthority('operator')")
-//@PreAuthorize("hasAuthority('admin')")
 public class DistancesController {
     private final DistanceRepository distanceRepository;
     private final DistancesService distancesService;
-    private final StationService stationService;
-    private final StationRepository stationRepository;
-    private final UserService userService;
+    private final MainService mainService;
 
-    public DistancesController(DistanceRepository distanceRepository, DistancesService distancesService, StationService stationService, StationRepository stationRepository, UserService userService) {
+    public DistancesController(DistanceRepository distanceRepository, DistancesService distancesService, MainService mainService) {
         this.distanceRepository = distanceRepository;
         this.distancesService = distancesService;
-        this.stationService = stationService;
-        this.stationRepository = stationRepository;
-        this.userService = userService;
+        this.mainService = mainService;
     }
 
     @GetMapping
     public String distanceList(@AuthenticationPrincipal User user,
                            Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
+            mainService.putUserInfoToModel(user, model);
             model.addAttribute("distances", distancesService.convertAllEntityToDto(distanceRepository.findAll()));
             return "distancesList";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -65,30 +42,11 @@ public class DistancesController {
                                @PathVariable String distance,
                                Model model) {
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            if (distance.equals("new")) {
-                model.addAttribute("distance", distancesService.getEmptyDto());
-                model.addAttribute("stationsFirst", stationService.convertAllEntitysToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-                model.addAttribute("stationsLast", stationService.convertAllEntitysToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-            } else {
-                Distance selectedDistance = distanceRepository.findById(Integer.parseInt(distance));
-                model.addAttribute("distance", distancesService.convertEntityToDto(selectedDistance));
-                model.addAttribute("stationsFirst", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedDistance.getStationFirst()));
-                model.addAttribute("stationsLast", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedDistance.getStationLast()));
-            }
+            mainService.putUserInfoToModel(user, model);
+            distancesService.putInfoAboutDistanceToModel(user, model, distance);
             return "distancesEdit";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -100,50 +58,11 @@ public class DistancesController {
                            @RequestParam Integer kilometers,
                            Model model) {
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            if (distanceId.equals(0)) {
-                Distance distanceChanged = new Distance(
-                        stationRepository.findByName(stationFirst),
-                        stationRepository.findByName(stationLast),
-                        kilometers
-                );
-                distanceRepository.save(distanceChanged);
-            } else {
-                Distance distanceChanged = distanceRepository.findById(distanceId);
-                boolean wasChanged = false;
-                Station stationFirstNew = stationRepository.findByName(stationFirst);
-                if(!distanceChanged.getStationFirst().getName().equals(stationFirstNew.getName())){
-                    distanceChanged.setStationFirst(stationFirstNew);
-                    wasChanged = true;
-                }
-                Station stationLastNew = stationRepository.findByName(stationLast);
-                if(!distanceChanged.getStationFirst().getName().equals(stationFirstNew.getName())){
-                    distanceChanged.setStationLast(stationLastNew);
-                    wasChanged = true;
-                }
-                if(!distanceChanged.getKilometers().equals(kilometers)){
-                    distanceChanged.setKilometers(kilometers);
-                    wasChanged = true;
-                }
-                if(wasChanged){
-                    distanceRepository.save(distanceChanged);
-                }
-            }
-            //distanceChanged.setLogin(login);
-            //distanceRepository.save(distanceChanged);
+            mainService.putUserInfoToModel(user, model);
+            distancesService.saveDistance(distanceId, kilometers, stationFirst, stationLast);
             return "redirect:/distances";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }

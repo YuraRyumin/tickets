@@ -2,8 +2,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="/styles/stylebesheniy.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/styles/bootstrap.min.css">
+    <link href="/styles/stylebesheniy.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="/styles/my.style.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -80,37 +80,54 @@
     </div>
 </nav>
 <br>
-<div class="container">
-    <div class="row">
-        <div class="col-2">
-        </div>
-        <div class="col">
-            <div align=center>
-                Train editor
-                <form action="/trains" method="post">
-                    <table class="tableOnDiv" id='ticket_table' border = '1'>
+<form method="post" id="takeTicket" action="/takeTicket">
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col">
+                <h3 align="center">Arrivals board</h3>
+                <br>
+                <div class="mainDiv">
+                    <div class="field">
+                        <label>Station:</label>
+                        <select class="js-select2" id="stations" name="stations" placeholder="Choose station">
+
+                            {{#stations}}
+                            <option value="{{name}}">{{name}}</option>
+                            {{/stations}}
+                        </select>
+                    </div>
+                </div>
+                <div id="tableArrival">
+                    <table class="tableOnDiv" id='ticket_table' border = '1' width="100%">
+                        <thead>
+                        <tr>
+                            <th>Train</th>
+                            <th>Time arrival</th>
+                            <th>Time departure</th>
+                        </tr>
+                        </thead>
                         <tbody>
+                        {{#arrivals}}
                         <tr>
-                            <td>Number</td>
-                            <td><input type="text" name="number" value="{{train.number}}"></td>
+                            <td>{{train}}</td>
+                            <td>{{timeBegining}}</td>
+                            <td>{{timeEnd}}</td>
                         </tr>
-                        <tr>
-                            <td>Seats</td>
-                            <td><input type="number" name="seats" value="{{train.seats}}"></td>
-                        </tr>
+                        {{/arrivals}}
                         </tbody>
                     </table>
-
-                    <input type="hidden" value="{{train.id}}" name="trainId">
-                    <input type="hidden" value="{{_csrf.token}}" name="_csrf">
-                    <button type="submit">Save</button>
-                </form>
+                </div>
+            </div>
+            <div class="col-2">
             </div>
         </div>
-        <div class="col-2">
-        </div>
     </div>
-</div>
+</form>
+<script rel="javascript" type="text/javascript" src="/js/jquery.js"></script>
+<script rel="javascript" type="text/javascript" src="/js/TableHighlite.js"></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/arrivals.js"></script>
 </body>
 </html>

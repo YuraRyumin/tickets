@@ -1,61 +1,39 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.*;
-import com.trains.tickets.dto.ErrorDTO;
-import com.trains.tickets.repository.ScheduleRepository;
-import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
-import com.trains.tickets.service.ScheduleService;
-import com.trains.tickets.service.StationService;
-import com.trains.tickets.service.StopService;
-import com.trains.tickets.service.UserService;
-import org.springframework.data.domain.Sort;
+import com.trains.tickets.service.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
-import java.util.Map;
-
 @Controller
 @RequestMapping("/stops")
 @PreAuthorize("hasAuthority('operator')")
-//@PreAuthorize("hasAuthority('admin')")
 public class StopsController {
     private final StopRepository stopRepository;
     private final StopService stopService;
-    private final ScheduleRepository scheduleRepository;
-    private final ScheduleService scheduleService;
-    private final StationRepository stationRepository;
-    private final StationService stationService;
-    private final UserService userService;
+    private final MainService mainService;
 
-    public StopsController(StopRepository stopRepository, StopService stopService,
-                           ScheduleRepository scheduleRepository, ScheduleService scheduleService,
-                           StationRepository stationRepository, StationService stationService, UserService userService) {
+    public StopsController(StopRepository stopRepository, StopService stopService, MainService mainService) {
         this.stopRepository = stopRepository;
         this.stopService = stopService;
-        this.scheduleRepository = scheduleRepository;
-        this.scheduleService = scheduleService;
-        this.stationRepository = stationRepository;
-        this.stationService = stationService;
-        this.userService = userService;
+        this.mainService = mainService;
     }
 
     @GetMapping
     public String stopList(@AuthenticationPrincipal User user,
                                Model model){
-        model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
-        model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-        if(user.isAdmin()) {
-            model.addAttribute("adminRole", true);
+        try{
+            model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
+            mainService.putUserInfoToModel(user, model);
+            return "stopsList";
+        } catch (Exception e){
+            mainService.putExceptionInfoToModel(e, model);
+            return "error";
         }
-        if(user.isOperator()) {
-            model.addAttribute("operatorRole", true);
-        }
-        return "stopsList";
     }
 
     @GetMapping("{stop}")
@@ -63,34 +41,11 @@ public class StopsController {
                                    @PathVariable String stop,
                                    Model model){
         try{
-            if (stop.equals("new")) {
-                model.addAttribute("stop", stopService.getEmptyDto());
-                model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-                model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
-            } else {
-                Stop selectedStop = stopRepository.findById(Integer.parseInt(stop));
-                if(selectedStop == null){
-                    throw  new NullPointerException("Stop not found!");
-                }
-                model.addAttribute("stop", stopService.convertEntityToDto(selectedStop));
-                model.addAttribute("stations", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedStop.getStation()));
-                model.addAttribute("schedule", scheduleService.convertAllEntityToDtoWithSelected(scheduleRepository.findAll(), selectedStop.getSchedule()));
-            }
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
+            mainService.putUserInfoToModel(user, model);
+            stopService.putInfoAboutStopToModel(stop, model);
             return "stopsEdit";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }
@@ -101,65 +56,13 @@ public class StopsController {
                                @RequestParam String schedule,
                                @RequestParam String station,
                                @RequestParam Integer stopId,
-                               @RequestParam Map<String, String> form,
-                               //@RequestParam("stopId") Stop stopChanged,
                                Model model){
         try{
-            model.addAttribute("user", userService.convertEntityToDtoForNav(user));
-            if(user.isAdmin()) {
-                model.addAttribute("adminRole", true);
-            }
-            if(user.isOperator()) {
-                model.addAttribute("operatorRole", true);
-            }
-            String[] fullTimeBegining = timeBegining.split(":");
-            Integer hourOfBegining = Integer.valueOf(fullTimeBegining[0]);
-            Integer minuteOfBegining = Integer.valueOf(fullTimeBegining[1]);
-            LocalTime localTimeBegining = LocalTime.of(hourOfBegining, minuteOfBegining, 0);
-            String[] fullTimeEnd = timeEnd.split(":");
-            Integer hourOfEnd = Integer.valueOf(fullTimeEnd[0]);
-            Integer minuteOfEnd = Integer.valueOf(fullTimeEnd[1]);
-            LocalTime localTimeEnd = LocalTime.of(hourOfEnd, minuteOfEnd, 0);
-            if (stopId.equals(0)) {
-                Stop stopChanged = new Stop(
-                    localTimeBegining,
-                    localTimeEnd,
-                    scheduleRepository.findByTime(schedule),
-                    stationRepository.findByName(station)
-                );
-                stopRepository.save(stopChanged);
-            } else {
-                Stop stopChanged = stopRepository.findById(stopId);
-                boolean wasChanged = false;
-                if(!stopChanged.getTimeBegining().equals(localTimeBegining)){
-                    stopChanged.setTimeBegining(localTimeBegining);
-                    wasChanged = true;
-                }
-                if(!stopChanged.getTimeEnd().equals(localTimeEnd)){
-                    stopChanged.setTimeEnd(localTimeEnd);
-                    wasChanged = true;
-                }
-                Schedule scheduleNew = scheduleRepository.findByTime(schedule);
-                if(!stopChanged.getSchedule().equals(scheduleNew)){
-                    stopChanged.setSchedule(scheduleNew);
-                    wasChanged = true;
-                }
-                Station stationNew = stationRepository.findByName(station);
-                if(!stopChanged.getStation().equals(stationNew)){
-                    stopChanged.setStation(stationNew);
-                    wasChanged = true;
-                }
-                if(wasChanged){
-                    stopRepository.save(stopChanged);
-                }
-            }
+            mainService.putUserInfoToModel(user, model);
+            stopService.saveStop(timeBegining, timeEnd, schedule, station, stopId);
             return "redirect:/stops";
         } catch (Exception e){
-            ErrorDTO errorDTO = new ErrorDTO();
-            errorDTO.setCode(e.getClass().getName());
-            errorDTO.setMessage(e.getMessage());
-            errorDTO.setBody(String.valueOf(e.getCause()));
-            model.addAttribute("error", errorDTO);
+            mainService.putExceptionInfoToModel(e, model);
             return "error";
         }
     }

@@ -25,6 +25,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/news">Our news</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/arrivals">Arrivals</a>
+                </li>
                 {{#operatorRole}}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -85,7 +88,7 @@
     <div align=center>
         Ticket editor
         <form action="/tickets" method="post">
-            <table id='ticket_table' border = '1'>
+            <table class="tableOnDiv" id='ticket_table' border = '1'>
                 <tbody>
                 <tr>
                     <td>Passenger</td>

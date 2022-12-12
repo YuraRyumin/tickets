@@ -38,7 +38,7 @@ function ReturnTicketsTableByStations() {
                         //if(data.length = 0){
                         //    $("#tableTrains").html("No trains, sorry...");
                         //}else {
-                        let table = "<table id='route_table' border = '1'>" +
+                        let table = "<table class='tableOnDiv' id='route_table' border = '1'>" +
                             "<thead><tr>" +
                             "<th>Departure station</th>" +
                             "<th>Arrival station</th>" +
@@ -76,7 +76,7 @@ function ReturnTicketsTableByStations() {
                         //if(data.length = 0){
                         //    $("#tableTrains").html("No trains, sorry...");
                         //}else {
-                        let table = "<table id='two_routes_table' border = '1'>" +
+                        let table = "<table class='tableOnDiv' id='two_routes_table' border = '1'>" +
                             "<thead><tr>" +
                             "<th>Departure time (1 train)</th>" +
                             "<th>Departure station  (1 train)</th>" +
@@ -114,3 +114,5 @@ function ReturnTicketsTableByStations() {
         }
     }
 }
+
+

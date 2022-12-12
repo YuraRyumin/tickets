@@ -43,3 +43,7 @@ a{
 a:visited{
     color: black;
 }
+
+table[class="tableOnDiv"]{
+    width: 100%;
+}
