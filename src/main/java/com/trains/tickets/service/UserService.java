@@ -5,6 +5,7 @@ import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.UserDTO;
 import com.trains.tickets.dto.UserForNavDTO;
+import com.trains.tickets.exception.NotFoundException;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
@@ -154,7 +155,7 @@ public class UserService implements UserDetailsService {
         model.addAttribute("message", "User successfully activated");
     }
 
-    public void putInfoAboutUserToModel(String userThis, Model model){
+    public String putInfoAboutUserToModel(String userThis, Model model){
         if (userThis.equals("new")) {
             model.addAttribute("userThis", getEmptyDto());
             model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
@@ -168,6 +169,7 @@ public class UserService implements UserDetailsService {
             model.addAttribute("roles", roleService.convertAllEntityToDtoWithSelected(roleRepository.findAll(), selectedUser.getRole()));
             model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedUser.getPassenger()));
         }
+        return "ok";
     }
 
     public void saveUser(String email, String telephone, String login, String password, String activationCode, String passenger, String role, Integer userId){
