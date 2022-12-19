@@ -88,8 +88,9 @@ public class Graph {
     }
 
     public Set<ManyTrainsTripDTO> findWaysBetweenTwoStations(Station stationFirst,
-                                                           Station stationLast,
-                                                           List<Stop> stopList){
+                                                               Station stationLast,
+                                                               List<Stop> stopList,
+                                                               String dateTicket){
         Set<OneTrainTripDTO> oneTrainTripDTOS = new HashSet<>();
         Set<ManyTrainsTripDTO> manyTrainsTripDTOSet = new HashSet<>();
         int startTree = 0;
@@ -152,7 +153,14 @@ public class Graph {
                 }
                 result += scheduleResult + ") -> ";
             }
-            cycleOfStations(parents, manyTrainsTripDTOSet, endTree, stopList);
+
+            String[] fullDate = dateTicket.split("-");
+            Integer dayOfDate = Integer.valueOf(fullDate[2]);
+            Integer monthOfDate = Integer.valueOf(fullDate[1]);
+            Integer yearOfDate = Integer.valueOf(fullDate[0]);
+            Calendar calendar = new GregorianCalendar(yearOfDate, monthOfDate - 1 , dayOfDate);
+
+            cycleOfStations(parents, manyTrainsTripDTOSet, endTree, stopList, calendar.get(Calendar.DAY_OF_WEEK));
             result += vertexList[endTree].getStation().getName() + "(";
             scheduleResult = "";
 
@@ -173,7 +181,8 @@ public class Graph {
     private void cycleOfStations(List<Integer> parents,
                                  Set<ManyTrainsTripDTO> manyTrainsTripDTOSet,
                                  Integer endTree,
-                                 List<Stop> stopList){
+                                 List<Stop> stopList,
+                                 Integer dayOfWeek){
         Set<OneTrainTripDTO> oneTrainTripDTOS = new HashSet<>();
         ManyTrainsTripDTO manyTrainsTripDTO = new ManyTrainsTripDTO();
 
@@ -185,7 +194,8 @@ public class Graph {
                                 manyTrainsTripDTO,
                                 manyTrainsTripDTOSet,
                                 oneTrainTripDTOS,
-                                null);
+                                null,
+                                dayOfWeek);
     }
 
     private OneTrainTripDTO cycleOfSchedules(Set<ManyTrainsTripDTO> manyTrainsTripDTOSet,
@@ -222,21 +232,18 @@ public class Graph {
                            ManyTrainsTripDTO manyTrainsTripDTO,
                            Set<ManyTrainsTripDTO> manyTrainsTripDTOSet,
                            Set<OneTrainTripDTO> oneTrainTripDTOS,
-                           Schedule prevSchedule){
+                           Schedule prevSchedule,
+                           Integer dayOfWeek){
         LocalTime localTimeOfBegining = null;
         LocalTime localTimeOfEnd = null;
         Vertex vertexMain = vertexList[parents.get(numVertex)];
         for(Schedule scheduleMain: vertexMain.getScheduleList()) {
+            if(!scheduleMain.getDayOfWeek().equals(dayOfWeek)){
+                continue;
+            }
             Set<OneTrainTripDTO> oneTrainTripDTOSCopy = new HashSet<>(oneTrainTripDTOS);
             oneTrainTripDTO = new OneTrainTripDTO();
-//            if(parents.size() == 1){
-//                localTimeOfBegining = setFirstValuesToOneTrainTripDTO(oneTrainTripDTO,
-//                                                                    vertexMain.getStation(),
-//                                                                    scheduleMain,
-//                                                                    stopList);
-//                prevSchedule = scheduleMain;
-//                continue;
-//                }
+
             if(parents.size() > numVertex + 1){
                 if(vertexList[parents.get(numVertex + 1)].getScheduleList().indexOf(scheduleMain) == -1){
                     continue;
@@ -255,6 +262,13 @@ public class Graph {
                                                                     vertexList[parents.get(i - 1)].getStation(),
                                                                     prevSchedule,
                                                                     stopList);
+                    if(vertexList[0].equals(vertexMain)) {
+                        oneTrainTripDTO.setDistance(shortestPaths.get(parents.get(i - 1)).getDistance());
+                    } else {
+                        Integer firstDistance = shortestPaths.get(parents.get(i - 1)).getDistance();
+                        Integer secondDistance = shortestPaths.get(endTree).getDistance();
+                        oneTrainTripDTO.setDistance(secondDistance - firstDistance);
+                    }
                     if(localTimeOfBegining != null && localTimeOfEnd != null && localTimeOfEnd.isAfter(localTimeOfBegining)) {
                         oneTrainTripDTOSCopy.add(oneTrainTripDTO);
                         manyTrainsTripDTO.setValid(true);
@@ -273,7 +287,8 @@ public class Graph {
                                             manyTrainsTripDTO,
                                             manyTrainsTripDTOSet,
                                             oneTrainTripDTOSCopy,
-                                            prevSchedule);
+                                            prevSchedule,
+                                            dayOfWeek);
                     break;
                 }
             }
@@ -282,6 +297,13 @@ public class Graph {
                                                                 vertexList[parents.get(parents.size() - 1)].getStation(),
                                                                 prevSchedule,
                                                                 stopList);
+                if(vertexList[0].equals(vertexMain)) {
+                    oneTrainTripDTO.setDistance(shortestPaths.get(parents.get(parents.size() - 1)).getDistance());
+                } else {
+                    Integer firstDistance = shortestPaths.get(parents.get(parents.size() - 1)).getDistance();
+                    Integer secondDistance = shortestPaths.get(endTree).getDistance();
+                    oneTrainTripDTO.setDistance(secondDistance - firstDistance);
+                }
                 if(localTimeOfBegining != null && localTimeOfEnd != null && localTimeOfEnd.isAfter(localTimeOfBegining)) {
                     oneTrainTripDTOSCopy.add(oneTrainTripDTO);
                     manyTrainsTripDTO.setValid(true);
@@ -306,6 +328,13 @@ public class Graph {
                                                                         vertexList[endTree].getStation(),
                                                                         schedule,
                                                                         stopList);
+                    if(vertexList[0].equals(vertexMain)) {
+                        oneTrainTripDTO.setDistance(shortestPaths.get(endTree).getDistance());
+                    } else {
+                        Integer firstDistance = 0;//shortestPaths.get(parents.get(endTree)).getDistance();
+                        Integer secondDistance = shortestPaths.get(endTree).getDistance();
+                        oneTrainTripDTO.setDistance(secondDistance - firstDistance);
+                    }
                     if(localTimeOfBegining != null && localTimeOfEnd != null && localTimeOfEnd.isAfter(localTimeOfBegining)) {
                         oneTrainTripDTOSCopy.add(oneTrainTripDTO);
                         manyTrainsTripDTO.setValid(true);
@@ -324,6 +353,26 @@ public class Graph {
                         vertexList[endTree].getStation(),
                         prevSchedule,
                         stopList);
+                if(vertexList[0].equals(vertexMain)) {
+                    oneTrainTripDTO.setDistance(shortestPaths.get(endTree).getDistance());
+                } else {
+                    Integer firstDistance = 0;//shortestPaths.get(endTree).getDistance();
+                    for(Integer nu = 0; nu < vertexList.length; nu++){
+                        Vertex vertex = vertexList[nu];
+                        if (vertex == null){
+                            break;
+                        }
+                        if(vertex.getStation().getName().equals(oneTrainTripDTO.getStationFirst())){
+                            firstDistance = shortestPaths.get(nu + 1).getDistance();
+                            if(firstDistance == MAX_VERTS){
+                                continue;
+                            }
+                            break;
+                        }
+                    }
+                    Integer secondDistance = shortestPaths.get(endTree).getDistance();
+                    oneTrainTripDTO.setDistance(secondDistance - firstDistance);
+                }
                 if(localTimeOfBegining != null && localTimeOfEnd != null && localTimeOfEnd.isAfter(localTimeOfBegining)) {
                     oneTrainTripDTOSCopy.add(oneTrainTripDTO);
                     manyTrainsTripDTO.setValid(true);

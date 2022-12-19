@@ -117,13 +117,23 @@ public class TicketsRestController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/getGraph")
     public Set<ManyTrainsTripDTO> getGraph(@RequestParam String strStationFirst,
-                                      @RequestParam String strStationLast){
+                                        @RequestParam String strStationLast,
+                                        @RequestParam String dateTicket){
         Graph graph = graphService.getFilledGraph();
         Station stationFirst = stationRepository.findByName(strStationFirst);
         Station stationLast = stationRepository.findByName(strStationLast);
         List<Stop> stopList = stopRepository.findAll();
-        Set<ManyTrainsTripDTO> twoTrainsDTOS = graph.findWaysBetweenTwoStations(stationFirst, stationLast, stopList);
+        Set<ManyTrainsTripDTO> twoTrainsDTOS = graph.findWaysBetweenTwoStations(stationFirst, stationLast, stopList, dateTicket);
         graph.clean();
         return twoTrainsDTOS;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getPrice")
+    public Float getSeats(@RequestParam String trainNumber,
+                          @RequestParam Integer distance,
+                          @RequestParam Integer wagonId){
+        Float kilometers = wagonService.getPrice(trainNumber, distance, wagonId);
+        System.out.println(trainNumber + "; " + distance + "; " + wagonId);
+        return kilometers;
     }
 }

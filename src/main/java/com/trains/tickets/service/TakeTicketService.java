@@ -44,6 +44,7 @@ public class TakeTicketService {
         if (form.containsKey("passengerName")) {
             passengerForTicket = passengerRepository.findByNameAndSurname(form.get("passengerName"), form.get("passengerSurname"));
         }
+
         if(passengerForTicket == null) {
             String passengerNameForTicket = null;
             if (form.containsKey("passengerName")) {
@@ -83,63 +84,82 @@ public class TakeTicketService {
         }
 
         for(Integer i = 0; i < 10; i++){
-            // First ticket info
-            Station stationFirstFirstTicket = null;
+            // ticket info
+            Station stationFirstTicket = null;
             if (form.containsKey("stationFirstN" + i)) {
-                stationFirstFirstTicket = stationRepository.findByName(form.get("stationFirstN" + i).replace("_", " "));
+                stationFirstTicket = stationRepository.findByName(form.get("stationFirstN" + i).replace("_", " "));
             }
-            System.out.println(stationFirstFirstTicket);
-            String timeDepartureFirstTicket = null;
-            //    LocalTime localTimeDepartureFirstTicket = null;
+            System.out.println(stationFirstTicket);
+            String timeDepartureTicket = null;
+            //    LocalTime localTimeDepartureTicket = null;
             if (form.containsKey("timeDepartureN" + i)) {
-                timeDepartureFirstTicket = form.get("timeDepartureN" + i);
+                timeDepartureTicket = form.get("timeDepartureN" + i);
             }
-            Station stationLastFirstTicket = null;
+            Station stationLastTicket = null;
             if (form.containsKey("stationLastN" + i)) {
-                stationLastFirstTicket = stationRepository.findByName(form.get("stationLastN" + i).replace("_", " "));
+                stationLastTicket = stationRepository.findByName(form.get("stationLastN" + i).replace("_", " "));
             }
-            System.out.println(stationLastFirstTicket);
-            if(stationFirstFirstTicket == null && stationLastFirstTicket == null){
+            System.out.println(stationLastTicket);
+            if(stationFirstTicket == null && stationLastTicket == null){
                 continue;
             }
-            String timeArrivalFirstTicket = null;
+            String timeArrivalTicket = null;
             //    LocalTime localTimeArrivalTicket = null;
             if (form.containsKey("timeArrivalN" + i)) {
-                timeArrivalFirstTicket = form.get("timeArrivalN" + i);
+                timeArrivalTicket = form.get("timeArrivalN" + i);
             }
-            Integer seatFirstTicket = null;
+            Integer seatTicket = null;
             if (form.containsKey("seatsN" + i)) {
-                seatFirstTicket = Integer.valueOf(form.get("seatsN" + i));
+                seatTicket = Integer.valueOf(form.get("seatsN" + i));
             }
-            Wagon wagonFirstTicket = null;
+            Wagon wagonTicket = null;
             if (form.containsKey("wagonN" + i)) {
-                wagonFirstTicket = wagonRepository.findById(Integer.valueOf(form.get("wagonN" + i)));
+                wagonTicket = wagonRepository.findById(Integer.valueOf(form.get("wagonN" + i)));
             }
-            Train trainFirstTicket = null;
+            Train trainTicket = null;
             if (form.containsKey("trainN" + i)) {
-                trainFirstTicket = trainRepository.findByNumber(form.get("trainN" + i));
+                trainTicket = trainRepository.findByNumber(form.get("trainN" + i));
             }
-            Schedule scheduleFirstTicket = null;
+            Integer priceTicket = null;
+            if (form.containsKey("priceN" + i)) {
+                priceTicket = Integer.valueOf(form.get("priceN" + i));
+            }
+            Schedule scheduleTicket = null;
             if (form.containsKey("scheduleN" + i)) {
                 String[] fullName = form.get("scheduleN" + i).split("_->_");
                 String numberOfTrain = fullName[0];
                 String timeOfSchedule = fullName[1];
                 //scheduleFirstTicket = scheduleRepository.findByTime(form.get("scheduleFirstTicket"));
-                scheduleFirstTicket = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
+                scheduleTicket = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
             }
-            System.out.println(scheduleFirstTicket);
+            System.out.println(scheduleTicket);
+            if(checkPassengerInTrain(passengerForTicket, localDateTicket, trainTicket, scheduleTicket)){
+                model.addAttribute("message", "Passenger is alredy registred for this train!");
+                return;
+            }
 
-            if(!stationFirstFirstTicket.equals(null) && !stationLastFirstTicket.equals(null)){
+            if(!stationFirstTicket.equals(null) && !stationLastTicket.equals(null)){
                 createTicket(passengerForTicket,
                         localDateTicket,
-                        trainFirstTicket,
-                        wagonFirstTicket,
-                        0,
-                        scheduleFirstTicket,
-                        seatFirstTicket,
+                        trainTicket,
+                        wagonTicket,
+                        priceTicket,
+                        scheduleTicket,
+                        seatTicket,
                         user);
             }
         }
+    }
+
+    private boolean checkPassengerInTrain(Passenger passenger,
+                                          LocalDate localDate,
+                                          Train train,
+                                          Schedule schedule){
+        Ticket ticket = ticketRepository.findByPassengerAndDateTicketAndTrainAndSchedule(passenger, localDate, train, schedule);
+        if(ticket == null){
+            return false;
+        }
+        return true;
     }
 
     private void correctPassanger(Passenger passenger, String passengerName, String passengerSurname, String passengerGender){

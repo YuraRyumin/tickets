@@ -22,6 +22,7 @@ function ReturnListOfTicketsByStations() {
     } else {
         var stationLast = selectLast.options[selectLast.selectedIndex].value;
     }
+    console.log(stationFirst + "!" + stationLast);
     if(stationFirst == stationLast){
         $("#tableTrains").html("<h1>First station equals last station. Change your choice.</h1>");
         $("#tableTickets").html("");
@@ -35,7 +36,8 @@ function ReturnListOfTicketsByStations() {
         $.get('/getGraph',
             {
                 strStationFirst: stationFirst,
-                strStationLast: stationLast
+                strStationLast: stationLast,
+                dateTicket: dateTicket
             }).done(
             function (data) {
                 if (data != null) {
@@ -73,6 +75,10 @@ function ReturnListOfTicketsByStations() {
                                 "<div class='field'>" +
                                 "     <label>Train:</label>" +
                                 "     <input class='js-select4' type='text' id='trainTicket" + j + "' readonly name='trainTicket" + j + "' value=" + route[j].train + ">" +
+                                "</div>" +
+                                "<div class='field'>" +
+                                "     <label>Distance:</label>" +
+                                "     <input class='js-select4' type='text' id='distanceTicket" + j + "' readonly name='distanceTicket" + j + "' value=" + route[j].distance + ">" +
                                 "</div>" +
                                 "</div>";
                         }

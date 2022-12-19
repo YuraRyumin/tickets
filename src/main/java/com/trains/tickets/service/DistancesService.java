@@ -35,9 +35,10 @@ public class DistancesService {
     }
 
     public Iterable<DistanceDTO> convertAllEntityToDto(Iterable<Distance> distances){
-        return StreamSupport.stream(distances.spliterator(), false)
+        LinkedHashSet<DistanceDTO> collect = StreamSupport.stream(distances.spliterator(), false)
                 .map(this::convertEntityToDto)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+        return collect;
     }
 
     public DistanceDTO convertEntityToDto(Distance distance){

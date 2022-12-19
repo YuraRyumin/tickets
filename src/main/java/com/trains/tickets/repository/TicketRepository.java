@@ -1,7 +1,9 @@
 package com.trains.tickets.repository;
 
 import com.trains.tickets.domain.Passenger;
+import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.domain.Ticket;
+import com.trains.tickets.domain.Train;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -13,5 +15,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Set<Ticket> findAllByUserLogin(String login);
     Set<Ticket> findAllByDateTicketAndScheduleTimeAndWagonId(LocalDate dateTicket, String schedule, Integer wagonId);
     Ticket findByDateTicketAndScheduleTimeAndTrainNumberAndPassenger(LocalDate dateTicket, String schedule, String number, Passenger passenger);
+    Ticket findByPassengerAndDateTicketAndTrainAndSchedule(Passenger passenger, LocalDate localDate, Train train, Schedule schedule);
 
 }

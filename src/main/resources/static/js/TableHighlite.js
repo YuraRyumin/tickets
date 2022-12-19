@@ -23,8 +23,6 @@ function highlight_Table_Rows(table_Id, hover_Class, click_Class, multiple) {
     }
 
     if (click_Class) table.onclick = function(e) {
-        //let ticketsInfo1 = "<h1>Test</h1>";
-        //$("#tableTickets").html("<h1>" + elem + "</h1>");
 
         if (!e) e = window.event;
         var elem = e.target || e.srcElement;
@@ -103,14 +101,13 @@ function SetDivOneTicket(table_Id, elem) {
         });
 }
 
-function getTableForTicket(stationFirst, stationLast, timeDeparture, timeArrival, numM){
+function getTableForTicket(stationFirst, stationLast, timeDeparture, timeArrival, numM, distance){
     var request = new XMLHttpRequest();
     var txtDate = document.getElementById("dateTicket").value;
     var params = 'stationFirst=' + encodeURIComponent(stationFirst.replace('_', ' ')) +
                 '&stationLast=' + encodeURIComponent(stationLast.replace('_', ' ')) +
                 '&timeDeparture=' + timeDeparture +
                 '&timeArrival=' + timeArrival;
-    console.log(params);
     request.open('GET', '/getTicketsInfo?' + params, false);
     request.send(null);
     let ticketsInfo = "";
@@ -126,8 +123,9 @@ function getTableForTicket(stationFirst, stationLast, timeDeparture, timeArrival
                 let opositeGender = (dataR[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
                 var sched = dataR[i].schedule;
                 var train = dataR[i].trainId;
+                var trainNumber = dataR[i].trainNumber;
+                console.log(trainNumber);
                 var schedName = dataR[i].trainNumber + "_-&gt;_" + dataR[i].schedule;
-                console.log("1) i = " + numM);
                 ticketsInfo += "<tr><td>Station first</td><td><input type='text' id='stationFirstN" + numM + "' name='stationFirstN" + numM + "' readonly value=" + dataR[i].stationFirst.replace(' ', '_') + "></td></tr>" +
                     "<tr><td>Time departure</td><td><input type='text' id='timeDepartureN" + numM + "' name='timeDepartureN" + numM + "' readonly value=" + dataR[i].timeDeparture + "></td></tr>" +
                     "<tr><td>Station last</td><td><input type='text' id='stationLastN" + numM + "' name='stationLastN" + numM + "' readonly value=" + dataR[i].stationLast.replace(' ', '_') + "></td></tr>" +
@@ -135,48 +133,14 @@ function getTableForTicket(stationFirst, stationLast, timeDeparture, timeArrival
                     "<tr><td>Train</td><td><input type='text' id='trainN" + numM + "' name='trainN" + numM + "' readonly value=" + dataR[i].trainNumber + "></td></tr>" +
                     "<tr><td>Schedule</td><td><input type='text' id='scheduleN" + numM + "' name='scheduleN" + numM + "' readonly value=" + schedName + "></td></tr>" +
                     "<tr><td>Wagon</td><td>" + showWagonList(dataR[i].trainId, numM) + "</td></tr>" +
-                    "<tr><td>Seat</td><td><div id='divForSeats" + numM + "'>" + showSeatsList(sched, 1, txtDate, numM, train) + "</div></td></tr>";
-                console.log("2) i = " + numM);
+                    "<tr><td>Seat</td><td><div id='divForSeats" + numM + "'>" + showSeatsList(sched, 1, txtDate, numM, train) + "</div></td></tr>" +
+                    "<tr><td>Distance</td><td><input type='text' id='distanceN" + numM + "' name='distanceN" + numM + "' readonly value=" + distance + "></td></tr>" +
+                    "<tr><td>Price</td><td><input type='text' id='priceN" + numM + "' name='priceN" + numM + "' readonly value=" + showPrice(trainNumber, distance, 0) + "></td></tr>";
             }
             ticketsInfo += "</tbody></table><br>";
         }
         return ticketsInfo
     }
-
-
-
-    // $.get('/getTicketsInfo',
-    //     {
-    //         stationFirst: nameFirstStationFirstTrain,
-    //         stationLast: nameSecondStationFirstTrain,
-    //         timeDeparture: timeBeginningFirstTrain,
-    //         timeArrival: timeEndFirstTrain
-    //     }).done(
-    //     function (data) {
-    //         console.log(data);
-    //         if (data != null) {
-    //             let ticketsInfo = "<table id='ticket_table' border = '1'>" +
-    //                 "<tbody>";
-    //             for (i = 0; i < data.length; i++) {
-    //                 let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
-    //                 var sched = data[i].schedule;
-    //                 var train = data[i].trainId;
-    //                 var schedName = data[i].trainNumber + "_-&gt;_" + data[i].schedule;
-    //                 ticketsInfo = ticketsInfo +
-    //                     "<tr><td>Station first</td><td><input type='text' id='stationFirstFirstTicket' name='stationFirstFirstTicket' readonly value=" + data[i].stationFirst.replace(' ', '_') + "></td></tr>" +
-    //                     "<tr><td>Time departure</td><td><input type='text' id='timeDepartureFirstTicket' name='timeDepartureFirstTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
-    //                     "<tr><td>Station last</td><td><input type='text' id='stationLastFirstTicket' name='stationLastFirstTicket' readonly value=" + data[i].stationLast.replace(' ', '_') + "></td></tr>" +
-    //                     "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalFirstTicket' name='timeArrivalFirstTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
-    //                     "<tr><td>Train</td><td><input type='text' id='trainFirstTicket' name='trainFirstTicket' readonly value=" + data[i].trainNumber + "></td></tr>" +
-    //                     "<tr><td>Schedule</td><td><input type='text' id='scheduleFirstTicket' name='scheduleFirstTicket' readonly value=" + schedName + "></td></tr>" +
-    //                     "<tr><td>Wagon</td><td>" + showWagonList(data[i].trainId, "FirstTicket") + "</td></tr>" +
-    //                     "<tr><td>Seat</td><td>" + showSeatsList(sched, 1, txtDate, "FirstTicket", train) + "</td></tr>";
-    //             }
-    //
-    //             ticketsInfo = ticketsInfo + "</tbody></table><br>";
-    //             $("#tableTickets").html(ticketsInfo);
-    //         }
-    //     });
 }
 
 function SetDivTwoTicket(table_Id, elem) {
@@ -186,10 +150,10 @@ function SetDivTwoTicket(table_Id, elem) {
         var txtTable = "<div class='tableOnDiv' id='divForAllTickets'>";
         for (n = 0; n < elem.childNodes.length; n++) {
             for (m = 0; m < elem.childNodes[n].childNodes.length; m++) {
-                console.log(elem.childNodes[n].childNodes[m]);
-                console.log(elem.childNodes[n].childNodes[m].className);
-                console.log(elem.childNodes[n].childNodes[m].className == "divForTrainsEmpty");
-                console.log(elem.childNodes[n].childNodes[m].childNodes.length);
+                // console.log(elem.childNodes[n].childNodes[m]);
+                // console.log(elem.childNodes[n].childNodes[m].className);
+                // console.log(elem.childNodes[n].childNodes[m].className == "divForTrainsEmpty");
+                // console.log(elem.childNodes[n].childNodes[m].childNodes.length);
                 if(elem.childNodes[n].childNodes[m].className == "divForTrainsEmpty"){
                     continue;
                 }
@@ -200,6 +164,7 @@ function SetDivTwoTicket(table_Id, elem) {
                 var txtStationLastTicket = elem.childNodes[n].childNodes[m].childNodes[3].childNodes[3].value;
                 var txtTimeArrivalTicket = elem.childNodes[n].childNodes[m].childNodes[4].childNodes[3].value;
                 var txtTrainTicket = elem.childNodes[n].childNodes[m].childNodes[5].childNodes[3].value;
+                var txtDistanceTicket = elem.childNodes[n].childNodes[m].childNodes[6].childNodes[3].value;
 
                 tickets.push({schedule: txtSchedule,
                     stationFirst: txtStationFirstTicket,
@@ -208,17 +173,19 @@ function SetDivTwoTicket(table_Id, elem) {
                     timeArrival: txtTimeArrivalTicket,
                     train: txtTrainTicket});
 
-                console.log(txtSchedule + "; "
-                    + txtStationFirstTicket + "; "
-                    + txtTimeDepartureTicket + "; "
-                    + txtStationLastTicket + "; "
-                    + txtTimeArrivalTicket + "; "
-                    + txtTrainTicket + "; ");
+                // console.log(txtSchedule + "; "
+                //     + txtStationFirstTicket + "; "
+                //     + txtTimeDepartureTicket + "; "
+                //     + txtStationLastTicket + "; "
+                //     + txtTimeArrivalTicket + "; "
+                //     + txtTrainTicket + "; ");
 
                 txtTable += "<div class='divForTickets' id='divForAllTickets" + m + "'>" + getTableForTicket(txtStationFirstTicket,
                     txtStationLastTicket,
                     txtTimeDepartureTicket,
-                    txtTimeArrivalTicket, m) + "</div>";
+                    txtTimeArrivalTicket,
+                    m,
+                    txtDistanceTicket) + "</div>";
 
             }
         }
@@ -329,22 +296,18 @@ function SetDivTwoTicket(table_Id, elem) {
 
 function showWagonList(trainId, runNumber){
     var num = runNumber;
-    console.log("wagon list. i = " + num)
     var request = new XMLHttpRequest();
     request.open('GET', '/getWagons?trainId=' + trainId, false);
     request.send(null);
     if (request.status === 200) {
         var dataR = JSON.parse(request.response);
-        //console.log(dataR);
 
         if (dataR != null) {
             let wagonsInfo = "<select onchange='ReturnSeatsByWagonToElement(" + num + ")' class='js-select1' id='wagonN" + num + "' name='wagonN" + num + "' placeholder='Choose wagon'>";
             for (i = 0; i < dataR.length; i++) {
                 wagonsInfo = wagonsInfo + "<option value=" + dataR[i].id + ">" + dataR[i].name + "</option>";
             }
-            console.log("wagon list2. i = " + num)
             wagonsInfo = wagonsInfo + "</select>";
-            //console.log(wagonsInfo);
             return wagonsInfo;
         }
     }
@@ -352,14 +315,11 @@ function showWagonList(trainId, runNumber){
 
 function showSeatsList(scheduleId, wagonId, dateTicket, runNumber, trainId) {
     var num = runNumber;
-    console.log("seats list. i = " + num)
     var request = new XMLHttpRequest();
-    //console.log("/getSeats?schedule='" + scheduleId + "'&wagonId=" + wagonId + "&dateTicket='" + dateTicket + "&trainId='" + trainId + "'");
     request.open('GET', "/getSeats?schedule=" + scheduleId + "&wagonId=" + wagonId + "&dateTicket=" + dateTicket + "&trainId=" + trainId + "", false);
     request.send(null);
     if (request.status === 200) {
         var dataR = JSON.parse(request.response);
-       // console.log(dataR);
         let seatsInfo = "";
         if (dataR != null && dataR.length != 0) {
             seatsInfo = "<select class='js-select1' id='seatsN" + num + "' name='seatsN" + num + "' placeholder='Choose seat'>";
@@ -382,19 +342,39 @@ function ReturnSeatsByWagon() {
     }
     var txtSchedule = document.getElementById("scheduleFirstTicket").getAttribute("value");
 
-    $("#divForSeats").html(showSeatsList(txtSchedule, txtWagon, txtDate, "FirstTicket", 0));
+        $("#divForSeats").html(showSeatsList(txtSchedule, txtWagon, txtDate, "FirstTicket", 0));
 }
 
 function ReturnSeatsByWagonToElement(num) {
     console.log(num);
     var txtDate = document.getElementById("dateTicket").value;
-    var objWagon = document.getElementById("wagon" + num);
+    var objWagon = document.getElementById("wagonN" + num);
     if(objWagon == null){
         var txtWagon = "";
     } else {
         var txtWagon = objWagon.options[objWagon.selectedIndex].value;
     }
-    var txtSchedule = document.getElementById("schedule" + num).getAttribute("value");
+    var txtSchedule = document.getElementById("scheduleN" + num).getAttribute("value");
 
     $("#divForSeats" + num).html(showSeatsList(txtSchedule, txtWagon, txtDate, num, 0));
+
+    var txtTrain = document.getElementById("trainN" + num).getAttribute("value");
+    var txtDistance = document.getElementById("distanceN" + num).getAttribute("value");
+    document.getElementById("priceN" + num).setAttribute("value", showPrice(txtTrain, txtDistance, txtWagon));
+}
+
+function showPrice(trainNumber, distance, wagonId){
+    var price = 0.0;
+    var request = new XMLHttpRequest();
+    console.log("/getPrice?trainNumber=" + trainNumber + "&distance=" + distance + "&wagonId=" + wagonId);
+    request.open('GET', "/getPrice?trainNumber=" + trainNumber + "&distance=" + distance + "&wagonId=" + wagonId, false);
+    request.send(null);
+    if (request.status === 200) {
+        var dataR = JSON.parse(request.response);
+        console.log(dataR);
+        if (dataR != null && dataR.length != 0) {
+            price = dataR;
+        }
+    }
+    return price;
 }

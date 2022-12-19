@@ -138,6 +138,31 @@ public class WagonService {
         }
     }
 
+    public Float getPrice(String trainNumber, Integer distance, Integer wagonId){
+        Float pricePerKm = Float.valueOf(0);
+        if(!wagonId.equals(null) && !wagonId.equals(0)){
+            Wagon wagonN = wagonRepository.findById(wagonId);
+            if(wagonN != null){
+                ServiceClass serviceClass = wagonN.getServiceClasses();
+                if(!serviceClass.equals(null)) {
+                    pricePerKm = serviceClass.getPrisePerKm();
+                }
+            }
+        } else {
+            Set<Wagon> wagons = wagonRepository.findAllByTrainNumber(trainNumber);
+            for (Wagon wagon : wagons) {
+                if (wagon.getId() != null) {
+                    ServiceClass serviceClass = wagon.getServiceClasses();
+                    if (!serviceClass.equals(null)) {
+                        pricePerKm = serviceClass.getPrisePerKm();
+                    }
+                    break;
+                }
+            }
+        }
+        return pricePerKm * distance;
+    }
+
     public Set<Integer> getSeats(String schedule, Integer wagonId, String dateTicket, Integer trainId){
         Set<Wagon> wagons = wagonRepository.findAllByTrainId(trainId);
         for (Wagon wagon: wagons){

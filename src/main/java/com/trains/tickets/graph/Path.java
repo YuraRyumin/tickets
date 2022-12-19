@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Path {
-    private int distance; // текущая дистанция от начальной вершины
-    private List<Integer> parentVertices; // текущий родитель вершины
+    private int distance;
+    private List<Integer> parentVertices;
 
     public Path(int distance) {
         this.distance = distance;

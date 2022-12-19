@@ -11,4 +11,5 @@ public class OneTrainTripDTO {
     private String timeArrival;
     private String schedule;
     private String train;
+    private Integer distance;
 }

@@ -40,8 +40,6 @@ public class TicketsSearchController {
         model.addAttribute("dateNow", LocalDate.now());
         model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
         model.addAttribute("stations", stationService.convertAllEntitysToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-//        model.addAttribute("passenger", passengerService.convertEntityToDto(user.getPassenger()));
-//        model.addAttribute("genders", passengerService.getGendersList(user.getPassenger()));
         return "ticketsSearch";
     }
 
