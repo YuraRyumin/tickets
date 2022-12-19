@@ -45,12 +45,4 @@ public class TicketsSearchController {
         return "ticketsSearch";
     }
 
-    @GetMapping("chooseTickets")
-    public String chooseTickets(@AuthenticationPrincipal User user,
-                                @RequestParam String stationFirst,
-                                @RequestParam String stationLast,
-                                Model model){
-        mainService.putUserInfoToModel(user, model);
-        return "main";
-    }
 }

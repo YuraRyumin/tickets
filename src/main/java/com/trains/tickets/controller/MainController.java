@@ -59,24 +59,6 @@ public class MainController {
             Model model){
         mainService.putUserInfoToModel(user, model);
         model.addAttribute("dateNow", LocalDate.now());
-    return "issueTicket";
-}
-
-    @PostMapping("changePass")
-    public String post(@AuthenticationPrincipal User user,
-                       Model model){
-//        SimpleMailMessage mailMessage = new SimpleMailMessage();
-//
-//        mailMessage.setFrom(username);
-//        mailMessage.setTo("s_shukrik_s@mail.ru");
-//        mailMessage.setSubject("activation");
-//        mailMessage.setText("User successfully activated");
-//
-//        mailSender.send(mailMessage);
-//        model.put("user", user);
-        //return "main";
-        mainService.putUserInfoToModel(user, model);
-        model.addAttribute("dateNow", LocalDate.now());
-        return "ticketsSearch";
+        return "issueTicket";
     }
 }

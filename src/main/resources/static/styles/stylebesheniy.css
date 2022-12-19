@@ -410,4 +410,7 @@ label {
 select[class="js-select1"]{
     width: 100%;
 }
-
+input[class="js-select4"]{
+    width: 100px;
+    height: 20px;
+}

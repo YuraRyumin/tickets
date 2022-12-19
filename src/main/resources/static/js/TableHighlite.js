@@ -186,7 +186,13 @@ function SetDivTwoTicket(table_Id, elem) {
         var txtTable = "<div class='tableOnDiv' id='divForAllTickets'>";
         for (n = 0; n < elem.childNodes.length; n++) {
             for (m = 0; m < elem.childNodes[n].childNodes.length; m++) {
-            //console.log(elem.childNodes[n].childNodes[m]);
+                console.log(elem.childNodes[n].childNodes[m]);
+                console.log(elem.childNodes[n].childNodes[m].className);
+                console.log(elem.childNodes[n].childNodes[m].className == "divForTrainsEmpty");
+                console.log(elem.childNodes[n].childNodes[m].childNodes.length);
+                if(elem.childNodes[n].childNodes[m].className == "divForTrainsEmpty"){
+                    continue;
+                }
 
                 var txtSchedule = elem.childNodes[n].childNodes[m].childNodes[0].childNodes[3].value;
                 var txtStationFirstTicket = elem.childNodes[n].childNodes[m].childNodes[1].childNodes[3].value;
@@ -218,6 +224,8 @@ function SetDivTwoTicket(table_Id, elem) {
         }
         txtTable += "</div>";
         $("#divForOneTrains").html(txtTable);
+        $("#passengerInfo").collapse("show");
+        $("#divForGraph").collapse("hide");
         //console.log(txtTable);
         //console.log(tickets);
         //$("#tableTickets").html(tickets);

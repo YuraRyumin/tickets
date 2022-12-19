@@ -39,15 +39,17 @@ function ReturnListOfTicketsByStations() {
             }).done(
             function (data) {
                 if (data != null) {
-                    let table = "<table class='tableOnDiv' id='div_table' border = '1'>" +
+                    let table = "<h5><a data-toggle='collapse' href='#divForGraph' aria-expanded='false' aria-controls='divForGraph'>Tickets:</a></h5>" +
+                        "<div class='collapse' id='divForGraph'>" +
+                        "<table class='tableOnDiv' id='div_table' border = '1'>" +
                         "<tbody>";
                     for (i = 0; i < data.length; i++) {
                         var route = data[i].oneTrainTripDTOS;
-                        table += "<tr><td><div id='divMainForTrains" + i + "'>"
+                        table += "<tr><td><div class='divMainForTrains' id='divMainForTrains" + i + "'>"
                         for (j = 0; j < route.length; j++) {
                             console.log(route[j]);
                             table += //"<div id='divForTrains'>" +
-                                "<div class='divForTrains' id='divTicket" + j + "'>" +
+                                "<div class='divForTrainsEmpty' id='divTicketEmpty" + j + "'>&nbsp;&nbsp;&nbsp;</div><div class='divForTrains' id='divTicket" + j + "'>" +
                                 "<div class='field'>" +
                                 "     <label>Schedule:</label>" +
                                 "     <input class='js-select4' type='text' id='scheduleTicket" + j + "' readonly name='scheduleTicket" + j + "' value=" + route[j].schedule + ">" +
@@ -74,12 +76,13 @@ function ReturnListOfTicketsByStations() {
                                 "</div>" +
                                 "</div>";
                         }
-                        table += "</div></td></tr>";
+                        table += "</div></td></tr></div>";
                     }
                     table += "</tbody></table><script type='text/javascript'>highlight_Table_Rows('div_table', 'hover_Row', 'clicked_Row');</script>";
                     //console.log(table);
                     $("#divForTwoTrains").html(table);
                     $("#tableTrains").html("");
+                    $("#divForGraph").collapse("show");
                 }
             });
     }

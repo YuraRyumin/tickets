@@ -2,6 +2,7 @@
     --color1: #8f2cb3;
     --color2: rgb(54, 134, 156);
     --color3: #6d6f71;
+    --color4: #b4b4b4;
 }
 body{
     background: var(--color2);
@@ -11,16 +12,6 @@ body{
 }
 .navbar-brand:hover, .nav-link:hover, .nav-item:hover{
     color: var(--color3);
-}
-
-#tableTickets, #tableTicketsTwo, #tableTicketsPassangerInfo{
-    width:30%;
-    float:left;
-}
-
-#tableTicketsOneTrain, #tableTicketsPassangerInfoOneTrain{
-    width:50%;
-    float:left;
 }
 
 input[id="dateTicket"] {
@@ -44,17 +35,35 @@ a:visited{
     color: black;
 }
 
-table[class="tableOnDiv"]{
+table[class="tableOnDiv"], div[class="tableOnDiv"], div[id="passengerInfo"]{
     width: 100%;
 }
 
 div[class="divForTrains"]{
     border-radius: 10px;
-    background: var(--color3);
+    background: var(--color4);
     float:left;
-    width:30%;
+    width:auto;
+    text-align: center;
+    align-content: center;
+    align-items: center;
 }
 div[class="divForTickets"]{
     float:left;
     width:30%;
 }
+div[class="divForTrainsEmpty"]{
+    float:left;
+}
+h5 {
+    text-align: center;
+}
+
+div[id="passengerInfo"], div[class="divMainForTrains"]{
+    justify-content: center;
+}
+table[class="tablePassenger"], div[class="divForTrains"]{
+    margin-left: auto;
+    margin-right: auto;
+}
+
