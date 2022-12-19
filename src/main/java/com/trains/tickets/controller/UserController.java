@@ -28,28 +28,16 @@ public class UserController {
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
-        //try{
-            model.addAttribute("users", userService.convertAllEntityToDto(userRepository.findAll()));
-            mainService.putUserInfoToModel(user, model);
-            return "userList";
-        //} catch (Exception e){
-        //    mainService.putExceptionInfoToModel(e, model);
-        //    return "error";
-        //}
+        mainService.putUserInfoToModel(user, model);
+        return userService.putInfoAboutAllUsersToModel(model);
     }
 
     @GetMapping("{userThis}")
-    public ResponseEntity<String> userEditForm(@AuthenticationPrincipal User user,
+    public String userEditForm(@AuthenticationPrincipal User user,
                                               @PathVariable String userThis,
                                               Model model) throws NotFoundException {
-        //try {
-            mainService.putUserInfoToModel(user, model);
-            return ResponseEntity.ok(userService.putInfoAboutUserToModel(userThis, model));
-        //return "userEdit";
-        //} catch (Exception e){
-        //     mainService.putExceptionInfoToModel(e, model);
-        //    return "error";
-        //}
+        mainService.putUserInfoToModel(user, model);
+        return userService.putInfoAboutUserToModel(userThis, model);
     }
 
     @PostMapping
@@ -63,13 +51,7 @@ public class UserController {
             @RequestParam String role,
             @RequestParam Integer userId,
             Model model){
-        //try{
-            mainService.putUserInfoToModel(user, model);
-            userService.saveUser(email, telephone, login, password, activationCode, passenger, role, userId);
-            return "redirect:/user";
-//        } catch (Exception e){
-//            mainService.putExceptionInfoToModel(e, model);
-//            return "error";
-//        }
+        mainService.putUserInfoToModel(user, model);
+        return userService.saveUser(email, telephone, login, password, activationCode, passenger, role, userId);
     }
 }

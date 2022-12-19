@@ -92,7 +92,7 @@ public class DistancesService {
                 wasChanged = true;
             }
             Station stationLastNew = stationRepository.findByName(stationLast);
-            if(!distanceChanged.getStationFirst().getName().equals(stationFirstNew.getName())){
+            if(!distanceChanged.getStationLast().getName().equals(stationLastNew.getName())){
                 distanceChanged.setStationLast(stationLastNew);
                 wasChanged = true;
             }

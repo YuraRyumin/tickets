@@ -71,4 +71,41 @@ public class Stop {
     public void setStation(Station station) {
         this.station = station;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Stop other = (Stop) obj;
+        if ((this.station == null) ? (other.station != null) : !this.station.equals(other.station)) {
+            return false;
+        }
+        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+            return false;
+        }
+        if ((this.timeBegining == null) ? (other.timeBegining != null) : !this.timeBegining.equals(other.timeBegining)) {
+            return false;
+        }
+        if ((this.timeEnd == null) ? (other.timeEnd != null) : !this.timeEnd.equals(other.timeEnd)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + (this.timeEnd != null ? this.timeEnd.hashCode() : 0)
+                + (this.timeBegining != null ? this.timeBegining.hashCode() : 0)
+                + (this.station != null ? this.station.hashCode() : 0);
+        hash = 53 * hash + this.id;
+        return hash;
+    }
 }

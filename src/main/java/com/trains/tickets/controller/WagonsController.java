@@ -26,29 +26,18 @@ public class WagonsController {
     @GetMapping
     public String wagonsList(@AuthenticationPrincipal User user,
                                Model model){
-        try {
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll()));
-            return "wagonsList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
-
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("wagons", wagonService.convertAllEntityToDto(wagonRepository.findAll()));
+        return "wagonsList";
     }
 
     @GetMapping("{wagon}")
     public String wagonEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String wagon,
                                    Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            wagonService.putInfoAboutWagonToModel(wagon, model);
-            return "wagonsEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        wagonService.putInfoAboutWagonToModel(wagon, model);
+        return "wagonsEdit";
     }
     @PostMapping
     public String wagonSave(@AuthenticationPrincipal User user,
@@ -58,13 +47,8 @@ public class WagonsController {
                             @RequestParam Integer seats,
                             @RequestParam Integer wagonId,
                             Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            wagonService.saveWagon(train, serviceClasses, name, seats, wagonId);
-            return "redirect:/wagons";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        wagonService.saveWagon(train, serviceClasses, name, seats, wagonId);
+        return "redirect:/wagons";
     }
 }

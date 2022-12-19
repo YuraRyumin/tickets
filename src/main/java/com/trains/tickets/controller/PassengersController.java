@@ -36,28 +36,18 @@ public class PassengersController {
     @GetMapping
     public String PassengersList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll()));
-            return "passengersList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("passengers", passengerService.convertAllEntityToDto(passengerRepository.findAll()));
+        return "passengersList";
     }
 
     @GetMapping("{passenger}")
     public String PassengerEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String passenger,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            passengerService.putInfoAboutPassengerToModel(model, passenger);
-            return "passengersEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        passengerService.putInfoAboutPassengerToModel(model, passenger);
+        return "passengersEdit";
     }
     @PostMapping
     public String userSave(@AuthenticationPrincipal User user,
@@ -68,13 +58,8 @@ public class PassengersController {
                            @RequestParam String dateOfBirth,
                            @RequestParam Integer passengerId,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            passengerService.savePassenger(name, surname, passport, gender, dateOfBirth, passengerId);
-            return "redirect:/passengers";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        passengerService.savePassenger(name, surname, passport, gender, dateOfBirth, passengerId);
+        return "redirect:/passengers";
     }
 }

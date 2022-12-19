@@ -38,12 +38,7 @@ public class RegistrationController {
 
     @GetMapping("/activate/{code}")
     public String activate(Model model, @PathVariable String code){
-        try{
-            userService.activateUser(code, model);
-            return "login";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        userService.activateUser(code, model);
+        return "login";
     }
 }

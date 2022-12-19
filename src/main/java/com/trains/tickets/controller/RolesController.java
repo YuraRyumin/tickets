@@ -34,32 +34,22 @@ public class RolesController {
     @GetMapping
     public String rolesList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
-            return "roleList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("roles", roleService.convertAllEntityToDto(roleRepository.findAll()));
+        return "roleList";
     }
 
     @GetMapping("{role}")
     public String roleEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String role,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            if (role.equals("new")) {
-                model.addAttribute("role", roleService.getEmptyDto());
-            } else {
-                model.addAttribute("role", roleService.convertEntityToDto(roleRepository.findById(Integer.parseInt(role))));
-            }
-            return "roleEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
+        mainService.putUserInfoToModel(user, model);
+        if (role.equals("new")) {
+            model.addAttribute("role", roleService.getEmptyDto());
+        } else {
+            model.addAttribute("role", roleService.convertEntityToDto(roleRepository.findById(Integer.parseInt(role))));
         }
+        return "roleEdit";
     }
     @PostMapping
     public String roleSave(@AuthenticationPrincipal User user,
@@ -68,13 +58,8 @@ public class RolesController {
                            @RequestParam Map<String, String> form,
                            //@RequestParam("roleId") Role roleChanged,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            roleService.saveRole(name, roleId);
-            return "redirect:/roles";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        roleService.saveRole(name, roleId);
+        return "redirect:/roles";
     }
 }

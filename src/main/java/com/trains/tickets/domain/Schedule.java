@@ -56,4 +56,39 @@ public class Schedule {
     public void setTrain(Train train) {
         this.train = train;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Schedule other = (Schedule) obj;
+        if ((this.time == null) ? (other.time != null) : !this.time.equals(other.time)) {
+            return false;
+        }
+        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+            return false;
+        }
+        if ((this.train == null) ? (other.train != null) : !this.train.equals(other.train)) {
+            return false;
+        }
+        if ((this.dayOfWeek == null) ? (other.dayOfWeek != null) : !this.dayOfWeek.equals(other.dayOfWeek)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + (this.time != null ? this.time.hashCode() : 0);
+        hash = 53 * hash + this.id + this.dayOfWeek + this.train.hashCode();
+        return hash;
+    }
 }

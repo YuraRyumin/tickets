@@ -86,7 +86,9 @@
         <div class="col-2">
         </div>
         <div class="col">
-
+            {{#message}}
+            <h2>{{message}}</h2>>
+            {{/message}}
                 <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                 <div class="mainDiv">
                     <div class="field">
@@ -114,7 +116,7 @@
                         </select>
                     </div>
                     <br>
-                    <div class="field">
+                    <div class="field" hidden>
                         <label for="direct">Direct </label>
                         <input name="radioRun" type="radio" id="direct" value="direct" checked><br>
                         <label for="transfer">Transfer</label>
@@ -127,12 +129,15 @@
         </div>
     </div>
 </div>
+    <br>
+    <br>
 
     <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     <div id="tableTrains">
 
     </div>
-
+    <br>
+    <br>
     <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
     <div id="divForTwoTrains">
         <div id="tableTickets">
@@ -145,6 +150,8 @@
 
         </div>
     </div>
+    <br>
+    <br>
     <div id="divForOneTrains">
         <div id="tableTicketsOneTrain">
 
@@ -153,8 +160,50 @@
 
         </div>
     </div>
+    <div id="passengerInfo">
+        Passenger info:
+        <table id='passenger_table'>
+            <tr>
+                <td>Name</td>
+                <td><input type='text' id='passengerName' name='passengerName' value="{{passenger.name}}"></td>
+            </tr>
+            <tr>
+                <td>Surname</td>
+                <td><input type='text' id='passengerSurname' name='passengerSurname' value="{{passenger.surname}}"></td>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td><select class='js-select1' id='passengerGender' name='passengerGender' placeholder='Choose gender'>
+                    {{#genders}}
+                        {{#selected}}
+                            <option value="{{name}}" selected>{{name}}</option>
+                        {{/selected}}
+                        {{^selected}}
+                            <option value="{{name}}" >{{name}}</option>
+                        {{/selected}}
+                    {{/genders}}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Passport</td>
+                <td><input type='text' id='passengerPassport' name='passengerPassport' value="{{passenger.passport}}">
+                </td>
+            </tr>
+            <tr>
+                <td>Date of b.</td>
+                <td><input type='text' id='passengerDate' name='passengerDate' value="{{passenger.dateOfBirth}}">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div align='center'>
+            <br><br>
+            <button type='submit'>Confirm</button>
+        </div>
+    </div>
 </form>
-<script rel="javascript" type="text/javascript" src="/js/jquery.js"></script>
+<script rel="javascript" type="text/javascript" src="/js/myQuery.js"></script>
 <script rel="javascript" type="text/javascript" src="/js/TableHighlite.js"></script>
 <script src="/js/bootstrap.bundle.min.js"></script>
 </body>

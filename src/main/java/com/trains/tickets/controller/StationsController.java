@@ -34,41 +34,26 @@ public class StationsController {
     @GetMapping
     public String stationList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-            return "stationsList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+        return "stationsList";
     }
 
     @GetMapping("{station}")
     public String stationEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String station,
                                    Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            stationService.putInfoAboutStationToModel(station, model);
-            return "stationsEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        stationService.putInfoAboutStationToModel(station, model);
+        return "stationsEdit";
     }
     @PostMapping
     public String stationSave(@AuthenticationPrincipal User user,
                                @RequestParam String name,
                                @RequestParam Integer stationId,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            stationService.saveStation(name, stationId);
-            return "redirect:/stations";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        stationService.saveStation(name, stationId);
+        return "redirect:/stations";
     }
 }

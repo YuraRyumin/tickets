@@ -3,8 +3,8 @@ package com.trains.tickets.dto;
 import lombok.Data;
 
 @Data
-public class TrainDTO {
+public class DaysOfWeekDTO {
     private Integer id;
-    private String number;
+    private String name;
     private boolean selected;
 }

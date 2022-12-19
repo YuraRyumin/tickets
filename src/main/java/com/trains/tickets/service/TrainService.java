@@ -46,7 +46,6 @@ public class TrainService {
 
         trainDTO.setId(train.getId());
         trainDTO.setNumber(train.getNumber());
-        trainDTO.setSeats(train.getSeats());
 
         return trainDTO;
     }
@@ -56,7 +55,6 @@ public class TrainService {
 
         trainDTO.setId(0);
         trainDTO.setNumber("");
-        trainDTO.setSeats(0);
 
         return trainDTO;
     }
@@ -69,11 +67,10 @@ public class TrainService {
         }
     }
 
-    public void saveTrain(String number, Integer seats, Integer trainId){
+    public void saveTrain(String number, Integer trainId){
         if (trainId.equals(0)) {
             Train trainChanged = new Train(
-                    number,
-                    seats
+                    number
             );
             trainRepository.save(trainChanged);
         } else {
@@ -84,10 +81,6 @@ public class TrainService {
             boolean wasChanged = false;
             if(!trainChanged.getNumber().equals(number)){
                 trainChanged.setNumber(number);
-                wasChanged = true;
-            }
-            if(!trainChanged.getSeats().equals(seats)){
-                trainChanged.setSeats(seats);
                 wasChanged = true;
             }
             if(wasChanged){

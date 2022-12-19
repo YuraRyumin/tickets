@@ -301,8 +301,8 @@ div.field {
 div.field label {
     display: block;
     float: left;
-    width: 70px;
-    height: 15px;
+    width: 140px;
+    height: 20px;
 }
 
 div.field input {

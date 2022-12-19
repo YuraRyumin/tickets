@@ -44,12 +44,13 @@ function highlight_Table_Rows(table_Id, hover_Class, click_Class, multiple) {
 }
 
 function SetDivOneTicket(table_Id, elem) {
+    console.log(elem);
     var stationFirst = elem.parentNode.childNodes[0].textContent;
     var stationLast = elem.parentNode.childNodes[1].textContent;
     var timeDeparture = elem.parentNode.childNodes[2].textContent;
     var timeArrival = elem.parentNode.childNodes[3].textContent;
 
-    var txtDate = document.getElementById("dateTicket").getAttribute("value");
+    var txtDate = document.getElementById("dateTicket").value;
     console.log(txtDate);
 
     $.get('/getTicketsInfo',
@@ -68,10 +69,13 @@ function SetDivOneTicket(table_Id, elem) {
                     "<tbody>";
                 for (i = 0; i < data.length; i++) {
                     let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
-
+                    var sched = data[i].schedule;
+                    var train = data[i].trainId;
+                    var schedName = data[i].trainNumber + "_-&gt;_" + data[i].schedule;
                     tablePassenger = tablePassenger +
                         "<tr><td>Passenger name</td><td><input type='text' id='passengerName' name='passengerName' value=" + data[i].passengerName + "></td></tr>" +
                         "<tr><td>Passenger surname</td><td><input type='text' id='passengerSurname' name='passengerSurname' value=" + data[i].passengerSurname + "></td></tr>" +
+                        "<tr><td>Passenger DoB</td><td><input type='date' id='passengerDate' name='passengerDate' value=" + data[i].passengerDate + "></td></tr>" +
                         "<tr><td>Passenger gender</td><td><select class='js-select1' id='passengerGender' name='passengerGender' placeholder='Choose gender'>" +
                         "<option value=" + data[i].passengerGender + ">" + data[i].passengerGender + "</option>" +
                         opositeGender +
@@ -84,11 +88,11 @@ function SetDivOneTicket(table_Id, elem) {
                         "<tr><td>Station last</td><td><input type='text' id='stationLastFirstTicket' name='stationLastFirstTicket' readonly value=" + data[i].stationLast.replace(' ', '_') + "></td></tr>" +
                         "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalFirstTicket' name='timeArrivalFirstTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
                         "<tr><td>Train</td><td><input type='text' id='trainFirstTicket' name='trainFirstTicket' readonly value=" + data[i].trainNumber + "></td></tr>" +
-                        "<tr><td>Schedule</td><td><input type='text' id='scheduleFirstTicket' name='scheduleFirstTicket' readonly value=" + data[i].schedule + "></td></tr>" +
+                        "<tr><td>Schedule</td><td><input type='text' id='scheduleFirstTicket' name='scheduleFirstTicket' readonly value=" + schedName + "></td></tr>" +
                         "<tr><td>Wagon</td><td>" + showWagonList(data[i].trainId, "FirstTicket") + "</td></tr>" +
-                        "<tr><td>Seat</td><td><div id='divForSeats'>" + showSeatsList(8, 1, "2022-06-11", "FirstTicket") + "</div></td></tr>";
+                        "<tr><td>Seat</td><td><div id='divForSeats'>" + showSeatsList(sched, 1, txtDate, "FirstTicket", train) + "</div></td></tr>";
                 }
-                tablePassenger = tablePassenger + "</tbody></table> <div align='center'><button type='submit'>Confirm</button></div>";
+                tablePassenger = tablePassenger + "</tbody></table> <div align='center'><br><br><button type='submit'>Confirm</button></div>";
                 ticketsInfo = ticketsInfo + "</tbody></table>";
                 $("#tableTicketsOneTrain").html(ticketsInfo);
                 $("#tableTicketsPassangerInfoOneTrain").html(tablePassenger);
@@ -99,7 +103,128 @@ function SetDivOneTicket(table_Id, elem) {
         });
 }
 
+function getTableForTicket(stationFirst, stationLast, timeDeparture, timeArrival, numM){
+    var request = new XMLHttpRequest();
+    var txtDate = document.getElementById("dateTicket").value;
+    var params = 'stationFirst=' + encodeURIComponent(stationFirst.replace('_', ' ')) +
+                '&stationLast=' + encodeURIComponent(stationLast.replace('_', ' ')) +
+                '&timeDeparture=' + timeDeparture +
+                '&timeArrival=' + timeArrival;
+    console.log(params);
+    request.open('GET', '/getTicketsInfo?' + params, false);
+    request.send(null);
+    let ticketsInfo = "";
+    if (request.status === 200) {
+        var dataR = JSON.parse(request.response);
+        //console.log(dataR);
+        if (dataR != null) {
+
+            ticketsInfo += "<table id='ticket_table' border = '1'>" +
+                "<tbody>";
+            for (i = 0; i < dataR.length; i++) {
+                var numForSeat = i;
+                let opositeGender = (dataR[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
+                var sched = dataR[i].schedule;
+                var train = dataR[i].trainId;
+                var schedName = dataR[i].trainNumber + "_-&gt;_" + dataR[i].schedule;
+                console.log("1) i = " + numM);
+                ticketsInfo += "<tr><td>Station first</td><td><input type='text' id='stationFirstN" + numM + "' name='stationFirstN" + numM + "' readonly value=" + dataR[i].stationFirst.replace(' ', '_') + "></td></tr>" +
+                    "<tr><td>Time departure</td><td><input type='text' id='timeDepartureN" + numM + "' name='timeDepartureN" + numM + "' readonly value=" + dataR[i].timeDeparture + "></td></tr>" +
+                    "<tr><td>Station last</td><td><input type='text' id='stationLastN" + numM + "' name='stationLastN" + numM + "' readonly value=" + dataR[i].stationLast.replace(' ', '_') + "></td></tr>" +
+                    "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalN" + numM + "' name='timeArrivalN" + numM + "' readonly value=" + dataR[i].timeArrival + "></td></tr>" +
+                    "<tr><td>Train</td><td><input type='text' id='trainN" + numM + "' name='trainN" + numM + "' readonly value=" + dataR[i].trainNumber + "></td></tr>" +
+                    "<tr><td>Schedule</td><td><input type='text' id='scheduleN" + numM + "' name='scheduleN" + numM + "' readonly value=" + schedName + "></td></tr>" +
+                    "<tr><td>Wagon</td><td>" + showWagonList(dataR[i].trainId, numM) + "</td></tr>" +
+                    "<tr><td>Seat</td><td><div id='divForSeats" + numM + "'>" + showSeatsList(sched, 1, txtDate, numM, train) + "</div></td></tr>";
+                console.log("2) i = " + numM);
+            }
+            ticketsInfo += "</tbody></table><br>";
+        }
+        return ticketsInfo
+    }
+
+
+
+    // $.get('/getTicketsInfo',
+    //     {
+    //         stationFirst: nameFirstStationFirstTrain,
+    //         stationLast: nameSecondStationFirstTrain,
+    //         timeDeparture: timeBeginningFirstTrain,
+    //         timeArrival: timeEndFirstTrain
+    //     }).done(
+    //     function (data) {
+    //         console.log(data);
+    //         if (data != null) {
+    //             let ticketsInfo = "<table id='ticket_table' border = '1'>" +
+    //                 "<tbody>";
+    //             for (i = 0; i < data.length; i++) {
+    //                 let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
+    //                 var sched = data[i].schedule;
+    //                 var train = data[i].trainId;
+    //                 var schedName = data[i].trainNumber + "_-&gt;_" + data[i].schedule;
+    //                 ticketsInfo = ticketsInfo +
+    //                     "<tr><td>Station first</td><td><input type='text' id='stationFirstFirstTicket' name='stationFirstFirstTicket' readonly value=" + data[i].stationFirst.replace(' ', '_') + "></td></tr>" +
+    //                     "<tr><td>Time departure</td><td><input type='text' id='timeDepartureFirstTicket' name='timeDepartureFirstTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
+    //                     "<tr><td>Station last</td><td><input type='text' id='stationLastFirstTicket' name='stationLastFirstTicket' readonly value=" + data[i].stationLast.replace(' ', '_') + "></td></tr>" +
+    //                     "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalFirstTicket' name='timeArrivalFirstTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
+    //                     "<tr><td>Train</td><td><input type='text' id='trainFirstTicket' name='trainFirstTicket' readonly value=" + data[i].trainNumber + "></td></tr>" +
+    //                     "<tr><td>Schedule</td><td><input type='text' id='scheduleFirstTicket' name='scheduleFirstTicket' readonly value=" + schedName + "></td></tr>" +
+    //                     "<tr><td>Wagon</td><td>" + showWagonList(data[i].trainId, "FirstTicket") + "</td></tr>" +
+    //                     "<tr><td>Seat</td><td>" + showSeatsList(sched, 1, txtDate, "FirstTicket", train) + "</td></tr>";
+    //             }
+    //
+    //             ticketsInfo = ticketsInfo + "</tbody></table><br>";
+    //             $("#tableTickets").html(ticketsInfo);
+    //         }
+    //     });
+}
+
 function SetDivTwoTicket(table_Id, elem) {
+    if(table_Id == "div_table") {
+        //console.log(elem);
+        var tickets = [];
+        var txtTable = "<div class='tableOnDiv' id='divForAllTickets'>";
+        for (n = 0; n < elem.childNodes.length; n++) {
+            for (m = 0; m < elem.childNodes[n].childNodes.length; m++) {
+            //console.log(elem.childNodes[n].childNodes[m]);
+
+                var txtSchedule = elem.childNodes[n].childNodes[m].childNodes[0].childNodes[3].value;
+                var txtStationFirstTicket = elem.childNodes[n].childNodes[m].childNodes[1].childNodes[3].value;
+                var txtTimeDepartureTicket = elem.childNodes[n].childNodes[m].childNodes[2].childNodes[3].value;
+                var txtStationLastTicket = elem.childNodes[n].childNodes[m].childNodes[3].childNodes[3].value;
+                var txtTimeArrivalTicket = elem.childNodes[n].childNodes[m].childNodes[4].childNodes[3].value;
+                var txtTrainTicket = elem.childNodes[n].childNodes[m].childNodes[5].childNodes[3].value;
+
+                tickets.push({schedule: txtSchedule,
+                    stationFirst: txtStationFirstTicket,
+                    timeDeparture: txtTimeDepartureTicket,
+                    stationLast: txtStationLastTicket,
+                    timeArrival: txtTimeArrivalTicket,
+                    train: txtTrainTicket});
+
+                console.log(txtSchedule + "; "
+                    + txtStationFirstTicket + "; "
+                    + txtTimeDepartureTicket + "; "
+                    + txtStationLastTicket + "; "
+                    + txtTimeArrivalTicket + "; "
+                    + txtTrainTicket + "; ");
+
+                txtTable += "<div class='divForTickets' id='divForAllTickets" + m + "'>" + getTableForTicket(txtStationFirstTicket,
+                    txtStationLastTicket,
+                    txtTimeDepartureTicket,
+                    txtTimeArrivalTicket, m) + "</div>";
+
+            }
+        }
+        txtTable += "</div>";
+        $("#divForOneTrains").html(txtTable);
+        //console.log(txtTable);
+        //console.log(tickets);
+        //$("#tableTickets").html(tickets);
+        //window.location.href = 'issueTicket';
+        return;
+    }
+
     var timeBeginningFirstTrain = elem.parentNode.childNodes[0].textContent;
     var nameFirstStationFirstTrain = elem.parentNode.childNodes[1].textContent;
     var nameSecondStationFirstTrain = elem.parentNode.childNodes[2].textContent;
@@ -109,6 +234,8 @@ function SetDivTwoTicket(table_Id, elem) {
     var nameFirstStationSecondTrain = elem.parentNode.childNodes[5].textContent;
     var nameSecondStationSecondTrain = elem.parentNode.childNodes[6].textContent;
     var timeEndSecondTrain = elem.parentNode.childNodes[7].textContent;
+
+    var txtDate = document.getElementById("dateTicket").value;
 
     $.get('/getTicketsInfo',
         {
@@ -124,15 +251,18 @@ function SetDivTwoTicket(table_Id, elem) {
                     "<tbody>";
                 for (i = 0; i < data.length; i++) {
                     let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
+                    var sched = data[i].schedule;
+                    var train = data[i].trainId;
+                    var schedName = data[i].trainNumber + "_-&gt;_" + data[i].schedule;
                     ticketsInfo = ticketsInfo +
                         "<tr><td>Station first</td><td><input type='text' id='stationFirstFirstTicket' name='stationFirstFirstTicket' readonly value=" + data[i].stationFirst.replace(' ', '_') + "></td></tr>" +
                         "<tr><td>Time departure</td><td><input type='text' id='timeDepartureFirstTicket' name='timeDepartureFirstTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
                         "<tr><td>Station last</td><td><input type='text' id='stationLastFirstTicket' name='stationLastFirstTicket' readonly value=" + data[i].stationLast.replace(' ', '_') + "></td></tr>" +
                         "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalFirstTicket' name='timeArrivalFirstTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
                         "<tr><td>Train</td><td><input type='text' id='trainFirstTicket' name='trainFirstTicket' readonly value=" + data[i].trainNumber + "></td></tr>" +
-                        "<tr><td>Schedule</td><td><input type='text' id='scheduleFirstTicket' name='scheduleFirstTicket' readonly value=" + data[i].schedule + "></td></tr>" +
+                        "<tr><td>Schedule</td><td><input type='text' id='scheduleFirstTicket' name='scheduleFirstTicket' readonly value=" + schedName + "></td></tr>" +
                         "<tr><td>Wagon</td><td>" + showWagonList(data[i].trainId, "FirstTicket") + "</td></tr>" +
-                        "<tr><td>Seat</td><td>" + showSeatsList('07:41', 1, "2022-06-11", "FirstTicket") + "</td></tr>";
+                        "<tr><td>Seat</td><td>" + showSeatsList(sched, 1, txtDate, "FirstTicket", train) + "</td></tr>";
                 }
 
                 ticketsInfo = ticketsInfo + "</tbody></table><br>";
@@ -156,6 +286,9 @@ function SetDivTwoTicket(table_Id, elem) {
                 for (i = 0; i < data.length; i++) {
                     let textResult = "";
                     let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
+                    var sched = data[i].schedule;
+                    var train = data[i].trainId;
+                    var schedName = data[i].trainNumber + "_-&gt;_" + data[i].schedule;
 
                     tablePassenger = tablePassenger +
                         "<tr><td>Passenger name</td><td><input type='text' id='passengerName' name='passengerName' value=" + data[i].passengerName + "></td></tr>" +
@@ -172,11 +305,11 @@ function SetDivTwoTicket(table_Id, elem) {
                         "<tr><td>Station last</td><td><input type='text' id='stationLastSecondTicket' name='stationLastSecondTicket' readonly value=" + data[i].stationLast.replace(' ', '_') + "></td></tr>" +
                         "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalSecondTicket' name='timeArrivalSecondTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
                         "<tr><td>Train</td><td><input type='text' id='trainSecondTicket' name='trainSecondTicket' readonly value=" + data[i].trainNumber + "></td></tr>" +
-                        "<tr><td>Schedule</td><td><input type='text' id='scheduleSecondTicket' name='scheduleSecondTicket' readonly value=" + data[i].schedule + "></td></tr>" +
+                        "<tr><td>Schedule</td><td><input type='text' id='scheduleSecondTicket' name='scheduleSecondTicket' readonly value=" + schedName + "></td></tr>" +
                         "<tr><td>Wagon</td><td>" + showWagonList(data[i].trainId, "SecondTicket") + "</td></tr>" +
-                        "<tr><td>Seat</td><td>" + showSeatsList(8, 1, "2022-06-11", "SecondTicket") + "</td></tr>";
+                        "<tr><td>Seat</td><td>" + showSeatsList(sched, 1, txtDate, "SecondTicket", train) + "</td></tr>";
                 }
-                tablePassenger = tablePassenger + "</tbody></table> <div align='center'><button type='submit'>Confirm</button></div>";
+                tablePassenger = tablePassenger + "</tbody></table> <div align='center'><br><br><button type='submit'>Confirm</button></div>";
                 ticketsInfo = ticketsInfo + "</tbody></table>";
                 $("#tableTicketsTwo").html(ticketsInfo);
                 $("#tableTicketsPassangerInfo").html(tablePassenger);
@@ -187,47 +320,43 @@ function SetDivTwoTicket(table_Id, elem) {
 }
 
 function showWagonList(trainId, runNumber){
+    var num = runNumber;
+    console.log("wagon list. i = " + num)
     var request = new XMLHttpRequest();
     request.open('GET', '/getWagons?trainId=' + trainId, false);
     request.send(null);
     if (request.status === 200) {
         var dataR = JSON.parse(request.response);
-        console.log(dataR);
+        //console.log(dataR);
 
         if (dataR != null) {
-            let wagonsInfo = "<select class='js-select1' id='wagon" + runNumber + "' name='wagon" + runNumber + "' placeholder='Choose wagon'>";
+            let wagonsInfo = "<select onchange='ReturnSeatsByWagonToElement(" + num + ")' class='js-select1' id='wagonN" + num + "' name='wagonN" + num + "' placeholder='Choose wagon'>";
             for (i = 0; i < dataR.length; i++) {
                 wagonsInfo = wagonsInfo + "<option value=" + dataR[i].id + ">" + dataR[i].name + "</option>";
             }
+            console.log("wagon list2. i = " + num)
             wagonsInfo = wagonsInfo + "</select>";
-            console.log(wagonsInfo);
+            //console.log(wagonsInfo);
             return wagonsInfo;
         }
     }
 }
 
-function showSeatsList(scheduleId, wagonId, dateTicket, runNumber) {
+function showSeatsList(scheduleId, wagonId, dateTicket, runNumber, trainId) {
+    var num = runNumber;
+    console.log("seats list. i = " + num)
     var request = new XMLHttpRequest();
-    console.log("/getSeats?schedule='" + scheduleId + "'&wagonId=" + wagonId + "&dateTicket='" + dateTicket + "'");
-    request.open('GET', "/getSeats?schedule=" + scheduleId + "&wagonId=" + wagonId + "&dateTicket=" + dateTicket + "", false);
+    //console.log("/getSeats?schedule='" + scheduleId + "'&wagonId=" + wagonId + "&dateTicket='" + dateTicket + "&trainId='" + trainId + "'");
+    request.open('GET', "/getSeats?schedule=" + scheduleId + "&wagonId=" + wagonId + "&dateTicket=" + dateTicket + "&trainId=" + trainId + "", false);
     request.send(null);
     if (request.status === 200) {
         var dataR = JSON.parse(request.response);
-        console.log(dataR);
+       // console.log(dataR);
         let seatsInfo = "";
         if (dataR != null && dataR.length != 0) {
-            const array = Array(dataR[0].maxSeats);
-            seatsInfo = "<select class='js-select1' id='seats" + runNumber + "' name='seats" + runNumber + "' placeholder='Choose seat'>";
-            for (i = 1; i <= dataR[0].maxSeats; i++) {
-                let wasInResponse = false;
-                for (j = 0; j < dataR.length; j++) {
-                    if (dataR[j].seat == i) {
-                        wasInResponse = true;
-                    }
-                }
-                if (!wasInResponse) {
-                    seatsInfo = seatsInfo + "<option value=" + i + ">" + i + "</option>";
-                }
+            seatsInfo = "<select class='js-select1' id='seatsN" + num + "' name='seatsN" + num + "' placeholder='Choose seat'>";
+            for (u = 0; u < dataR.length; u++) {
+                seatsInfo = seatsInfo + "<option value=" + dataR[u] + ">" + dataR[u] + "</option>";
             }
             seatsInfo = seatsInfo + "</select>";
         }
@@ -236,8 +365,7 @@ function showSeatsList(scheduleId, wagonId, dateTicket, runNumber) {
 }
 
 function ReturnSeatsByWagon() {
-    var txtDate = document.getElementById("dateTicket").getAttribute("value");
-    console.log(document.getElementById("dateTicket"));
+    var txtDate = document.getElementById("dateTicket").value;
     var objWagon = document.getElementById("wagonFirstTicket");
     if(objWagon == null){
         var txtWagon = "";
@@ -245,7 +373,20 @@ function ReturnSeatsByWagon() {
         var txtWagon = objWagon.options[objWagon.selectedIndex].value;
     }
     var txtSchedule = document.getElementById("scheduleFirstTicket").getAttribute("value");
-    console.log(txtDate + "; " + txtWagon + "; " + txtSchedule)
 
-    $("#divForSeats").html(showSeatsList(txtSchedule, txtWagon, txtDate, "FirstTicket"));
+    $("#divForSeats").html(showSeatsList(txtSchedule, txtWagon, txtDate, "FirstTicket", 0));
+}
+
+function ReturnSeatsByWagonToElement(num) {
+    console.log(num);
+    var txtDate = document.getElementById("dateTicket").value;
+    var objWagon = document.getElementById("wagon" + num);
+    if(objWagon == null){
+        var txtWagon = "";
+    } else {
+        var txtWagon = objWagon.options[objWagon.selectedIndex].value;
+    }
+    var txtSchedule = document.getElementById("schedule" + num).getAttribute("value");
+
+    $("#divForSeats" + num).html(showSeatsList(txtSchedule, txtWagon, txtDate, num, 0));
 }

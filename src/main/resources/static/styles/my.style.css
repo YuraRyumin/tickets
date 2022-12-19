@@ -47,3 +47,14 @@ a:visited{
 table[class="tableOnDiv"]{
     width: 100%;
 }
+
+div[class="divForTrains"]{
+    border-radius: 10px;
+    background: var(--color3);
+    float:left;
+    width:30%;
+}
+div[class="divForTickets"]{
+    float:left;
+    width:30%;
+}

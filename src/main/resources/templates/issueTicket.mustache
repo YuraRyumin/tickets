@@ -75,59 +75,65 @@
                 </li>
             </ul>
             {{/user}}
-
         </div>
     </div>
 </nav>
 <br>
-<form method="post" id="takeTicket" action="/takeTicket">
-    <div class="container">
-        <div class="row">
-            <div class="col-2">
-            </div>
-            <div class="col">
-                <h3 align="center">Arrivals board</h3>
-                <br>
-                <div class="mainDiv">
-                    <div class="field">
-                        <label>Station:</label>
-                        <select class="js-select2" id="stations" name="stations" placeholder="Choose station">
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+        </div>
+        <div class="col">
+            <form method="post" id="takeTicket" action="/takeTicket">
+                <div id="divForTickets">
 
-                            {{#stations}}
-                            <option value="{{name}}">{{name}}</option>
-                            {{/stations}}
-                        </select>
-                    </div>
                 </div>
-                <div id="tableArrival">
-                    <table class="tableOnDiv" id='ticket_table' border = '1' width="100%">
-                        <thead>
+                <div id="passengerInfo">
+                    Passenger info:
+                    <table id='passenger_table'>
                         <tr>
-                            <th>Train</th>
-                            <th>Time arrival</th>
-                            <th>Time departure</th>
+                            <td>Name</td>
+                            <td><input type='text' id='passengerName' name='passengerName' value="{{passenger.name}}"></td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {{#arrivals}}
                         <tr>
-                            <td>{{train}}</td>
-                            <td>{{timeBegining}}</td>
-                            <td>{{timeEnd}}</td>
+                            <td>Surname</td>
+                            <td><input type='text' id='passengerSurname' name='passengerSurname' value="{{passenger.surname}}"></td>
                         </tr>
-                        {{/arrivals}}
+                        <tr>
+                            <td>Gender</td>
+                            <td><select class='js-select1' id='passengerGender' name='passengerGender' placeholder='Choose gender'>
+                                {{#genders}}
+                                {{#selected}}
+                                <option value="{{name}}" selected>{{name}}</option>
+                                {{/selected}}
+                                {{^selected}}
+                                <option value="{{name}}" >{{name}}</option>
+                                {{/selected}}
+                                {{/genders}}
+                            </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Passport</td>
+                            <td><input type='text' id='passengerPassport' name='passengerPassport' value="{{passenger.passport}}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Date of b.</td>
+                            <td><input type='text' id='passengerDate' name='passengerDate' value="{{passenger.dateOfBirth}}">
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
+                    <div align='center'>
+                        <br><br>
+                        <button type='submit'>Confirm</button>
+                    </div>
                 </div>
-            </div>
-            <div class="col-2">
-            </div>
+            </form>
         </div>
     </div>
-</form>
-<script rel="javascript" type="text/javascript" src="/js/myQuery.js"></script>
-<script rel="javascript" type="text/javascript" src="/js/TableHighlite.js"></script>
+</div>
 <script src="/js/bootstrap.bundle.min.js"></script>
-<script src="/js/arrivals.js"></script>
 </body>
 </html>

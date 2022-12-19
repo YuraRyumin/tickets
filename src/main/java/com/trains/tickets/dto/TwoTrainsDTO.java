@@ -12,4 +12,5 @@ public class TwoTrainsDTO {
     private String nameFirstStationSecondTrain;
     private String nameSecondStationSecondTrain;
     private String timeEndSecondTrain;
+    private Integer distance;
 }

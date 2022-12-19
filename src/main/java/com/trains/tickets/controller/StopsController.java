@@ -26,28 +26,18 @@ public class StopsController {
     @GetMapping
     public String stopList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
-            mainService.putUserInfoToModel(user, model);
-            return "stopsList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        model.addAttribute("stops", stopService.convertAllEntityToDto(stopRepository.findAll()));
+        mainService.putUserInfoToModel(user, model);
+        return "stopsList";
     }
 
     @GetMapping("{stop}")
     public String stopEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String stop,
                                    Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            stopService.putInfoAboutStopToModel(stop, model);
-            return "stopsEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        stopService.putInfoAboutStopToModel(stop, model);
+        return "stopsEdit";
     }
     @PostMapping
     public String stopSave(@AuthenticationPrincipal User user,
@@ -57,13 +47,8 @@ public class StopsController {
                                @RequestParam String station,
                                @RequestParam Integer stopId,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            stopService.saveStop(timeBegining, timeEnd, schedule, station, stopId);
-            return "redirect:/stops";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        stopService.saveStop(timeBegining, timeEnd, schedule, station, stopId);
+        return "redirect:/stops";
     }
 }

@@ -3,8 +3,8 @@ package com.trains.tickets.controller;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.service.MainService;
+import com.trains.tickets.service.PassengerService;
 import com.trains.tickets.service.StationService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,11 +19,13 @@ public class MainController {
     private final StationRepository stationRepository;
     private final StationService stationService;
     private final MainService mainService;
+    private final PassengerService passengerService;
 
-    public MainController(StationRepository stationRepository, StationService stationService, MainService mainService) {
+    public MainController(StationRepository stationRepository, StationService stationService, MainService mainService, PassengerService passengerService) {
         this.stationRepository = stationRepository;
         this.stationService = stationService;
         this.mainService = mainService;
+        this.passengerService = passengerService;
     }
 
     @GetMapping("/")
@@ -36,32 +38,29 @@ public class MainController {
     @GetMapping("/main")
     public String main(@AuthenticationPrincipal User user,
                        Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("dateNow", LocalDate.now());
-            model.addAttribute("stations", stationService.convertAllEntitysToDto(stationRepository.findAll()));
-            return "ticketsSearch";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        mainService.putMainInfoToModel(user, model);
+
+        return "ticketsSearch";
     }
 
     @PostMapping("/main")
     public String add(@AuthenticationPrincipal User user,
                       @RequestParam String name,
                       Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("dateNow", LocalDate.now());
-            return "ticketsSearch";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("dateNow", LocalDate.now());
+        return "ticketsSearch";
     }
 
-
+    @PostMapping("/issueTicket")
+    public String issueTicket(@AuthenticationPrincipal User user,
+            @RequestParam String name,
+            Model model){
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("dateNow", LocalDate.now());
+    return "issueTicket";
+}
 
     @PostMapping("changePass")
     public String post(@AuthenticationPrincipal User user,
@@ -76,13 +75,8 @@ public class MainController {
 //        mailSender.send(mailMessage);
 //        model.put("user", user);
         //return "main";
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("dateNow", LocalDate.now());
-            return "ticketsSearch";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("dateNow", LocalDate.now());
+        return "ticketsSearch";
     }
 }

@@ -28,13 +28,8 @@ public class NewsController {
     @GetMapping
     public String newsList(@AuthenticationPrincipal User user,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAll(Sort.by(Sort.Direction.DESC, "date"))));
-            return "allNews";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("news", newsService.convertAllEntityToDto(newsRepository.findAll(Sort.by(Sort.Direction.DESC, "date"))));
+        return "allNews";
     }
 }

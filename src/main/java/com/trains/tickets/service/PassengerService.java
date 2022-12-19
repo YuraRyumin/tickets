@@ -4,6 +4,7 @@ import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.DistanceDTO;
+import com.trains.tickets.dto.GenderDTO;
 import com.trains.tickets.dto.PassengerDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -131,6 +134,31 @@ public class PassengerService {
                 passengerRepository.save(passengerChanged);
             }
         }
+    }
+
+    public Set<GenderDTO> getGendersList(Passenger passenger){
+        Set<GenderDTO> genderDTOSet = new HashSet<>();
+        String passengerGender = "";
+        if(!(passenger == null)){
+            passengerGender = passenger.getGender();
+        }
+        GenderDTO genderDTOFemale = new GenderDTO();
+        genderDTOFemale.setName("FEMALE");
+        if(passengerGender.equals("FEMALE")){
+            genderDTOFemale.setSelected(true);
+        } else {
+            genderDTOFemale.setSelected(false);
+        }
+        genderDTOSet.add(genderDTOFemale);
+        GenderDTO genderDTOMale = new GenderDTO();
+        genderDTOMale.setName("MALE");
+        if(passengerGender.equals("MALE")){
+            genderDTOMale.setSelected(true);
+        } else {
+            genderDTOMale.setSelected(false);
+        }
+        genderDTOSet.add(genderDTOMale);
+        return  genderDTOSet;
     }
 
     public void putInfoAboutPassengerToModel(Model model, String passenger){

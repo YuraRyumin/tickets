@@ -96,19 +96,26 @@ public class StopService {
     }
 
     public void saveStop(String timeBegining, String timeEnd, String schedule, String station, Integer stopId){
+
         String[] fullTimeBegining = timeBegining.split(":");
         Integer hourOfBegining = Integer.valueOf(fullTimeBegining[0]);
         Integer minuteOfBegining = Integer.valueOf(fullTimeBegining[1]);
         LocalTime localTimeBegining = LocalTime.of(hourOfBegining, minuteOfBegining, 0);
+
         String[] fullTimeEnd = timeEnd.split(":");
         Integer hourOfEnd = Integer.valueOf(fullTimeEnd[0]);
         Integer minuteOfEnd = Integer.valueOf(fullTimeEnd[1]);
         LocalTime localTimeEnd = LocalTime.of(hourOfEnd, minuteOfEnd, 0);
+
+        String[] fullName = schedule.split("_->_");
+        String numberOfTrain = fullName[0];
+        String timeOfSchedule = fullName[1];
         if (stopId.equals(0)) {
             Stop stopChanged = new Stop(
                     localTimeBegining,
                     localTimeEnd,
-                    scheduleRepository.findByTime(schedule),
+                    //scheduleRepository.findByTime(schedule),
+                    scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain),
                     stationRepository.findByName(station)
             );
             stopRepository.save(stopChanged);
@@ -123,7 +130,8 @@ public class StopService {
                 stopChanged.setTimeEnd(localTimeEnd);
                 wasChanged = true;
             }
-            Schedule scheduleNew = scheduleRepository.findByTime(schedule);
+            //Schedule scheduleNew = scheduleRepository.findByTime(schedule);
+            Schedule scheduleNew = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
             if(!stopChanged.getSchedule().equals(scheduleNew)){
                 stopChanged.setSchedule(scheduleNew);
                 wasChanged = true;

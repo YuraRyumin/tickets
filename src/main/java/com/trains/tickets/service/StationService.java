@@ -69,7 +69,11 @@ public class StationService {
         if (station.equals("new")) {
             model.addAttribute("stations", getEmptyDto());
         } else {
-            model.addAttribute("stations", convertEntityToDto(stationRepository.findById(Integer.parseInt(station))));
+            Station selecteStation = stationRepository.findById(Integer.parseInt(station));
+            if(selecteStation == null){
+                throw  new NullPointerException("Station not found!");
+            }
+            model.addAttribute("stations", convertEntityToDto(selecteStation));
         }
     }
 

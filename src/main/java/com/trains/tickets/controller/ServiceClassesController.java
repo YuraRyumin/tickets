@@ -27,28 +27,18 @@ public class ServiceClassesController {
     @GetMapping
     public String serviceClassList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll()));
-            return "serviceClassesList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("serviceClasses", serviceClassService.convertAllEntityToDto(serviceClassRepository.findAll()));
+        return "serviceClassesList";
     }
 
     @GetMapping("{serviceClass}")
     public String serviceClassEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String serviceClass,
                                    Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            serviceClassService.putInfoAboutServiceClassToModel(serviceClass, model);
-            return "serviceClassesEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        serviceClassService.putInfoAboutServiceClassToModel(serviceClass, model);
+        return "serviceClassesEdit";
     }
     @PostMapping
     public String serviceClassSave(@AuthenticationPrincipal User user,
@@ -56,13 +46,8 @@ public class ServiceClassesController {
                                @RequestParam Float prisePerKm,
                                @RequestParam Integer serviceClassId,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            serviceClassService.saveServiceClass(name, prisePerKm, serviceClassId);
-            return "redirect:/serviceClasses";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        serviceClassService.saveServiceClass(name, prisePerKm, serviceClassId);
+        return "redirect:/serviceClasses";
     }
 }

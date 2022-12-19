@@ -146,7 +146,11 @@ public class TicketService {
         Passenger passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
         Train trainNew = trainRepository.findByNumber(train);
         Wagon wagonNew = wagonRepository.findByName(wagon);
-        Schedule scheduleNew = scheduleRepository.findByTime(schedule);
+        String[] fullNameSchedule = schedule.split("_->_");
+        String numberOfTrain = fullNameSchedule[0];
+        String timeOfSchedule = fullNameSchedule[1];
+        //Schedule scheduleNew = scheduleRepository.findByTime(schedule);
+        Schedule scheduleNew = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
         if (ticketId.equals(0)) {
             Ticket ticketChanged = new Ticket(
                     passengerNew,

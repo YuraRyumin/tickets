@@ -6,7 +6,8 @@ import lombok.Data;
 public class ScheduleDTO {
     private Integer id;
     private String time;
-    private Integer dayOfWeek;
+    private String dayOfWeek;
     private String train;
     private boolean selected;
+    private String name;
 }

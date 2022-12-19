@@ -5,7 +5,6 @@ import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.UserDTO;
 import com.trains.tickets.dto.UserForNavDTO;
-import com.trains.tickets.exception.NotFoundException;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
@@ -169,10 +168,15 @@ public class UserService implements UserDetailsService {
             model.addAttribute("roles", roleService.convertAllEntityToDtoWithSelected(roleRepository.findAll(), selectedUser.getRole()));
             model.addAttribute("passengers", passengerService.convertAllEntityToDtoWithSelected(passengerRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedUser.getPassenger()));
         }
-        return "ok";
+        return "userEdit";
     }
 
-    public void saveUser(String email, String telephone, String login, String password, String activationCode, String passenger, String role, Integer userId){
+    public String putInfoAboutAllUsersToModel(Model model){
+        model.addAttribute("users", convertAllEntityToDto(userRepository.findAll()));
+        return "userList";
+    }
+
+    public String saveUser(String email, String telephone, String login, String password, String activationCode, String passenger, String role, Integer userId){
         String[] fullName = passenger.split("\\s");
         String nameOfPassenger = fullName[0];
         String surnameOfPassenger = fullName[1];
@@ -241,5 +245,6 @@ public class UserService implements UserDetailsService {
                 userRepository.save(userChanged);
             }
         }
+        return "redirect:/user";
     }
 }

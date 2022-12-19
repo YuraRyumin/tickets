@@ -12,5 +12,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     Schedule findById(Integer id);
     Schedule findByTime(String time);
+    Schedule findByTimeAndTrainNumber(String time, String number);
+    //Set<Schedule> findAllByStationName(String name);
+    //findDirectScheduleByTwoStations
+    //Set<Schedule> findAllByStationName(String name);
 
 }

@@ -27,14 +27,10 @@ public class TakeTicketController {
     public String takeTicket(@AuthenticationPrincipal User user,
                              @RequestParam Map<String, String> form,
                              Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            takeTicketService.saveTicket(user, form, model);
-            return "redirect:/ticketsSearch";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        takeTicketService.saveTicket(user, form, model);
+        mainService.putMainInfoToModel(user, model);
+        return "ticketsSearch";
     }
 
 

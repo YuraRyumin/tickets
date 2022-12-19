@@ -29,28 +29,18 @@ public class ScheduleController {
     @GetMapping
     public String scheduleList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
-            return "scheduleList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("schedule", scheduleService.convertAllEntityToDto(scheduleRepository.findAll()));
+        return "scheduleList";
     }
 
     @GetMapping("{schedule}")
     public String scheduleEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String schedule,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            scheduleService.putInfoAboutScheduleToModel(schedule, model);
-            return "scheduleEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        scheduleService.putInfoAboutScheduleToModel(schedule, model);
+        return "scheduleEdit";
     }
     @PostMapping
     public String scheduleSave(@AuthenticationPrincipal User user,
@@ -59,13 +49,8 @@ public class ScheduleController {
                            @RequestParam String train,
                            @RequestParam Integer scheduleId,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            scheduleService.saveSchedule(time, dayOfWeek, train, scheduleId);
-            return "redirect:/schedule";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        scheduleService.saveSchedule(time, dayOfWeek, train, scheduleId);
+        return "redirect:/schedule";
     }
 }

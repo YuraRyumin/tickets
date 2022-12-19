@@ -1,17 +1,23 @@
 package com.trains.tickets.controller;
 
+import com.trains.tickets.domain.Station;
+import com.trains.tickets.domain.Stop;
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.StopsForArrivalsDTO;
+import com.trains.tickets.dto.*;
+import com.trains.tickets.graph.Graph;
+import com.trains.tickets.graph.GraphService;
 import com.trains.tickets.projection.*;
-import com.trains.tickets.repository.StopRepository;
-import com.trains.tickets.repository.StopsForMainDTORepository;
-import com.trains.tickets.repository.UserRepository;
-import com.trains.tickets.repository.WagonRepository;
+import com.trains.tickets.repository.*;
 import com.trains.tickets.service.StopService;
 import com.trains.tickets.service.WagonService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -22,30 +28,56 @@ public class TicketsRestController {
     private final WagonService wagonService;
     private final StopService stopService;
     private final StopRepository stopRepository;
+    private final GraphService graphService;
+    private final StationRepository stationRepository;
 
-    public TicketsRestController(UserRepository userRepository, StopsForMainDTORepository stopsForMainDTORepository, WagonRepository wagonRepository, WagonService wagonService, StopService stopService, StopRepository stopRepository) {
+    public TicketsRestController(UserRepository userRepository, StopsForMainDTORepository stopsForMainDTORepository, WagonRepository wagonRepository, WagonService wagonService, StopService stopService, StopRepository stopRepository, GraphService graphService, StationRepository stationRepository) {
         this.userRepository = userRepository;
         this.stopsForMainDTORepository = stopsForMainDTORepository;
         this.wagonRepository = wagonRepository;
         this.wagonService = wagonService;
         this.stopService = stopService;
         this.stopRepository = stopRepository;
+        this.graphService = graphService;
+        this.stationRepository = stationRepository;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getTableTickets")
     public Set<StopsDirectProjection> getTableTickets(
             @RequestParam String stationFirst,
-            @RequestParam String stationLast
+            @RequestParam String stationLast,
+            @RequestParam String dateTicket
             ){
-        return stopsForMainDTORepository.findDirectScheduleByTwoStations(stationFirst, stationLast);
+        String[] fullDate = dateTicket.split("-");
+        Integer dayOfDate = Integer.valueOf(fullDate[2]);
+        Integer monthOfDate = Integer.valueOf(fullDate[1]);
+        Integer yearOfDate = Integer.valueOf(fullDate[0]);
+        Calendar calendar = new GregorianCalendar(yearOfDate, monthOfDate - 1 , dayOfDate);
+
+        LocalTime timeNow = LocalTime.now();
+        timeNow = timeNow.plusMinutes(10);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String timeNowPlusTen = formatter.format(timeNow);
+        return stopsForMainDTORepository.findDirectScheduleByTwoStations(stationFirst, stationLast, calendar.get(Calendar.DAY_OF_WEEK), timeNowPlusTen);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getTableTicketsTransfer")
     public Set<StopsTwoTrainsProjection> getTableTicketsTransfer(
             @RequestParam String stationFirst,
-            @RequestParam String stationLast
+            @RequestParam String stationLast,
+            @RequestParam String dateTicket
     ){
-        return stopsForMainDTORepository.findScheduleByTwoStations(stationFirst, stationLast);
+        String[] fullDate = dateTicket.split("-");
+        Integer dayOfDate = Integer.valueOf(fullDate[2]);
+        Integer monthOfDate = Integer.valueOf(fullDate[1]);
+        Integer yearOfDate = Integer.valueOf(fullDate[0]);
+        Calendar calendar = new GregorianCalendar(yearOfDate, monthOfDate - 1 , dayOfDate);
+
+        LocalTime timeNow = LocalTime.now();
+        timeNow = timeNow.plusMinutes(10);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String timeNowPlusTen = formatter.format(timeNow);
+        return stopsForMainDTORepository.findScheduleByTwoStations(stationFirst, stationLast, calendar.get(Calendar.DAY_OF_WEEK), calendar.get(Calendar.DAY_OF_WEEK), timeNowPlusTen);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getTicketsInfo")
@@ -60,23 +92,38 @@ public class TicketsRestController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getWagons")
-    public Set<WagonInfoProjection> getWagons(
+    public Iterable<WagonDTO> getWagons(
             @RequestParam String trainId
     ){
-        return wagonRepository.findByTrainID(Integer.parseInt(trainId));
+        //return wagonRepository.findByTrainID(Integer.parseInt(trainId));
+        return wagonService.convertAllEntityToDto(wagonRepository.findAllByTrainId(Integer.parseInt(trainId)));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getSeats")
-    public Set<SeatsProjection> getSeats(
+    public Set<Integer> getSeats(
             @RequestParam String schedule,
             @RequestParam Integer wagonId,
-            @RequestParam String dateTicket
+            @RequestParam String dateTicket,
+            @RequestParam Integer trainId
     ){
-        return wagonRepository.findSeatsByTrainAndSchedule(schedule, wagonId, dateTicket);
+        //return wagonRepository.findSeatsByTrainAndSchedule(schedule, wagonId, dateTicket);
+        return wagonService.getSeats(schedule, wagonId, dateTicket, trainId);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getArrivalsInfo")
     public Iterable<StopsForArrivalsDTO> getArrivalsInfo(@RequestParam String station){
         return stopService.convertAllEntityToDtoForArrival(stopRepository.findAllByStationName(station));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/getGraph")
+    public Set<ManyTrainsTripDTO> getGraph(@RequestParam String strStationFirst,
+                                      @RequestParam String strStationLast){
+        Graph graph = graphService.getFilledGraph();
+        Station stationFirst = stationRepository.findByName(strStationFirst);
+        Station stationLast = stationRepository.findByName(strStationLast);
+        List<Stop> stopList = stopRepository.findAll();
+        Set<ManyTrainsTripDTO> twoTrainsDTOS = graph.findWaysBetweenTwoStations(stationFirst, stationLast, stopList);
+        graph.clean();
+        return twoTrainsDTOS;
     }
 }

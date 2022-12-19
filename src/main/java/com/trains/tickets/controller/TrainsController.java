@@ -27,42 +27,26 @@ public class TrainsController {
     @GetMapping
     public String trainList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll()));
-            return "trainsList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("trains", trainService.convertAllEntityToDto(trainRepository.findAll()));
+        return "trainsList";
     }
 
     @GetMapping("{train}")
     public String trainEditForm(@AuthenticationPrincipal User user,
                                    @PathVariable String train,
                                    Model model){
-        try {
-            mainService.putUserInfoToModel(user, model);
-            trainService.putInfoAboutTrainToModel(train, model);
-            return "trainsEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        trainService.putInfoAboutTrainToModel(train, model);
+        return "trainsEdit";
     }
     @PostMapping
     public String trainSave(@AuthenticationPrincipal User user,
                                 @RequestParam String number,
-                                @RequestParam Integer seats,
                                 @RequestParam Integer trainId,
                                 Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            trainService.saveTrain(number, seats, trainId);
-            return "redirect:/trains";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        trainService.saveTrain(number, trainId);
+        return "redirect:/trains";
     }
 }

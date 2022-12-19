@@ -24,28 +24,18 @@ public class TicketsController {
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAll()));
-            return "ticketsList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("tickets", ticketService.convertAllEntityToDto(ticketRepository.findAll()));
+        return "ticketsList";
     }
 
     @GetMapping("{ticket}")
     public String userEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String ticket,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            ticketService.putInfoAboutTicketToModel(ticket, model);
-            return "ticketsEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        ticketService.putInfoAboutTicketToModel(ticket, model);
+        return "ticketsEdit";
     }
 
     @PostMapping
@@ -60,13 +50,8 @@ public class TicketsController {
                            @RequestParam Integer seat,
                            @RequestParam String user,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(userThis, model);
-            ticketService.saveTicket(passenger, dateTicket, train, wagon, price, schedule, ticketId, seat, user, userThis);
-            return "redirect:/tickets";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(userThis, model);
+        ticketService.saveTicket(passenger, dateTicket, train, wagon, price, schedule, ticketId, seat, user, userThis);
+        return "redirect:/tickets";
     }
 }

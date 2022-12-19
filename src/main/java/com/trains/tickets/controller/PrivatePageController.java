@@ -36,26 +36,16 @@ public class PrivatePageController {
     @GetMapping
     public String userList(@AuthenticationPrincipal User user,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            return "ticketsList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        return "ticketsList";
     }
 
     @GetMapping("{uuid}")
     public String userEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String uuid,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            privatePageService.putInfoAboutPrivatePageToModel(user, model, uuid);
-            return "privatePage";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        privatePageService.putInfoAboutPrivatePageToModel(user, model, uuid);
+        return "privatePage";
     }
 }

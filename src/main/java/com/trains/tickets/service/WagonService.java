@@ -1,17 +1,23 @@
 package com.trains.tickets.service;
 
 import com.trains.tickets.domain.ServiceClass;
+import com.trains.tickets.domain.Ticket;
 import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.Wagon;
 import com.trains.tickets.dto.WagonDTO;
+import com.trains.tickets.projection.WagonInfoProjection;
 import com.trains.tickets.repository.ServiceClassRepository;
+import com.trains.tickets.repository.TicketRepository;
 import com.trains.tickets.repository.TrainRepository;
 import com.trains.tickets.repository.WagonRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -22,13 +28,15 @@ public class WagonService {
     private final ServiceClassRepository serviceClassRepository;
     private final ServiceClassService serviceClassService;
     private final WagonRepository wagonRepository;
+    private final TicketRepository ticketRepository;
 
-    public WagonService(TrainRepository trainRepository, TrainService trainService, ServiceClassRepository serviceClassRepository, ServiceClassService serviceClassService, WagonRepository wagonRepository) {
+    public WagonService(TrainRepository trainRepository, TrainService trainService, ServiceClassRepository serviceClassRepository, ServiceClassService serviceClassService, WagonRepository wagonRepository, TicketRepository ticketRepository) {
         this.trainRepository = trainRepository;
         this.trainService = trainService;
         this.serviceClassRepository = serviceClassRepository;
         this.serviceClassService = serviceClassService;
         this.wagonRepository = wagonRepository;
+        this.ticketRepository = ticketRepository;
     }
 
     public Iterable<WagonDTO> convertAllEntityToDto(Iterable<Wagon> wagons){
@@ -128,5 +136,41 @@ public class WagonService {
                 wagonRepository.save(wagonChanged);
             }
         }
+    }
+
+    public Set<Integer> getSeats(String schedule, Integer wagonId, String dateTicket, Integer trainId){
+        Set<Wagon> wagons = wagonRepository.findAllByTrainId(trainId);
+        for (Wagon wagon: wagons){
+            if(wagon.getId() != null){
+                wagonId = wagon.getId();
+                break;
+            }
+        }
+        Set<Integer> freeSeats = new HashSet<>();
+        if (wagonId == null){
+            return freeSeats;
+        }
+        Wagon selectedWagon = wagonRepository.findById(wagonId);
+        if(selectedWagon == null){
+            return freeSeats;
+        }
+        String[] fullDate = dateTicket.split("-");
+        Integer dayOfTicket = Integer.valueOf(fullDate[2]);
+        Integer monthOfTicket = Integer.valueOf(fullDate[1]);
+        Integer yearOfTicket = Integer.valueOf(fullDate[0]);
+        Set<Ticket> tickets = ticketRepository.findAllByDateTicketAndScheduleTimeAndWagonId(LocalDate.of(yearOfTicket, monthOfTicket, dayOfTicket), schedule, wagonId);
+        boolean wasSaled = false;
+        for(Integer i = 1; i <= selectedWagon.getSeats(); i++) {
+            wasSaled = false;
+            for (Ticket ticket : tickets) {
+                if(i.equals(ticket.getSeat())){
+                    wasSaled = true;
+                }
+            }
+            if(!wasSaled){
+                freeSeats.add(i);
+            }
+        }
+        return freeSeats;
     }
 }

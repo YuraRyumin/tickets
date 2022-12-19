@@ -9,8 +9,10 @@ public interface TicketInfoProjection {
     String getPassengerSurname();
     String getPassengerGender();
     String getPassengerPassport();
+    String getPassengerDate();
     String getTrainNumber();
     String getTrainId();
     String getSchedule();
     Integer getScheduleID();
+    String getSchedName();
 }

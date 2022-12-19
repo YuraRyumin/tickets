@@ -27,28 +27,18 @@ public class DistancesController {
     @GetMapping
     public String distanceList(@AuthenticationPrincipal User user,
                            Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("distances", distancesService.convertAllEntityToDto(distanceRepository.findAll()));
-            return "distancesList";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("distances", distancesService.convertAllEntityToDto(distanceRepository.findAll()));
+        return "distancesList";
     }
 
     @GetMapping("{distance}")
     public String distanceEditForm(@AuthenticationPrincipal User user,
                                @PathVariable String distance,
                                Model model) {
-        try{
-            mainService.putUserInfoToModel(user, model);
-            distancesService.putInfoAboutDistanceToModel(user, model, distance);
-            return "distancesEdit";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        distancesService.putInfoAboutDistanceToModel(user, model, distance);
+        return "distancesEdit";
     }
     @PostMapping
     public String distanceSave(@AuthenticationPrincipal User user,
@@ -57,13 +47,8 @@ public class DistancesController {
                            @RequestParam Integer distanceId,
                            @RequestParam Integer kilometers,
                            Model model) {
-        try{
-            mainService.putUserInfoToModel(user, model);
-            distancesService.saveDistance(distanceId, kilometers, stationFirst, stationLast);
-            return "redirect:/distances";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        distancesService.saveDistance(distanceId, kilometers, stationFirst, stationLast);
+        return "redirect:/distances";
     }
 }

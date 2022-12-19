@@ -9,14 +9,12 @@ public class Train {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String number;
-    private Integer seats;
 
     public Train() {
     }
 
-    public Train(String number, Integer seats) {
+    public Train(String number) {
         this.number = number;
-        this.seats = seats;
     }
 
     public Integer getId() {
@@ -35,11 +33,31 @@ public class Train {
         this.number = number;
     }
 
-    public Integer getSeats() {
-        return seats;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Train other = (Train) obj;
+        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+            return false;
+        }
+        if ((this.number == null) ? (other.number != null) : !this.number.equals(other.number)) {
+            return false;
+        }
+        return true;
     }
 
-    public void setSeats(Integer seats) {
-        this.seats = seats;
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + (this.number != null ? this.number.hashCode() : 0);
+        hash = 53 * hash + this.id;
+        return hash;
     }
 }

@@ -1,6 +1,7 @@
 package com.trains.tickets.domain;
 
 import javax.persistence.*;
+//import org.springframework.data.relational.core.mapping.Table;
 
 @Entity
 @Table(name = "distances")

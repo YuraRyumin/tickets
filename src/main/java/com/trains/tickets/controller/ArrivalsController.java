@@ -37,15 +37,10 @@ public class ArrivalsController {
     @GetMapping
     public String arrivalsList(@AuthenticationPrincipal User user,
                                Model model){
-        try{
-            mainService.putUserInfoToModel(user, model);
-            model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
-            model.addAttribute("arrivals", stopService.convertAllEntityToDtoForArrival(stopRepository.findAll()));
-            return "arrivals";
-        } catch (Exception e){
-            mainService.putExceptionInfoToModel(e, model);
-            return "error";
-        }
+        mainService.putUserInfoToModel(user, model);
+        model.addAttribute("stations", stationService.convertAllEntityToDto(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))));
+        model.addAttribute("arrivals", stopService.convertAllEntityToDtoForArrival(stopRepository.findAll()));
+        return "arrivals";
     }
 
 
