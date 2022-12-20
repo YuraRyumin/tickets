@@ -46,7 +46,7 @@ public class TrainsController {
                                 @RequestParam Integer trainId,
                                 Model model){
         mainService.putUserInfoToModel(user, model);
-        trainService.saveTrain(number, trainId);
+        trainService.saveTrain(number, trainId, user);
         return "redirect:/trains";
     }
 }

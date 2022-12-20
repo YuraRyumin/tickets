@@ -1,37 +1,31 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.DistanceDTO;
 import com.trains.tickets.dto.GenderDTO;
 import com.trains.tickets.dto.PassengerDTO;
 import com.trains.tickets.repository.PassengerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class PassengerService {
     private final PassengerRepository passengerRepository;
 
     public PassengerService(PassengerRepository passengerRepository) {
         this.passengerRepository = passengerRepository;
-    }
-
-    public List<PassengerDTO> getAllPassengers(){
-        return passengerRepository.findAll()
-                .stream()
-                .map(this::convertEntityToDto)
-                .collect(Collectors.toList());
     }
 
     public Iterable<PassengerDTO> convertAllEntityToDto(Iterable<Passenger> passengers){
@@ -85,13 +79,14 @@ public class PassengerService {
 
         return passengerDTO;
     }
-
+    @Transactional
     public void savePassenger(String name,
-                           String surname,
-                           String passport,
-                           String gender,
-                           String dateOfBirth,
-                           Integer passengerId){
+                              String surname,
+                              String passport,
+                              String gender,
+                              String dateOfBirth,
+                              Integer passengerId,
+                              User user){
         String[] fullDate = dateOfBirth.split("-");
         Integer dayOfBirth = Integer.valueOf(fullDate[2]);
         Integer monthOfBirth = Integer.valueOf(fullDate[1]);
@@ -107,6 +102,13 @@ public class PassengerService {
                     localDateOfBirth
             );
             passengerRepository.save(passengerChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new passenger with id " +
+                    passengerChanged.getId() + " (" +
+                    passengerChanged.getName() + "; " +
+                    passengerChanged.getSurname() + "; " +
+                    passengerChanged.getGender() + "; " +
+                    passengerChanged.getDateOfBirth().toString() + "; " +
+                    passengerChanged.getPassport() + ")");
         } else {
             Passenger passengerChanged = passengerRepository.findById(passengerId);
             boolean wasChanged = false;
@@ -132,6 +134,13 @@ public class PassengerService {
             }
             if(wasChanged){
                 passengerRepository.save(passengerChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change passenger with id " +
+                        passengerChanged.getId() + " (" +
+                        passengerChanged.getName() + "; " +
+                        passengerChanged.getSurname() + "; " +
+                        passengerChanged.getGender() + "; " +
+                        passengerChanged.getDateOfBirth().toString() + "; " +
+                        passengerChanged.getPassport() + ")");
             }
         }
     }

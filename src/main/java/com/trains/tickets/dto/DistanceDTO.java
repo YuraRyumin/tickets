@@ -1,6 +1,5 @@
 package com.trains.tickets.dto;
 
-import com.trains.tickets.domain.Station;
 import lombok.Data;
 
 @Data

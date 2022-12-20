@@ -1,13 +1,8 @@
 package com.trains.tickets.controller;
 
 import com.trains.tickets.domain.User;
-import com.trains.tickets.repository.PassengerRepository;
-import com.trains.tickets.repository.RoleRepository;
-import com.trains.tickets.repository.UserRepository;
-import com.trains.tickets.service.MailSender;
 import com.trains.tickets.service.MainService;
 import com.trains.tickets.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

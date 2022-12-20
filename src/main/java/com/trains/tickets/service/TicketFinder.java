@@ -1,12 +1,9 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.Station;
-import com.trains.tickets.repository.StationRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.*;
-
+@Transactional(readOnly = true)
 @Service
 public class TicketFinder {
     private String stationFirst;

@@ -2,12 +2,16 @@ package com.trains.tickets.service;
 
 import com.trains.tickets.domain.*;
 import com.trains.tickets.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class TakeTicketService {
     private final TicketRepository ticketRepository;
@@ -28,6 +32,7 @@ public class TakeTicketService {
         this.userService = userService;
     }
 
+    @Transactional
     public void saveTicket(User user, Map<String, String> form, Model model){
         LocalDate localDateTicket = null;
         if (form.containsKey("dateTicket")) {
@@ -81,6 +86,13 @@ public class TakeTicketService {
                     passengerGenderForTicket,
                     localDateOfBirth);
             passengerRepository.save(passengerForTicket);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new passenger with id " +
+                    passengerForTicket.getId() + " (" +
+                    passengerForTicket.getName() + "; " +
+                    passengerForTicket.getSurname() + "; " +
+                    passengerForTicket.getGender() + "; " +
+                    passengerForTicket.getDateOfBirth().toString() + "; " +
+                    passengerForTicket.getPassport() + ")");
         }
 
         for(Integer i = 0; i < 10; i++){
@@ -89,7 +101,6 @@ public class TakeTicketService {
             if (form.containsKey("stationFirstN" + i)) {
                 stationFirstTicket = stationRepository.findByName(form.get("stationFirstN" + i).replace("_", " "));
             }
-            System.out.println(stationFirstTicket);
             String timeDepartureTicket = null;
             //    LocalTime localTimeDepartureTicket = null;
             if (form.containsKey("timeDepartureN" + i)) {
@@ -99,7 +110,6 @@ public class TakeTicketService {
             if (form.containsKey("stationLastN" + i)) {
                 stationLastTicket = stationRepository.findByName(form.get("stationLastN" + i).replace("_", " "));
             }
-            System.out.println(stationLastTicket);
             if(stationFirstTicket == null && stationLastTicket == null){
                 continue;
             }
@@ -132,9 +142,12 @@ public class TakeTicketService {
                 //scheduleFirstTicket = scheduleRepository.findByTime(form.get("scheduleFirstTicket"));
                 scheduleTicket = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
             }
-            System.out.println(scheduleTicket);
             if(checkPassengerInTrain(passengerForTicket, localDateTicket, trainTicket, scheduleTicket)){
                 model.addAttribute("message", "Passenger is alredy registred for this train!");
+                return;
+            }
+            if(checkSeatInTrain(seatTicket, localDateTicket, trainTicket, scheduleTicket)){
+                model.addAttribute("message", "Sorry, this place is already taken.");
                 return;
             }
 
@@ -162,7 +175,19 @@ public class TakeTicketService {
         return true;
     }
 
-    private void correctPassanger(Passenger passenger, String passengerName, String passengerSurname, String passengerGender){
+    private boolean checkSeatInTrain(Integer seat,
+                                          LocalDate localDate,
+                                          Train train,
+                                          Schedule schedule){
+        Ticket ticket = ticketRepository.findBySeatAndDateTicketAndTrainAndSchedule(seat, localDate, train, schedule);
+        if(ticket == null){
+            return false;
+        }
+        return true;
+    }
+
+    @Transactional
+    public void correctPassanger(Passenger passenger, String passengerName, String passengerSurname, String passengerGender, User user){
         boolean wasChange = false;
         if(!passenger.getName().equals(passengerName)){
             passenger.setName(passengerName);
@@ -178,10 +203,18 @@ public class TakeTicketService {
         }
         if(wasChange){
             passengerRepository.save(passenger);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change passenger with id " +
+                    passenger.getId() + " (" +
+                    passenger.getName() + "; " +
+                    passenger.getSurname() + "; " +
+                    passenger.getGender() + "; " +
+                    passenger.getDateOfBirth().toString() + "; " +
+                    passenger.getPassport() + ")");
         }
     }
 
-    private void createTicket(Passenger passenger,
+    @Transactional
+    public void createTicket(Passenger passenger,
                               LocalDate dateTicket,
                               Train train,
                               Wagon wagon,
@@ -191,5 +224,15 @@ public class TakeTicketService {
                               User user){
         Ticket ticket = new Ticket(passenger, dateTicket, train, wagon, price, schedule, seat, user);
         ticketRepository.save(ticket);
+        log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new ticket with id " +
+                ticket.getId() + " (" +
+                ticket.getPassenger().getName() + " " + ticket.getPassenger().getSurname() + "; " +
+                ticket.getUser().getLogin() + "; " +
+                ticket.getTrain().getNumber() + "; " +
+                ticket.getSchedule().getTime().toString() + "; " +
+                ticket.getDateTicket().toString() + "; " +
+                ticket.getWagon().getName() + "; " +
+                ticket.getSeat().toString() + "; " +
+                ticket.getPrice().toString() + ")");
     }
 }

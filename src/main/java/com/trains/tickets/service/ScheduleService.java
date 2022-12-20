@@ -2,21 +2,25 @@ package com.trains.tickets.service;
 
 import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.domain.Train;
+import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.DaysOfWeekDTO;
 import com.trains.tickets.dto.ScheduleDTO;
 import com.trains.tickets.repository.ScheduleRepository;
 import com.trains.tickets.repository.TrainRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
-import java.security.PublicKey;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
@@ -71,11 +75,12 @@ public class ScheduleService {
 
         return scheduleDTO;
     }
-
+    @Transactional
     public void saveSchedule(String time,
-                              Integer dayOfWeek,
-                              String train,
-                              Integer scheduleId){
+                             Integer dayOfWeek,
+                             String train,
+                             Integer scheduleId,
+                             User user){
         if (scheduleId.equals(0)) {
             Schedule scheduleChanged = new Schedule(
                     time,
@@ -83,6 +88,11 @@ public class ScheduleService {
                     trainRepository.findByNumber(train)
             );
             scheduleRepository.save(scheduleChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new schedule with id " +
+                    scheduleChanged.getId() + " (" +
+                    scheduleChanged.getTrain().getNumber() + "; " +
+                    scheduleChanged.getTime().toString() + "; " +
+                    scheduleChanged.getDayOfWeek() + ")");
         } else {
             Schedule scheduleChanged = scheduleRepository.findById(scheduleId);
             boolean wasChanged = false;
@@ -101,6 +111,11 @@ public class ScheduleService {
             }
             if (wasChanged){
                 scheduleRepository.save(scheduleChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change schedule with id " +
+                        scheduleChanged.getId() + " (" +
+                        scheduleChanged.getTrain().getNumber() + "; " +
+                        scheduleChanged.getTime().toString() + "; " +
+                        scheduleChanged.getDayOfWeek() + ")");
             }
         }
     }

@@ -85,8 +85,35 @@
         <div class="col-2">
         </div>
         <div class="col">
-            <div align=center>
-                List of tickets
+            List of tickets
+            <div class="mainDiv">
+                <div class="field">
+                    <label>Date:</label>
+                    <input class="js-select2" type="date" id="dateTicket" name="dateTicket" min="{{dateNow}}" value="{{dateNow}}">
+                </div>
+                <br><br>
+                <div class="field">
+                    <label>Train:</label>
+                    <select class="js-select2" id="trainTickets" name="trainTickets" placeholder="Choose train">
+
+                        {{#trains}}
+                        <option value="{{number}}">{{number}}</option>
+                        {{/trains}}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Schedule:</label>
+                    <select class="js-select2" id="scheduleTickets" name="scheduleTickets" placeholder="Choose schedule">
+
+                        {{#schedules}}
+                        <option value="{{name}}">{{name}}</option>
+                        {{/schedules}}
+                    </select>
+                </div>
+                <input type="button" onclick="getDataAndSetFullTable()" class='btn btn-outline-dark' value="Drop filters">
+                <br>
+            </div>
+            <div id="divForTrainsTable" align=center>
                 <table class="tableOnDiv" id='ticket_table' border = '1'>
                     <thead>
                     <tr>
@@ -107,7 +134,7 @@
                         <td>{{dateTicket}}</td>
                         <td>{{train}}</td>
                         <td>{{wagon}}</td>
-                        <td></td>
+                        <td>{{seat}}</td>
                         <td>{{price}}</td>
                         <td>{{schedule}}</td>
                         <td><a href="/tickets/{{id}}" class="btn btn-outline-dark">edit</a></td>
@@ -123,5 +150,6 @@
     </div>
 </div>
 <script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/filterTrainsTable.js"></script>
 </body>
 </html>

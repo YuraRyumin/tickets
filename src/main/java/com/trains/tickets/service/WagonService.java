@@ -1,26 +1,26 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.ServiceClass;
-import com.trains.tickets.domain.Ticket;
-import com.trains.tickets.domain.Train;
-import com.trains.tickets.domain.Wagon;
+import com.trains.tickets.domain.*;
 import com.trains.tickets.dto.WagonDTO;
-import com.trains.tickets.projection.WagonInfoProjection;
 import com.trains.tickets.repository.ServiceClassRepository;
 import com.trains.tickets.repository.TicketRepository;
 import com.trains.tickets.repository.TrainRepository;
 import com.trains.tickets.repository.WagonRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class WagonService {
     private final TrainRepository trainRepository;
@@ -99,7 +99,8 @@ public class WagonService {
         }
     }
 
-    public void saveWagon(String train, String serviceClasses, String name, Integer seats, Integer wagonId){
+    @Transactional
+    public void saveWagon(String train, String serviceClasses, String name, Integer seats, Integer wagonId, User user){
         ServiceClass serviceClassNew = serviceClassRepository.findByName(serviceClasses);
         Train trainNew = trainRepository.findByNumber(train);
         if(wagonId.equals(0)){
@@ -110,6 +111,12 @@ public class WagonService {
                     seats
             );
             wagonRepository.save(wagonChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new wagon with id " +
+                    wagonChanged.getId() + " (" +
+                    wagonChanged.getName() + "; " +
+                    wagonChanged.getTrain().getNumber() + "; " +
+                    wagonChanged.getSeats().toString() + "; " +
+                    wagonChanged.getServiceClasses().getName() + ")");
         } else {
             Wagon wagonChanged = wagonRepository.findById(wagonId);
             if(wagonChanged == null){
@@ -134,6 +141,12 @@ public class WagonService {
             }
             if(wasChanged){
                 wagonRepository.save(wagonChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change wagon with id " +
+                        wagonChanged.getId() + " (" +
+                        wagonChanged.getName() + "; " +
+                        wagonChanged.getTrain().getNumber() + "; " +
+                        wagonChanged.getSeats().toString() + "; " +
+                        wagonChanged.getServiceClasses().getName() + ")");
             }
         }
     }

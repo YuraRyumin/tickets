@@ -1,19 +1,15 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.service.MainService;
 import com.trains.tickets.service.RoleService;
-import com.trains.tickets.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @Controller
 @RequestMapping("/roles")
@@ -21,13 +17,11 @@ import java.util.Map;
 public class RolesController {
     private final RoleRepository roleRepository;
     private final RoleService roleService;
-    private final UserService userService;
     private final MainService mainService;
 
-    public RolesController(RoleRepository roleRepository, RoleService roleService, UserService userService, MainService mainService) {
+    public RolesController(RoleRepository roleRepository, RoleService roleService, MainService mainService) {
         this.roleRepository = roleRepository;
         this.roleService = roleService;
-        this.userService = userService;
         this.mainService = mainService;
     }
 
@@ -44,22 +38,16 @@ public class RolesController {
                                @PathVariable String role,
                                Model model){
         mainService.putUserInfoToModel(user, model);
-        if (role.equals("new")) {
-            model.addAttribute("role", roleService.getEmptyDto());
-        } else {
-            model.addAttribute("role", roleService.convertEntityToDto(roleRepository.findById(Integer.parseInt(role))));
-        }
+        roleService.putInfoAboutRoleToModel(model, role);
         return "roleEdit";
     }
     @PostMapping
     public String roleSave(@AuthenticationPrincipal User user,
                            @RequestParam String name,
                            @RequestParam Integer roleId,
-                           @RequestParam Map<String, String> form,
-                           //@RequestParam("roleId") Role roleChanged,
                            Model model){
         mainService.putUserInfoToModel(user, model);
-        roleService.saveRole(name, roleId);
+        roleService.saveRole(name, roleId, user);
         return "redirect:/roles";
     }
 }

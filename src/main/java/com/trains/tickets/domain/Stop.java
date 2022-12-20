@@ -1,7 +1,6 @@
 package com.trains.tickets.domain;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity

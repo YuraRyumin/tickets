@@ -1,35 +1,26 @@
 package com.trains.tickets.controller;
 
-import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.service.MainService;
 import com.trains.tickets.service.PassengerService;
-import com.trains.tickets.service.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.Map;
-
 @Controller
 @RequestMapping("/passengers")
 @PreAuthorize("hasAuthority('operator')")
-//@PreAuthorize("hasAuthority('admin')")
 public class PassengersController {
     private final PassengerRepository passengerRepository;
     private final PassengerService passengerService;
-    private final UserService userService;
     private final MainService mainService;
 
-    public PassengersController(PassengerRepository passengerRepository, PassengerService passengerService, UserService userService, MainService mainService) {
+    public PassengersController(PassengerRepository passengerRepository, PassengerService passengerService, MainService mainService) {
         this.passengerRepository = passengerRepository;
         this.passengerService = passengerService;
-        this.userService = userService;
         this.mainService = mainService;
     }
 
@@ -59,7 +50,7 @@ public class PassengersController {
                            @RequestParam Integer passengerId,
                            Model model){
         mainService.putUserInfoToModel(user, model);
-        passengerService.savePassenger(name, surname, passport, gender, dateOfBirth, passengerId);
+        passengerService.savePassenger(name, surname, passport, gender, dateOfBirth, passengerId, user);
         return "redirect:/passengers";
     }
 }

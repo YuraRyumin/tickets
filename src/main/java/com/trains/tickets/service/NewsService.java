@@ -4,11 +4,13 @@ import com.trains.tickets.domain.News;
 import com.trains.tickets.dto.NewsDTO;
 import com.trains.tickets.repository.NewsRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Transactional(readOnly = true)
 @Service
 public class NewsService {
     private final NewsRepository newsRepository;

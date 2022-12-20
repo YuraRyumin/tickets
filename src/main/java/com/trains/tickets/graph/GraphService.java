@@ -4,15 +4,19 @@ import com.trains.tickets.domain.Distance;
 import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.Stop;
+import com.trains.tickets.dto.ManyTrainsTripDTO;
 import com.trains.tickets.repository.DistanceRepository;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@Transactional(readOnly = true)
 @Service
 public class GraphService {
     private final StationRepository stationRepository;
@@ -62,5 +66,17 @@ public class GraphService {
         }
 
         return graph;
+    }
+
+    public Set<ManyTrainsTripDTO> getAllShortestWays(String strStationFirst,
+                              String strStationLast,
+                              String dateTicket){
+        Graph graph = getFilledGraph();
+        Station stationFirst = stationRepository.findByName(strStationFirst);
+        Station stationLast = stationRepository.findByName(strStationLast);
+        List<Stop> stopList = stopRepository.findAll();
+        Set<ManyTrainsTripDTO> twoTrainsDTOS = graph.findWaysBetweenTwoStations(stationFirst, stationLast, stopList, dateTicket);
+        graph.clean();
+        return twoTrainsDTOS;
     }
 }

@@ -48,7 +48,7 @@ public class WagonsController {
                             @RequestParam Integer wagonId,
                             Model model){
         mainService.putUserInfoToModel(user, model);
-        wagonService.saveWagon(train, serviceClasses, name, seats, wagonId);
+        wagonService.saveWagon(train, serviceClasses, name, seats, wagonId, user);
         return "redirect:/wagons";
     }
 }

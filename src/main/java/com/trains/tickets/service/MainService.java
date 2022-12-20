@@ -1,13 +1,15 @@
 package com.trains.tickets.service;
 
 import com.trains.tickets.domain.User;
-import com.trains.tickets.dto.ErrorDTO;
 import com.trains.tickets.repository.StationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 
+@Transactional(readOnly = true)
 @Service
 public class MainService {
     private final UserService userService;
@@ -25,10 +27,10 @@ public class MainService {
     public void putUserInfoToModel(User user, Model model){
         model.addAttribute("user", userService.convertEntityToDtoForNav(user));
         if(user != null) {
-            if (user.isAdmin()) {
+            if (userService.isAdmin(user)) {
                 model.addAttribute("adminRole", true);
             }
-            if (user.isOperator()) {
+            if (userService.isOperator(user)) {
                 model.addAttribute("operatorRole", true);
             }
         }
@@ -43,13 +45,5 @@ public class MainService {
             model.addAttribute("passenger", passengerService.convertEntityToDto(user.getPassenger()));
         }
         model.addAttribute("genders", passengerService.getGendersList(user.getPassenger()));
-    }
-
-    public void putExceptionInfoToModel(Exception e, Model model){
-        ErrorDTO errorDTO = new ErrorDTO();
-        errorDTO.setCode(e.getClass().getName());
-        errorDTO.setMessage(e.getMessage());
-        errorDTO.setBody(String.valueOf(e.getCause()));
-        model.addAttribute("error", errorDTO);
     }
 }

@@ -1,14 +1,20 @@
 package com.trains.tickets.service;
 
 import com.trains.tickets.domain.Role;
+import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.RoleDTO;
 import com.trains.tickets.repository.RoleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class RoleService {
     private final RoleRepository roleRepository;
@@ -54,17 +60,31 @@ public class RoleService {
 
         return roleDTO;
     }
-
-    public void saveRole(String name, Integer roleId){
+    @Transactional
+    public void saveRole(String name, Integer roleId, User user){
         if (roleId.equals(0)) {
             Role roleChanged = new Role(name);
             roleRepository.save(roleChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new role with id " +
+                    roleChanged.getId() + " (" +
+                    roleChanged.getName() + ")");
         } else {
             Role roleChanged = roleRepository.findById(roleId);
             if(!roleChanged.getName().equals(name)){
                 roleChanged.setName(name);
                 roleRepository.save(roleChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change role with id " +
+                        roleChanged.getId() + " (" +
+                        roleChanged.getName() + ")");
             }
+        }
+    }
+
+    public void putInfoAboutRoleToModel(Model model, String role){
+        if (role.equals("new")) {
+            model.addAttribute("role", getEmptyDto());
+        } else {
+            model.addAttribute("role", convertEntityToDto(roleRepository.findById(Integer.parseInt(role))));
         }
     }
 }

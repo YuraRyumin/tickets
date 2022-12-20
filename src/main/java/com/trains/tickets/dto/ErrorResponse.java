@@ -1,4 +1,4 @@
-package com.trains.tickets.controller;
+package com.trains.tickets.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

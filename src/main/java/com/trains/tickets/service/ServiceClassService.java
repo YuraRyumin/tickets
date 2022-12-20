@@ -1,15 +1,20 @@
 package com.trains.tickets.service;
 
 import com.trains.tickets.domain.ServiceClass;
+import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.ServiceClassDTO;
 import com.trains.tickets.repository.ServiceClassRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class ServiceClassService {
     private final ServiceClassRepository serviceClassRepository;
@@ -65,16 +70,21 @@ public class ServiceClassService {
             model.addAttribute("serviceClass", convertEntityToDto(serviceClassRepository.findById(Integer.parseInt(serviceClass))));
         }
     }
-
+    @Transactional
     public void saveServiceClass(String name,
                                  Float prisePerKm,
-                                 Integer serviceClassId){
+                                 Integer serviceClassId,
+                                 User user){
         if (serviceClassId.equals(0)) {
             ServiceClass serviceClassChanged = new ServiceClass(
                     name,
                     prisePerKm
             );
             serviceClassRepository.save(serviceClassChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new service class with id " +
+                    serviceClassChanged.getId() + " (" +
+                    serviceClassChanged.getName() + "; " +
+                    serviceClassChanged.getPrisePerKm().toString() + ")");
         } else {
             ServiceClass serviceClassChanged = serviceClassRepository.findById(serviceClassId);
             boolean wasChanged = false;
@@ -88,6 +98,10 @@ public class ServiceClassService {
             }
             if(wasChanged){
                 serviceClassRepository.save(serviceClassChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change service class with id " +
+                        serviceClassChanged.getId() + " (" +
+                        serviceClassChanged.getName() + "; " +
+                        serviceClassChanged.getPrisePerKm().toString() + ")");
             }
         }
     }

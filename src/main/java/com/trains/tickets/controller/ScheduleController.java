@@ -10,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @Controller
 @RequestMapping("/schedule")
 @PreAuthorize("hasAuthority('operator')")
@@ -50,7 +48,7 @@ public class ScheduleController {
                            @RequestParam Integer scheduleId,
                            Model model){
         mainService.putUserInfoToModel(user, model);
-        scheduleService.saveSchedule(time, dayOfWeek, train, scheduleId);
+        scheduleService.saveSchedule(time, dayOfWeek, train, scheduleId, user);
         return "redirect:/schedule";
     }
 }

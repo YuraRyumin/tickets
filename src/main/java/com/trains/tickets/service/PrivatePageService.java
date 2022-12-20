@@ -4,8 +4,10 @@ import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.NewsRepository;
 import com.trains.tickets.repository.TicketRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
+@Transactional(readOnly = true)
 @Service
 public class PrivatePageService {
     private final TicketRepository ticketRepository;

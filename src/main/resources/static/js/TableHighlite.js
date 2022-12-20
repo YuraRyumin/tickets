@@ -115,7 +115,7 @@ function getTableForTicket(stationFirst, stationLast, timeDeparture, timeArrival
         var dataR = JSON.parse(request.response);
         //console.log(dataR);
         if (dataR != null) {
-
+            console.log(dataR);
             ticketsInfo += "<table id='ticket_table' border = '1'>" +
                 "<tbody>";
             for (i = 0; i < dataR.length; i++) {
@@ -150,10 +150,6 @@ function SetDivTwoTicket(table_Id, elem) {
         var txtTable = "<div class='tableOnDiv' id='divForAllTickets'>";
         for (n = 0; n < elem.childNodes.length; n++) {
             for (m = 0; m < elem.childNodes[n].childNodes.length; m++) {
-                // console.log(elem.childNodes[n].childNodes[m]);
-                // console.log(elem.childNodes[n].childNodes[m].className);
-                // console.log(elem.childNodes[n].childNodes[m].className == "divForTrainsEmpty");
-                // console.log(elem.childNodes[n].childNodes[m].childNodes.length);
                 if(elem.childNodes[n].childNodes[m].className == "divForTrainsEmpty"){
                     continue;
                 }
@@ -193,105 +189,9 @@ function SetDivTwoTicket(table_Id, elem) {
         $("#divForOneTrains").html(txtTable);
         $("#passengerInfo").collapse("show");
         $("#divForGraph").collapse("hide");
-        //console.log(txtTable);
-        //console.log(tickets);
-        //$("#tableTickets").html(tickets);
-        //window.location.href = 'issueTicket';
+
         return;
     }
-
-    var timeBeginningFirstTrain = elem.parentNode.childNodes[0].textContent;
-    var nameFirstStationFirstTrain = elem.parentNode.childNodes[1].textContent;
-    var nameSecondStationFirstTrain = elem.parentNode.childNodes[2].textContent;
-    var timeEndFirstTrain = elem.parentNode.childNodes[3].textContent;
-
-    var timeBeginningSecondTrain = elem.parentNode.childNodes[4].textContent;
-    var nameFirstStationSecondTrain = elem.parentNode.childNodes[5].textContent;
-    var nameSecondStationSecondTrain = elem.parentNode.childNodes[6].textContent;
-    var timeEndSecondTrain = elem.parentNode.childNodes[7].textContent;
-
-    var txtDate = document.getElementById("dateTicket").value;
-
-    $.get('/getTicketsInfo',
-        {
-            stationFirst: nameFirstStationFirstTrain,
-            stationLast: nameSecondStationFirstTrain,
-            timeDeparture: timeBeginningFirstTrain,
-            timeArrival: timeEndFirstTrain
-        }).done(
-        function (data) {
-            console.log(data);
-            if (data != null) {
-                let ticketsInfo = "<table id='ticket_table' border = '1'>" +
-                    "<tbody>";
-                for (i = 0; i < data.length; i++) {
-                    let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
-                    var sched = data[i].schedule;
-                    var train = data[i].trainId;
-                    var schedName = data[i].trainNumber + "_-&gt;_" + data[i].schedule;
-                    ticketsInfo = ticketsInfo +
-                        "<tr><td>Station first</td><td><input type='text' id='stationFirstFirstTicket' name='stationFirstFirstTicket' readonly value=" + data[i].stationFirst.replace(' ', '_') + "></td></tr>" +
-                        "<tr><td>Time departure</td><td><input type='text' id='timeDepartureFirstTicket' name='timeDepartureFirstTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
-                        "<tr><td>Station last</td><td><input type='text' id='stationLastFirstTicket' name='stationLastFirstTicket' readonly value=" + data[i].stationLast.replace(' ', '_') + "></td></tr>" +
-                        "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalFirstTicket' name='timeArrivalFirstTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
-                        "<tr><td>Train</td><td><input type='text' id='trainFirstTicket' name='trainFirstTicket' readonly value=" + data[i].trainNumber + "></td></tr>" +
-                        "<tr><td>Schedule</td><td><input type='text' id='scheduleFirstTicket' name='scheduleFirstTicket' readonly value=" + schedName + "></td></tr>" +
-                        "<tr><td>Wagon</td><td>" + showWagonList(data[i].trainId, "FirstTicket") + "</td></tr>" +
-                        "<tr><td>Seat</td><td>" + showSeatsList(sched, 1, txtDate, "FirstTicket", train) + "</td></tr>";
-                }
-
-                ticketsInfo = ticketsInfo + "</tbody></table><br>";
-                $("#tableTickets").html(ticketsInfo);
-            }
-        });
-    $.get('/getTicketsInfo',
-        {
-            stationFirst: nameFirstStationSecondTrain,
-            stationLast: nameSecondStationSecondTrain,
-            timeDeparture: timeBeginningSecondTrain,
-            timeArrival: timeEndSecondTrain
-        }).done(
-        function (data) {
-            console.log(data);
-            if (data != null) {
-                let ticketsInfo = "<table id='ticket_table' border = '1'>" +
-                    "<tbody>";
-                let tablePassenger = "<table id='passenger_table'>" +
-                    "<tbody>";
-                for (i = 0; i < data.length; i++) {
-                    let textResult = "";
-                    let opositeGender = (data[i].passengerGender = "MALE") ? "<option value='FEMALE'>FEMALE</option>" : "<option value='FEMALE'>MALE</option>";
-                    var sched = data[i].schedule;
-                    var train = data[i].trainId;
-                    var schedName = data[i].trainNumber + "_-&gt;_" + data[i].schedule;
-
-                    tablePassenger = tablePassenger +
-                        "<tr><td>Passenger name</td><td><input type='text' id='passengerName' name='passengerName' value=" + data[i].passengerName + "></td></tr>" +
-                        "<tr><td>Passenger surname</td><td><input type='text' id='passengerSurname' name='passengerSurname' value=" + data[i].passengerSurname + "></td></tr>" +
-                        "<tr><td>Passenger gender</td><td><select class='js-select1' id='passengerGender' name='passengerGender' placeholder='Choose gender'>" +
-                        "<option value=" + data[i].passengerGender + ">" + data[i].passengerGender + "</option>" +
-                        opositeGender +
-                        "</select></td></tr>" +
-                        "<tr><td>Passenger passport</td><td><input type='text' id='passengerPassport' name='passengerPassport' value=" + data[i].passengerPassport + "></td></tr>";
-
-                    ticketsInfo = ticketsInfo +
-                        "<tr><td>Station first</td><td><input type='text' id='stationFirstSecondTicket' name='stationFirstSecondTicket' readonly value=" + data[i].stationFirst.replace(' ', '_') + "></td></tr>" +
-                        "<tr><td>Time departure</td><td><input type='text' id='timeDepartureSecondTicket' name='timeDepartureSecondTicket' readonly value=" + data[i].timeDeparture + "></td></tr>" +
-                        "<tr><td>Station last</td><td><input type='text' id='stationLastSecondTicket' name='stationLastSecondTicket' readonly value=" + data[i].stationLast.replace(' ', '_') + "></td></tr>" +
-                        "<tr><td>Time arrival</td><td><input type='text' id='timeArrivalSecondTicket' name='timeArrivalSecondTicket' readonly value=" + data[i].timeArrival + "></td></tr>" +
-                        "<tr><td>Train</td><td><input type='text' id='trainSecondTicket' name='trainSecondTicket' readonly value=" + data[i].trainNumber + "></td></tr>" +
-                        "<tr><td>Schedule</td><td><input type='text' id='scheduleSecondTicket' name='scheduleSecondTicket' readonly value=" + schedName + "></td></tr>" +
-                        "<tr><td>Wagon</td><td>" + showWagonList(data[i].trainId, "SecondTicket") + "</td></tr>" +
-                        "<tr><td>Seat</td><td>" + showSeatsList(sched, 1, txtDate, "SecondTicket", train) + "</td></tr>";
-                }
-                tablePassenger = tablePassenger + "</tbody></table> <div align='center'><br><br><button type='submit'>Confirm</button></div>";
-                ticketsInfo = ticketsInfo + "</tbody></table>";
-                $("#tableTicketsTwo").html(ticketsInfo);
-                $("#tableTicketsPassangerInfo").html(tablePassenger);
-                $("#tableTicketsOneTrain").html("");
-                $("#tableTicketsPassangerInfoOneTrain").html("");
-            }
-        });
 }
 
 function showWagonList(trainId, runNumber){

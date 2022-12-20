@@ -159,11 +159,4 @@ public class User implements UserDetails {
         this.active = active;
     }
 
-    public boolean isAdmin(){
-        return role.getName().equals("admin");
-    }
-
-    public boolean isOperator(){
-        return role.getName().equals("operator");
-    }
 }

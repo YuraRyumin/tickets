@@ -48,7 +48,7 @@ public class DistancesController {
                            @RequestParam Integer kilometers,
                            Model model) {
         mainService.putUserInfoToModel(user, model);
-        distancesService.saveDistance(distanceId, kilometers, stationFirst, stationLast);
+        distancesService.saveDistance(distanceId, kilometers, stationFirst, stationLast, user);
         return "redirect:/distances";
     }
 }

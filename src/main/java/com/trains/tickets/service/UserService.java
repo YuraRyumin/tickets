@@ -8,20 +8,24 @@ import com.trains.tickets.dto.UserForNavDTO;
 import com.trains.tickets.repository.PassengerRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
@@ -48,7 +52,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-
+    @Transactional
     public String addUser(User user, Map<String, Object> model) {
         User userFromDB = userRepository.findByLogin(user.getLogin());
         if(userFromDB != null){
@@ -144,6 +148,7 @@ public class UserService implements UserDetailsService {
         return userDTO;
     }
 
+    @Transactional
     public void activateUser(String code, Model model) {
         User user = userRepository.findByActivationCode(code);
         if(user == null){
@@ -176,7 +181,8 @@ public class UserService implements UserDetailsService {
         return "userList";
     }
 
-    public String saveUser(String email, String telephone, String login, String password, String activationCode, String passenger, String role, Integer userId){
+    @Transactional
+    public String saveUser(String email, String telephone, String login, String password, String activationCode, String passenger, String role, Integer userId, User user){
         String[] fullName = passenger.split("\\s");
         String nameOfPassenger = fullName[0];
         String surnameOfPassenger = fullName[1];
@@ -203,6 +209,15 @@ public class UserService implements UserDetailsService {
                 mailSender.send(userChanged.getEmail(), "Activation", message);
             }
             userRepository.save(userChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new user with id " +
+                    userChanged.getId() + " (" +
+                    userChanged.getLogin() + "; " +
+                    userChanged.getEmail() + "; " +
+                    userChanged.getTelephone() + "; " +
+                    userChanged.getRole().getName() + "; " +
+                    userChanged.getPassenger().getName() + " " +userChanged.getPassenger().getSurname() + "; " +
+                    userChanged.getUuid() + "; " +
+                    userChanged.getActivationCode() + ")");
         } else {
             User userChanged = userRepository.findById(userId);
             boolean wasChanged = false;
@@ -218,33 +233,39 @@ public class UserService implements UserDetailsService {
                 userChanged.setLogin(login);
                 wasChanged = true;
             }
-            //            if(!userChanged.getPassenger().equals(passwordEncoder.encode(password))){
-            //                userChanged.setPassword(passwordEncoder.encode(password));
-            //                wasChanged = true;
-            //            }
+
             if (userChanged.getUuid().equals("") || userChanged.getUuid() == null){
                 userChanged.setUuid(UUID.randomUUID().toString());
                 wasChanged = true;
             }
-            //            if(!userChanged.getPassenger() == null || !passengerNew == null) {
-            //                if (!userChanged.getPassenger().equals(passengerNew)) {
-            //                    userChanged.setPassenger(passengerNew);
-            //                    wasChanged = true;
-            //                }
-            //            }
+
             if(!userChanged.getRole().equals(roleNew)){
                 userChanged.setRole(roleNew);
                 wasChanged = true;
             }
             userChanged.setActive(true);
-            //            if(!userChanged.getActivationCode().equals(activationCode)){
-            //                userChanged.setActivationCode(activationCode);
-            //                wasChanged = true;
-            //            }
+
             if(wasChanged){
                 userRepository.save(userChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change user with id " +
+                        userChanged.getId() + " (" +
+                        userChanged.getLogin() + "; " +
+                        userChanged.getEmail() + "; " +
+                        userChanged.getTelephone() + "; " +
+                        userChanged.getRole().getName() + "; " +
+                        userChanged.getPassenger().getName() + " " +userChanged.getPassenger().getSurname() + "; " +
+                        userChanged.getUuid() + "; " +
+                        userChanged.getActivationCode() + ")");
             }
         }
         return "redirect:/user";
+    }
+
+    public boolean isAdmin(User user){
+        return user.getRole().getName().equals("admin");
+    }
+
+    public boolean isOperator(User user){
+        return user.getRole().getName().equals("operator");
     }
 }

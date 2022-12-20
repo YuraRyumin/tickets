@@ -1,18 +1,20 @@
 package com.trains.tickets.service;
 
-import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.Train;
-import com.trains.tickets.dto.StationsForMainDTO;
+import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.TrainDTO;
 import com.trains.tickets.repository.TrainRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class TrainService {
     private final TrainRepository trainRepository;
@@ -67,12 +69,16 @@ public class TrainService {
         }
     }
 
-    public void saveTrain(String number, Integer trainId){
+    @Transactional
+    public void saveTrain(String number, Integer trainId, User user){
         if (trainId.equals(0)) {
             Train trainChanged = new Train(
                     number
             );
             trainRepository.save(trainChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new train with id " +
+                    trainChanged.getId() + " (" +
+                    trainChanged.getNumber() + ")");
         } else {
             Train trainChanged = trainRepository.findById(trainId);
             if (trainChanged == null){
@@ -85,6 +91,9 @@ public class TrainService {
             }
             if(wasChanged){
                 trainRepository.save(trainChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change train with id " +
+                        trainChanged.getId() + " (" +
+                        trainChanged.getNumber() + ")");
             }
         }
     }

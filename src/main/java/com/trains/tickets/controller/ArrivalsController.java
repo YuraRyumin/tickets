@@ -11,11 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/arrivals")
@@ -42,20 +38,4 @@ public class ArrivalsController {
         model.addAttribute("arrivals", stopService.convertAllEntityToDtoForArrival(stopRepository.findAll()));
         return "arrivals";
     }
-
-
-
-//    @GetMapping("{station}")
-//    public String userEditForm(@AuthenticationPrincipal User user,
-//                               @PathVariable String station,
-//                               Model model){
-//        try {
-//            mainService.putUserInfoToModel(user, model);
-//            userService.putInfoAboutUserToModel(userThis, model);
-//            return "arrivals";
-//        } catch (Exception e){
-//            mainService.putExceptionInfoToModel(e, model);
-//            return "error";
-//        }
-//    }
 }

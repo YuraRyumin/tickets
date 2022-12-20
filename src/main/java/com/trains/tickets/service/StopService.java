@@ -3,20 +3,25 @@ package com.trains.tickets.service;
 import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.domain.Station;
 import com.trains.tickets.domain.Stop;
+import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.StopDTO;
 import com.trains.tickets.dto.StopsForArrivalsDTO;
 import com.trains.tickets.repository.ScheduleRepository;
 import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class StopService {
     private final ScheduleRepository scheduleRepository;
@@ -95,7 +100,8 @@ public class StopService {
         }
     }
 
-    public void saveStop(String timeBegining, String timeEnd, String schedule, String station, Integer stopId){
+    @Transactional
+    public void saveStop(String timeBegining, String timeEnd, String schedule, String station, Integer stopId, User user){
 
         String[] fullTimeBegining = timeBegining.split(":");
         Integer hourOfBegining = Integer.valueOf(fullTimeBegining[0]);
@@ -119,6 +125,12 @@ public class StopService {
                     stationRepository.findByName(station)
             );
             stopRepository.save(stopChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new stop with id " +
+                    stopChanged.getId() + " (" +
+                    stopChanged.getStation().getName() + "; " +
+                    stopChanged.getSchedule().getTime().toString() + "; " +
+                    stopChanged.getTimeBegining().toString() + "; " +
+                    stopChanged.getTimeEnd().toString() + ")");
         } else {
             Stop stopChanged = stopRepository.findById(stopId);
             boolean wasChanged = false;
@@ -143,6 +155,12 @@ public class StopService {
             }
             if(wasChanged){
                 stopRepository.save(stopChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change stop with id " +
+                        stopChanged.getId() + " (" +
+                        stopChanged.getStation().getName() + "; " +
+                        stopChanged.getSchedule().getTime().toString() + "; " +
+                        stopChanged.getTimeBegining().toString() + "; " +
+                        stopChanged.getTimeEnd().toString() + ")");
             }
         }
     }

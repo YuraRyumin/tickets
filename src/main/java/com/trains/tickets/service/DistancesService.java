@@ -7,14 +7,18 @@ import com.trains.tickets.dto.DistanceDTO;
 import com.trains.tickets.repository.DistanceRepository;
 import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.StationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class DistancesService {
     private final UserService userService;
@@ -75,8 +79,8 @@ public class DistancesService {
             model.addAttribute("stationsLast", stationService.convertAllEntityToDtoWithSelected(stationRepository.findAll(Sort.by(Sort.Direction.ASC, "name")), selectedDistance.getStationLast()));
         }
     }
-
-    public void saveDistance(Integer distanceId, Integer kilometers, String stationFirst, String stationLast){
+    @Transactional
+    public void saveDistance(Integer distanceId, Integer kilometers, String stationFirst, String stationLast, User user){
         if (distanceId.equals(0)) {
             Distance distanceChanged = new Distance(
                     stationRepository.findByName(stationFirst),
@@ -84,6 +88,11 @@ public class DistancesService {
                     kilometers
             );
             distanceRepository.save(distanceChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new distance with id " +
+                    distanceChanged.getId() + " (" +
+                    distanceChanged.getStationFirst().getName() + "; " +
+                    distanceChanged.getStationLast().getName() + "; " +
+                    distanceChanged.getKilometers() + ")");
         } else {
             Distance distanceChanged = distanceRepository.findById(distanceId);
             boolean wasChanged = false;
@@ -103,6 +112,11 @@ public class DistancesService {
             }
             if(wasChanged){
                 distanceRepository.save(distanceChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change distance with id " +
+                        distanceChanged.getId() + " (" +
+                        distanceChanged.getStationFirst().getName() + "; " +
+                        distanceChanged.getStationLast().getName() + "; " +
+                        distanceChanged.getKilometers() + ")");
             }
         }
     }

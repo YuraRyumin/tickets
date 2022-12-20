@@ -1,7 +1,5 @@
 package com.trains.tickets.dto;
 
-import com.trains.tickets.domain.Passenger;
-import com.trains.tickets.domain.Role;
 import lombok.Data;
 
 import javax.persistence.*;

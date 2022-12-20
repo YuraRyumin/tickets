@@ -1,7 +1,6 @@
 package com.trains.tickets.dto;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalTime;
 

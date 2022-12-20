@@ -4,7 +4,6 @@ import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.NewsRepository;
 import com.trains.tickets.service.MainService;
 import com.trains.tickets.service.NewsService;
-import com.trains.tickets.service.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;

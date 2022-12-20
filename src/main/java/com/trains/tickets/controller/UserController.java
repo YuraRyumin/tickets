@@ -4,7 +4,6 @@ import com.trains.tickets.domain.User;
 import com.trains.tickets.exception.NotFoundException;
 import com.trains.tickets.repository.UserRepository;
 import com.trains.tickets.service.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/user")
-//@PreAuthorize("hasAuthority('admin')")
+@PreAuthorize("hasAuthority('admin')")
 public class UserController {
     private final UserRepository userRepository;
     private final UserService userService;
@@ -52,6 +51,6 @@ public class UserController {
             @RequestParam Integer userId,
             Model model){
         mainService.putUserInfoToModel(user, model);
-        return userService.saveUser(email, telephone, login, password, activationCode, passenger, role, userId);
+        return userService.saveUser(email, telephone, login, password, activationCode, passenger, role, userId, user);
     }
 }

@@ -1,15 +1,20 @@
 package com.trains.tickets.service;
 
 import com.trains.tickets.domain.Station;
+import com.trains.tickets.domain.User;
 import com.trains.tickets.dto.StationsForMainDTO;
 import com.trains.tickets.repository.StationRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class StationService {
     private final StationRepository stationRepository;
@@ -76,16 +81,22 @@ public class StationService {
             model.addAttribute("stations", convertEntityToDto(selecteStation));
         }
     }
-
-    public void saveStation(String name, Integer stationId){
+    @Transactional
+    public void saveStation(String name, Integer stationId, User user){
         if(stationId.equals(0)){
             Station stationChanged = new Station(name);
             stationRepository.save(stationChanged);
+            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new station with id " +
+                    stationChanged.getId() + " (" +
+                    stationChanged.getName() + ")");
         } else {
             Station stationChanged = stationRepository.findById(stationId);
             if(!stationChanged.getName().equals(name)){
                 stationChanged.setName(name);
                 stationRepository.save(stationChanged);
+                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change station with id " +
+                        stationChanged.getId() + " (" +
+                        stationChanged.getName() + ")");
             }
         }
     }

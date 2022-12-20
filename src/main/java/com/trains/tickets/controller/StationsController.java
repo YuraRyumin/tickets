@@ -12,12 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @Controller
 @RequestMapping("/stations")
 @PreAuthorize("hasAuthority('operator')")
-//@PreAuthorize("hasAuthority('admin')")
 public class StationsController {
     private final StationRepository stationRepository;
     private final StationService stationService;
@@ -53,7 +50,7 @@ public class StationsController {
                                @RequestParam Integer stationId,
                                Model model){
         mainService.putUserInfoToModel(user, model);
-        stationService.saveStation(name, stationId);
+        stationService.saveStation(name, stationId, user);
         return "redirect:/stations";
     }
 }

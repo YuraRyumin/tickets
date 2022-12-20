@@ -47,7 +47,7 @@ public class ServiceClassesController {
                                @RequestParam Integer serviceClassId,
                                Model model){
         mainService.putUserInfoToModel(user, model);
-        serviceClassService.saveServiceClass(name, prisePerKm, serviceClassId);
+        serviceClassService.saveServiceClass(name, prisePerKm, serviceClassId, user);
         return "redirect:/serviceClasses";
     }
 }

@@ -48,7 +48,7 @@ public class StopsController {
                                @RequestParam Integer stopId,
                                Model model){
         mainService.putUserInfoToModel(user, model);
-        stopService.saveStop(timeBegining, timeEnd, schedule, station, stopId);
+        stopService.saveStop(timeBegining, timeEnd, schedule, station, stopId, user);
         return "redirect:/stops";
     }
 }
