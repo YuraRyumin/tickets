@@ -38,9 +38,9 @@ class RoleServiceTest {
 
     @Test
     void anotherSaveRole(){
-        Role role = new Role("Abs");
-        role.setId(4);
-        when(roleRepositoryMockito.findById(4)).thenReturn(role);
+        Role role = new Role("aaa");
+        role.setId(1);
+        when(roleRepositoryMockito.findById(1)).thenReturn(role);
         when(roleRepositoryMockito.save(role)).thenReturn(role);
         Assertions.assertDoesNotThrow(() -> roleService.saveRole(role.getName() + "1", role.getId(), new User()));
     }

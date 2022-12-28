@@ -1,6 +1,8 @@
 package com.trains.tickets.service;
 
 import com.trains.tickets.domain.*;
+import com.trains.tickets.repository.ScheduleRepository;
+import com.trains.tickets.repository.StationRepository;
 import com.trains.tickets.repository.StopRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +20,12 @@ import static org.mockito.Mockito.when;
 class StopServiceTest {
     @Mock
     StopRepository stopRepositoryMockito;
+
+    @Mock
+    ScheduleRepository scheduleRepository;
+
+    @Mock
+    StationRepository stationRepository;
 
     @InjectMocks
     StopService stopService;
@@ -44,9 +52,9 @@ class StopServiceTest {
         when(stopRepositoryMockito.save(stop)).thenReturn(stop);
         Assertions.assertDoesNotThrow(() -> stopService.saveStop("10:10",
                                                                 "15:15",
-                                                                stop.getSchedule().getTime().toString(),
-                                                                stop.getStation().getName() + "New",
-                                                                stop.getId(),
+                                                                "NotNew",
+                                                                "New",
+                                                                4,
                                                                 new User()));
     }
 

@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  mysql:
+    image: 'mysql:8'
+    container_name: 'java-mysql'
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=Qwerasdf1234'
+      - 'MYSQL_DATABASE=trains'
+      - 'MYSQL_USER=mysql'
+      - 'MYSQL_PASSWORD=Qwerasdf1234'
+
+    ports:
+      - '3305:3306'
+
+  app:
+    container_name: 'java-app'
+    ports:
+      - 8080:8080
+    depends_on:
+      - 'mysql'
+    build: ./

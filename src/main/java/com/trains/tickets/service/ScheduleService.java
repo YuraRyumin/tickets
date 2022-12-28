@@ -82,17 +82,20 @@ public class ScheduleService {
                              Integer scheduleId,
                              User user){
         if (scheduleId.equals(0)) {
-            Schedule scheduleChanged = new Schedule(
-                    time,
-                    dayOfWeek,
-                    trainRepository.findByNumber(train)
-            );
-            scheduleRepository.save(scheduleChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new schedule with id " +
-                    scheduleChanged.getId() + " (" +
-                    scheduleChanged.getTrain().getNumber() + "; " +
-                    scheduleChanged.getTime().toString() + "; " +
-                    scheduleChanged.getDayOfWeek() + ")");
+            Train trainNew = trainRepository.findByNumber(train);
+            if(trainNew != null){
+                Schedule scheduleChanged = new Schedule(
+                        time,
+                        dayOfWeek,
+                        trainNew
+                );
+                scheduleRepository.save(scheduleChanged);
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new schedule with id " +
+                        scheduleChanged.getId() + " (" +
+                        //scheduleChanged.getTrain().getNumber() + "; " +
+                        scheduleChanged.getTime().toString() + "; " +
+                        scheduleChanged.getDayOfWeek() + ")");
+            }
         } else {
             Schedule scheduleChanged = scheduleRepository.findById(scheduleId);
             boolean wasChanged = false;
@@ -105,15 +108,15 @@ public class ScheduleService {
                 wasChanged = true;
             }
             Train trainNew = trainRepository.findByNumber(train);
-            if (!scheduleChanged.getTrain().equals(trainNew)) {
+            if (!scheduleChanged.getTrain().equals(trainNew) && trainNew != null) {
                 scheduleChanged.setTrain(trainNew);
                 wasChanged = true;
             }
             if (wasChanged){
                 scheduleRepository.save(scheduleChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change schedule with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change schedule with id " +
                         scheduleChanged.getId() + " (" +
-                        scheduleChanged.getTrain().getNumber() + "; " +
+                        //scheduleChanged.getTrain().getNumber() + "; " +
                         scheduleChanged.getTime().toString() + "; " +
                         scheduleChanged.getDayOfWeek() + ")");
             }

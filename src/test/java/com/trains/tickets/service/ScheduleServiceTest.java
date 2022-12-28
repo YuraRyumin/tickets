@@ -5,6 +5,7 @@ import com.trains.tickets.domain.Schedule;
 import com.trains.tickets.domain.Train;
 import com.trains.tickets.domain.User;
 import com.trains.tickets.repository.ScheduleRepository;
+import com.trains.tickets.repository.TrainRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,9 @@ import static org.mockito.Mockito.when;
 class ScheduleServiceTest {
     @Mock
     ScheduleRepository scheduleRepositoryMockito;
+
+    @Mock
+    TrainRepository trainRepository;
 
     @InjectMocks
     ScheduleService scheduleService;
@@ -45,7 +49,7 @@ class ScheduleServiceTest {
 
     @Test
     void testNameOfDay(){
-        Assertions.assertEquals(scheduleService.returnDaysOfWeek(1), "Sunday");
+        Assertions.assertEquals(scheduleService.returnDaysOfWeek(1).size(), 7);
     }
 
     @Test
@@ -59,5 +63,12 @@ class ScheduleServiceTest {
         Assertions.assertEquals(scheduleService.getEmptyDto().getTrain(), "");
         Assertions.assertEquals(scheduleService.getEmptyDto().getTime(), "");
         Assertions.assertEquals(scheduleService.getEmptyDto().getDayOfWeek(), "");
+    }
+
+    @Test
+    void testOneDayDTO(){
+//        Assertions.assertEquals(scheduleService.returnOneDayDTO(1, "name", 1).getId(), 1);
+//        Assertions.assertEquals(scheduleService.returnOneDayDTO(1, "name", 1).getName(), "name");
+//        Assertions.assertEquals(scheduleService.returnOneDayDTO(1, "name", 0).getId(), 1);
     }
 }

@@ -101,7 +101,7 @@ public class PassengerService {
                     localDateOfBirth
             );
             passengerRepository.save(passengerChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new passenger with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new passenger with id " +
                     passengerChanged.getId() + " (" +
                     passengerChanged.getName() + "; " +
                     passengerChanged.getSurname() + "; " +
@@ -133,7 +133,7 @@ public class PassengerService {
             }
             if(wasChanged){
                 passengerRepository.save(passengerChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change passenger with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change passenger with id " +
                         passengerChanged.getId() + " (" +
                         passengerChanged.getName() + "; " +
                         passengerChanged.getSurname() + "; " +

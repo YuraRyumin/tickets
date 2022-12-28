@@ -1,7 +1,7 @@
 package com.trains.tickets.service;
 
 import com.trains.tickets.domain.*;
-import com.trains.tickets.repository.TicketRepository;
+import com.trains.tickets.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,21 @@ import static org.mockito.Mockito.when;
 class TicketServiceTest {
     @Mock
     TicketRepository ticketRepositoryMockito;
+
+    @Mock
+    UserRepository userRepository;
+
+    @Mock
+    PassengerRepository passengerRepository;
+
+    @Mock
+    WagonRepository wagonRepository;
+
+    @Mock
+    ScheduleRepository scheduleRepository;
+
+    @Mock
+    TrainRepository trainRepository;
 
     @InjectMocks
     TicketService ticketService;
@@ -42,7 +57,7 @@ class TicketServiceTest {
                                                                         "M1",
                                                                         "W1",
                                                                         100,
-                                                                        "08:37",
+                                                                        "M1_->_08:37",
                                                                         0,
                                                                         10,
                                                                         "user",
@@ -67,7 +82,7 @@ class TicketServiceTest {
                                                                         "M2",
                                                                         "W1",
                                                                         100,
-                                                                        "08:37",
+                                                                        "M1_->_08:37",
                                                                         4,
                                                                         10,
                                                                         "user",

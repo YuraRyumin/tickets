@@ -86,7 +86,7 @@ public class StationService {
         if(stationId.equals(0)){
             Station stationChanged = new Station(name);
             stationRepository.save(stationChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new station with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new station with id " +
                     stationChanged.getId() + " (" +
                     stationChanged.getName() + ")");
         } else {
@@ -94,7 +94,7 @@ public class StationService {
             if(!stationChanged.getName().equals(name)){
                 stationChanged.setName(name);
                 stationRepository.save(stationChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change station with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change station with id " +
                         stationChanged.getId() + " (" +
                         stationChanged.getName() + ")");
             }

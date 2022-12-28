@@ -8,4 +8,5 @@ public interface PassengerRepository extends JpaRepository<Passenger, Long> {
     Passenger findByPassport(String passport);
     Passenger findById(Integer id);
     Passenger findByNameAndSurname(String name, String surname);
+    Passenger findByName(String name);
 }

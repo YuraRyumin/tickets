@@ -40,7 +40,7 @@ public class TicketsRestController {
             @RequestParam String timeDeparture,
             @RequestParam String timeArrival
     ){
-        return ticketService.findTicketsInfoAndPassanger(user.getPassenger(), stationFirst, stationLast, timeDeparture, timeArrival);
+        return ticketService.findTicketsInfoAndPassanger(user, stationFirst, stationLast, timeDeparture, timeArrival);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/getWagons")

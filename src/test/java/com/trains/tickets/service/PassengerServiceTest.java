@@ -64,6 +64,6 @@ class PassengerServiceTest {
         Assertions.assertEquals(passengerService.getEmptyDto().getSurname(), "");
         Assertions.assertEquals(passengerService.getEmptyDto().getPassport(), "");
         Assertions.assertEquals(passengerService.getEmptyDto().getGender(), "");
-        Assertions.assertEquals(passengerService.getEmptyDto().getDateOfBirth(), LocalTime.of(1, 1, 1));
+        Assertions.assertEquals(passengerService.getEmptyDto().getDateOfBirth(), LocalDate.of(1, 1, 1));
     }
 }

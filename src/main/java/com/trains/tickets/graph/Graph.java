@@ -375,7 +375,7 @@ public class Graph {
                             break;
                         }
                         if(vertex.getStation().getName().equals(oneTrainTripDTO.getStationFirst())){
-                            firstDistance = shortestPaths.get(nu + 1).getDistance();
+                            firstDistance = shortestPaths.get(nu).getDistance();
                             if(firstDistance == MAX_VERTS){
                                 continue;
                             }
@@ -412,7 +412,7 @@ public class Graph {
                                                       List<Stop> stopList){
         oneTrainTripDTO.setStationFirst(station.getName());
         Stop stop = findStopByStationAndSchedule(station, schedule, stopList);
-        if (!stop.equals(null)) {
+        if (stop != null) {
             oneTrainTripDTO.setTimeDeparture(stop.getTimeEnd().toString());
         }
         oneTrainTripDTO.setSchedule(schedule.getTime());
@@ -426,7 +426,7 @@ public class Graph {
                                                  List<Stop> stopList){
         oneTrainTripDTO.setStationLast(station.getName());
         Stop stop = findStopByStationAndSchedule(station, schedule, stopList);
-        if (!stop.equals(null)) {
+        if (stop != null) {
             oneTrainTripDTO.setTimeArrival(stop.getTimeBegining().toString());
         }
         return stop.getTimeBegining();

@@ -38,10 +38,10 @@ public class GraphService {
         for(Distance distance: distances){
             stationFirstObj = distance.getStationFirst();
             stationLastObj = distance.getStationLast();
-            if(!stationFirstObj.equals(null) && stations.indexOf(stationFirstObj) == -1){
+            if(stationFirstObj != null && stations.indexOf(stationFirstObj) == -1){
                 stations.add(stationFirstObj);
             }
-            if(!stationLastObj.equals(null) && stations.indexOf(stationLastObj) == -1){
+            if(stationLastObj != null && stations.indexOf(stationLastObj) == -1){
                 stations.add(stationLastObj);
             }
         }

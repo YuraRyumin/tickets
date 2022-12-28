@@ -65,7 +65,7 @@ public class RoleService {
         if (roleId.equals(0)) {
             Role roleChanged = new Role(name);
             roleRepository.save(roleChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new role with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new role with id " +
                     roleChanged.getId() + " (" +
                     roleChanged.getName() + ")");
         } else {
@@ -73,7 +73,7 @@ public class RoleService {
             if(!roleChanged.getName().equals(name)){
                 roleChanged.setName(name);
                 roleRepository.save(roleChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change role with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change role with id " +
                         roleChanged.getId() + " (" +
                         roleChanged.getName() + ")");
             }

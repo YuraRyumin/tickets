@@ -13,7 +13,7 @@
     <body>
     <nav class="navbar navbar-expand-lg bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Tickets to trains</a>
+            <a class="navbar-brand" href="/">Train tickets</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -86,7 +86,7 @@
                 </div>
                 <div class="col">
                     <div align=center>
-                        <form action="/private" method="post">
+                        <form action="/privatePage" method="post">
                             <table class="tableOnDiv" id='private_table' border = '1'>
                                 <tbody>
                                 <tr>
@@ -112,6 +112,47 @@
                                 </tbody>
                             </table>
 
+                            <br>
+
+                            Passenger info
+                            <table class="tableOnDiv" id='private_table_passenger' border = '1'>
+                                <tbody>
+                                <tr>
+                                    <td>Name</td>
+                                    <td><input type="text" name="passengerName" id="passengerName" value="{{passengerInfo.name}}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Surname</td>
+                                    <td><input type="text" name="passengerSurname" id="passengerSurname" value="{{passengerInfo.surname}}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Passport</td>
+                                    <td><input type="text" name="passengerPassport" id="passengerPassport" value="{{passengerInfo.passport}}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Gender</td>
+                                    <td><select class='js-select1' id='passengerGender' name='passengerGender' placeholder='Choose gender'>
+                                        {{#genders}}
+                                        {{#selected}}
+                                        <option value="{{name}}" selected>{{name}}</option>
+                                        {{/selected}}
+                                        {{^selected}}
+                                        <option value="{{name}}" >{{name}}</option>
+                                        {{/selected}}
+                                        {{/genders}}
+                                    </select></td>
+                                </tr>
+                                <tr>
+                                    <td>Date of b.</td>
+                                    <td><input type="date" name="passengerDateOfBirth" id="passengerDateOfBirth" value="{{passengerInfo.dateOfBirth}}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div align='center'>
+                                <br><br>
+                                <input type="hidden" value="{{_csrf.token}}" name="_csrf">
+                                <button type='submit'>Confirm</button>
+                            </div>
                             <br>
 
                             List of tickets

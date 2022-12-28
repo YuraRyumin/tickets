@@ -82,29 +82,37 @@ public class DistancesService {
     @Transactional
     public void saveDistance(Integer distanceId, Integer kilometers, String stationFirst, String stationLast, User user){
         if (distanceId.equals(0)) {
-            Distance distanceChanged = new Distance(
-                    stationRepository.findByName(stationFirst),
-                    stationRepository.findByName(stationLast),
-                    kilometers
-            );
-            distanceRepository.save(distanceChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new distance with id " +
-                    distanceChanged.getId() + " (" +
-                    distanceChanged.getStationFirst().getName() + "; " +
-                    distanceChanged.getStationLast().getName() + "; " +
-                    distanceChanged.getKilometers() + ")");
+            Station stationFirstNew = stationRepository.findByName(stationFirst);
+            Station stationLastNew = stationRepository.findByName(stationLast);
+            if(stationFirstNew != null && stationLastNew != null) {
+                Distance distanceChanged = new Distance(
+                        stationFirstNew,
+                        stationLastNew,
+                        kilometers
+                );
+                distanceRepository.save(distanceChanged);
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new distance with id " +
+                        distanceChanged.getId() + " (" +
+                        distanceChanged.getStationFirst().getName() + "; " +
+                        distanceChanged.getStationLast().getName() + "; " +
+                        distanceChanged.getKilometers() + ")");
+            }
         } else {
             Distance distanceChanged = distanceRepository.findById(distanceId);
             boolean wasChanged = false;
             Station stationFirstNew = stationRepository.findByName(stationFirst);
-            if(!distanceChanged.getStationFirst().getName().equals(stationFirstNew.getName())){
-                distanceChanged.setStationFirst(stationFirstNew);
-                wasChanged = true;
+            if(stationFirstNew != null) {
+                if (!distanceChanged.getStationFirst().getName().equals(stationFirstNew.getName())) {
+                    distanceChanged.setStationFirst(stationFirstNew);
+                    wasChanged = true;
+                }
             }
             Station stationLastNew = stationRepository.findByName(stationLast);
-            if(!distanceChanged.getStationLast().getName().equals(stationLastNew.getName())){
-                distanceChanged.setStationLast(stationLastNew);
-                wasChanged = true;
+            if(stationLastNew != null) {
+                if (!distanceChanged.getStationLast().getName().equals(stationLastNew.getName())) {
+                    distanceChanged.setStationLast(stationLastNew);
+                    wasChanged = true;
+                }
             }
             if(!distanceChanged.getKilometers().equals(kilometers)){
                 distanceChanged.setKilometers(kilometers);
@@ -112,7 +120,7 @@ public class DistancesService {
             }
             if(wasChanged){
                 distanceRepository.save(distanceChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change distance with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change distance with id " +
                         distanceChanged.getId() + " (" +
                         distanceChanged.getStationFirst().getName() + "; " +
                         distanceChanged.getStationLast().getName() + "; " +

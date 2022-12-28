@@ -113,24 +113,38 @@ public class StopService {
         Integer minuteOfEnd = Integer.valueOf(fullTimeEnd[1]);
         LocalTime localTimeEnd = LocalTime.of(hourOfEnd, minuteOfEnd, 0);
 
-        String[] fullName = schedule.split("_->_");
-        String numberOfTrain = fullName[0];
-        String timeOfSchedule = fullName[1];
+        String numberOfTrain = "";
+        String timeOfSchedule = "";
+        if(schedule != null) {
+            String[] fullName = schedule.split("_->_");
+            if(fullName.length > 0) {
+                numberOfTrain = fullName[0];
+                if(fullName.length > 1) {
+                    timeOfSchedule = fullName[1];
+                }
+            }
+        }
+
+        Schedule scheduleNew = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
+        Station stationNew = stationRepository.findByName(station);
+
         if (stopId.equals(0)) {
-            Stop stopChanged = new Stop(
-                    localTimeBegining,
-                    localTimeEnd,
-                    //scheduleRepository.findByTime(schedule),
-                    scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain),
-                    stationRepository.findByName(station)
-            );
-            stopRepository.save(stopChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new stop with id " +
-                    stopChanged.getId() + " (" +
-                    stopChanged.getStation().getName() + "; " +
-                    stopChanged.getSchedule().getTime().toString() + "; " +
-                    stopChanged.getTimeBegining().toString() + "; " +
-                    stopChanged.getTimeEnd().toString() + ")");
+
+            if(scheduleNew != null && stationNew != null) {
+                Stop stopChanged = new Stop(
+                        localTimeBegining,
+                        localTimeEnd,
+                        scheduleNew,
+                        stationNew
+                );
+                stopRepository.save(stopChanged);
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new stop with id " +
+                        stopChanged.getId() + " (" +
+                        //stopChanged.getStation().getName() + "; " +
+                        //stopChanged.getSchedule().getTime().toString() + "; " +
+                        stopChanged.getTimeBegining().toString() + "; " +
+                        stopChanged.getTimeEnd().toString() + ")");
+            }
         } else {
             Stop stopChanged = stopRepository.findById(stopId);
             boolean wasChanged = false;
@@ -143,22 +157,22 @@ public class StopService {
                 wasChanged = true;
             }
             //Schedule scheduleNew = scheduleRepository.findByTime(schedule);
-            Schedule scheduleNew = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
+            //Schedule scheduleNew = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
             if(!stopChanged.getSchedule().equals(scheduleNew)){
                 stopChanged.setSchedule(scheduleNew);
                 wasChanged = true;
             }
-            Station stationNew = stationRepository.findByName(station);
+            //Station stationNew = stationRepository.findByName(station);
             if(!stopChanged.getStation().equals(stationNew)){
                 stopChanged.setStation(stationNew);
                 wasChanged = true;
             }
-            if(wasChanged){
+            if(wasChanged && scheduleNew != null && stationNew != null){
                 stopRepository.save(stopChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change stop with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change stop with id " +
                         stopChanged.getId() + " (" +
-                        stopChanged.getStation().getName() + "; " +
-                        stopChanged.getSchedule().getTime().toString() + "; " +
+                        //stopChanged.getStation().getName() + "; " +
+                        //stopChanged.getSchedule().getTime().toString() + "; " +
                         stopChanged.getTimeBegining().toString() + "; " +
                         stopChanged.getTimeEnd().toString() + ")");
             }

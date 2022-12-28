@@ -111,7 +111,7 @@ public class WagonService {
                     seats
             );
             wagonRepository.save(wagonChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new wagon with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new wagon with id " +
                     wagonChanged.getId() + " (" +
                     wagonChanged.getName() + "; " +
                     wagonChanged.getTrain().getNumber() + "; " +
@@ -141,7 +141,7 @@ public class WagonService {
             }
             if(wasChanged){
                 wagonRepository.save(wagonChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change wagon with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change wagon with id " +
                         wagonChanged.getId() + " (" +
                         wagonChanged.getName() + "; " +
                         wagonChanged.getTrain().getNumber() + "; " +
@@ -153,11 +153,11 @@ public class WagonService {
 
     public Float getPrice(String trainNumber, Integer distance, Integer wagonId){
         Float pricePerKm = Float.valueOf(0);
-        if(!wagonId.equals(null) && !wagonId.equals(0)){
+        if(wagonId != null && !wagonId.equals(0)){
             Wagon wagonN = wagonRepository.findById(wagonId);
             if(wagonN != null){
                 ServiceClass serviceClass = wagonN.getServiceClasses();
-                if(!serviceClass.equals(null)) {
+                if(serviceClass != null) {
                     pricePerKm = serviceClass.getPrisePerKm();
                 }
             }
@@ -166,7 +166,7 @@ public class WagonService {
             for (Wagon wagon : wagons) {
                 if (wagon.getId() != null) {
                     ServiceClass serviceClass = wagon.getServiceClasses();
-                    if (!serviceClass.equals(null)) {
+                    if (serviceClass != null) {
                         pricePerKm = serviceClass.getPrisePerKm();
                     }
                     break;

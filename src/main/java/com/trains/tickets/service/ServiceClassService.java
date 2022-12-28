@@ -81,7 +81,7 @@ public class ServiceClassService {
                     prisePerKm
             );
             serviceClassRepository.save(serviceClassChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new service class with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new service class with id " +
                     serviceClassChanged.getId() + " (" +
                     serviceClassChanged.getName() + "; " +
                     serviceClassChanged.getPrisePerKm().toString() + ")");
@@ -98,7 +98,7 @@ public class ServiceClassService {
             }
             if(wasChanged){
                 serviceClassRepository.save(serviceClassChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change service class with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change service class with id " +
                         serviceClassChanged.getId() + " (" +
                         serviceClassChanged.getName() + "; " +
                         serviceClassChanged.getPrisePerKm().toString() + ")");

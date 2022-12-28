@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 @Slf4j
 @Transactional(readOnly = true)
@@ -37,7 +38,6 @@ public class TakeTicketService {
         LocalDate localDateTicket = null;
         if (form.containsKey("dateTicket")) {
             String dateTicket = form.get("dateTicket");
-            System.out.println(dateTicket);
             String[] fullTimeTicket = dateTicket.split("-");
             Integer dayOfTicket = Integer.valueOf(fullTimeTicket[2]);
             Integer monthOfTicket = Integer.valueOf(fullTimeTicket[1]);
@@ -72,7 +72,7 @@ public class TakeTicketService {
             LocalDate localDateOfBirth = null;
             if (form.containsKey("passengerDate")) {
                 passengerDateForTicket = form.get("passengerDate");
-                if(!passengerDateForTicket.equals(null)) {
+                if(passengerDateForTicket != null) {
                     String[] fullDate = passengerDateForTicket.split("-");
                     Integer dayOfBirth = Integer.valueOf(fullDate[2]);
                     Integer monthOfBirth = Integer.valueOf(fullDate[1]);
@@ -86,7 +86,7 @@ public class TakeTicketService {
                     passengerGenderForTicket,
                     localDateOfBirth);
             passengerRepository.save(passengerForTicket);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new passenger with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new passenger with id " +
                     passengerForTicket.getId() + " (" +
                     passengerForTicket.getName() + "; " +
                     passengerForTicket.getSurname() + "; " +
@@ -102,9 +102,15 @@ public class TakeTicketService {
                 stationFirstTicket = stationRepository.findByName(form.get("stationFirstN" + i).replace("_", " "));
             }
             String timeDepartureTicket = null;
-            //    LocalTime localTimeDepartureTicket = null;
+            LocalTime localTimeDepartureTicket = null;
             if (form.containsKey("timeDepartureN" + i)) {
                 timeDepartureTicket = form.get("timeDepartureN" + i);
+                if(timeDepartureTicket != null){
+                    String[] fullTimeBegining = timeDepartureTicket.split(":");
+                    Integer hourOfBegining = Integer.valueOf(fullTimeBegining[0]);
+                    Integer minuteOfBegining = Integer.valueOf(fullTimeBegining[1]);
+                    localTimeDepartureTicket = LocalTime.of(hourOfBegining, minuteOfBegining, 0);
+                }
             }
             Station stationLastTicket = null;
             if (form.containsKey("stationLastN" + i)) {
@@ -114,7 +120,7 @@ public class TakeTicketService {
                 continue;
             }
             String timeArrivalTicket = null;
-            //    LocalTime localTimeArrivalTicket = null;
+            LocalTime localTimeArrivalTicket = null;
             if (form.containsKey("timeArrivalN" + i)) {
                 timeArrivalTicket = form.get("timeArrivalN" + i);
             }
@@ -150,8 +156,12 @@ public class TakeTicketService {
                 model.addAttribute("message", "Sorry, this place is already taken.");
                 return;
             }
+            if(localDateTicket.equals(LocalDate.now()) && checkTimeOfTicket(localTimeDepartureTicket)){
+                model.addAttribute("message", "Sorry, before the departure of train there is at less 10 minutes.");
+                return;
+            }
 
-            if(!stationFirstTicket.equals(null) && !stationLastTicket.equals(null)){
+            if(stationFirstTicket != null && stationLastTicket != null){
                 createTicket(passengerForTicket,
                         localDateTicket,
                         trainTicket,
@@ -168,7 +178,7 @@ public class TakeTicketService {
                                           LocalDate localDate,
                                           Train train,
                                           Schedule schedule){
-        Ticket ticket = ticketRepository.findByPassengerAndDateTicketAndTrainAndSchedule(passenger, localDate, train, schedule);
+        Ticket ticket = ticketRepository.findFirstByPassengerAndDateTicketAndTrainAndSchedule(passenger, localDate, train, schedule);
         if(ticket == null){
             return false;
         }
@@ -184,6 +194,15 @@ public class TakeTicketService {
             return false;
         }
         return true;
+    }
+
+    private boolean checkTimeOfTicket(LocalTime timeOfTicket){
+        LocalTime localTimeNow = LocalTime.now();
+        localTimeNow = localTimeNow.plusMinutes(10);
+        if(localTimeNow.isAfter(timeOfTicket)){
+            return true;
+        }
+        return false;
     }
 
     @Transactional
@@ -203,7 +222,7 @@ public class TakeTicketService {
         }
         if(wasChange){
             passengerRepository.save(passenger);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change passenger with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change passenger with id " +
                     passenger.getId() + " (" +
                     passenger.getName() + "; " +
                     passenger.getSurname() + "; " +
@@ -224,7 +243,7 @@ public class TakeTicketService {
                               User user){
         Ticket ticket = new Ticket(passenger, dateTicket, train, wagon, price, schedule, seat, user);
         ticketRepository.save(ticket);
-        log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new ticket with id " +
+        log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new ticket with id " +
                 ticket.getId() + " (" +
                 ticket.getPassenger().getName() + " " + ticket.getPassenger().getSurname() + "; " +
                 ticket.getUser().getLogin() + "; " +

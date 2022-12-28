@@ -140,31 +140,33 @@ public class TicketService {
         String timeOfSchedule = fullNameSchedule[1];
         Schedule scheduleNew = scheduleRepository.findByTimeAndTrainNumber(timeOfSchedule, numberOfTrain);
         if (ticketId.equals(0)) {
-            Ticket ticketChanged = new Ticket(
-                    passengerNew,
-                    localDateOfTicket,
-                    trainNew,
-                    wagonNew,
-                    price,
-                    scheduleNew,
-                    seat,
-                    userThis
-            );
-            ticketRepository.save(ticketChanged);
-            log.error(LocalDateTime.now().toString() + " - " + userThis.getLogin() + " create new ticket with id " +
-                    ticketChanged.getId() + " (" +
-                    ticketChanged.getPassenger().getName() + " " + ticketChanged.getPassenger().getSurname() + "; " +
-                    ticketChanged.getUser().getLogin() + "; " +
-                    ticketChanged.getTrain().getNumber() + "; " +
-                    ticketChanged.getSchedule().getTime().toString() + "; " +
-                    ticketChanged.getDateTicket().toString() + "; " +
-                    ticketChanged.getWagon().getName() + "; " +
-                    ticketChanged.getSeat().toString() + "; " +
-                    ticketChanged.getPrice().toString() + ")");
+            if(trainNew != null && userNew != null && passengerNew != null && wagonNew != null && scheduleNew != null) {
+                Ticket ticketChanged = new Ticket(
+                        passengerNew,
+                        localDateOfTicket,
+                        trainNew,
+                        wagonNew,
+                        price,
+                        scheduleNew,
+                        seat,
+                        userThis
+                );
+                ticketRepository.save(ticketChanged);
+                log.info(LocalDateTime.now().toString() + " - " + userThis.getLogin() + " create new ticket with id " +
+                        ticketChanged.getId() + " (" +
+                        ticketChanged.getPassenger().getName() + " " + ticketChanged.getPassenger().getSurname() + "; " +
+                        ticketChanged.getUser().getLogin() + "; " +
+                        ticketChanged.getTrain().getNumber() + "; " +
+                        ticketChanged.getSchedule().getTime().toString() + "; " +
+                        ticketChanged.getDateTicket().toString() + "; " +
+                        ticketChanged.getWagon().getName() + "; " +
+                        ticketChanged.getSeat().toString() + "; " +
+                        ticketChanged.getPrice().toString() + ")");
+            }
         } else {
             Ticket ticketChanged = ticketRepository.findById(ticketId);
             boolean wasChanged = false;
-            if(!ticketChanged.getPassenger().equals(passengerNew)){
+            if(!ticketChanged.getPassenger().equals(passengerNew) && passengerNew != null){
                 ticketChanged.setPassenger(passengerNew);
                 wasChanged = true;
             }
@@ -172,11 +174,11 @@ public class TicketService {
                 ticketChanged.setDateTicket(localDateOfTicket);
                 wasChanged = true;
             }
-            if(!ticketChanged.getTrain().equals(trainNew)){
+            if(!ticketChanged.getTrain().equals(trainNew) && trainNew != null){
                 ticketChanged.setTrain(trainNew);
                 wasChanged = true;
             }
-            if(!ticketChanged.getWagon().equals(wagonNew)){
+            if(!ticketChanged.getWagon().equals(wagonNew) && wagonNew != null){
                 ticketChanged.setWagon(wagonNew);
                 wasChanged = true;
             }
@@ -184,7 +186,7 @@ public class TicketService {
                 ticketChanged.setPrice(price);
                 wasChanged = true;
             }
-            if(!ticketChanged.getSchedule().equals(scheduleNew)){
+            if(!ticketChanged.getSchedule().equals(scheduleNew) && scheduleNew != null){
                 ticketChanged.setSchedule(scheduleNew);
                 wasChanged = true;
             }
@@ -192,13 +194,15 @@ public class TicketService {
                 ticketChanged.setSeat(seat);
                 wasChanged = true;
             }
-            if(!ticketChanged.getUser().equals(userNew.getLogin())){
-                ticketChanged.setUser(userNew);
-                wasChanged = true;
+            if(userNew != null) {
+                if (!ticketChanged.getUser().equals(userNew.getLogin())) {
+                    ticketChanged.setUser(userNew);
+                    wasChanged = true;
+                }
             }
             if(wasChanged){
                 ticketRepository.save(ticketChanged);
-                log.error(LocalDateTime.now().toString() + " - " + userThis.getLogin() + " change ticket with id " +
+                log.info(LocalDateTime.now().toString() + " - " + userThis.getLogin() + " change ticket with id " +
                         ticketChanged.getId() + " (" +
                         ticketChanged.getPassenger().getName() + " " + ticketChanged.getPassenger().getSurname() + "; " +
                         ticketChanged.getUser().getLogin() + "; " +
@@ -237,13 +241,14 @@ public class TicketService {
         return convertAllEntityToDto(ticketList);
     }
 
-    public Set<TicketInfoDTO> findTicketsInfoAndPassanger(Passenger passengerTicket,
+    public Set<TicketInfoDTO> findTicketsInfoAndPassanger(User user,
                                                           String firstStation,
                                                           String lastStation,
                                                           String timeDeparture,
                                                           String timeArrival){
+        Passenger passengerTicket = user.getPassenger();
         Integer idPassenger = null;
-        if(passengerTicket == null){
+        if(passengerTicket != null){
             idPassenger = passengerTicket.getId();
         }
         Set<TicketInfoDTO> ticketInfoDTOS = new HashSet<>();

@@ -183,10 +183,20 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public String saveUser(String email, String telephone, String login, String password, String activationCode, String passenger, String role, Integer userId, User user){
-        String[] fullName = passenger.split("\\s");
-        String nameOfPassenger = fullName[0];
-        String surnameOfPassenger = fullName[1];
-        Passenger passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
+        Passenger passengerNew = null;
+        if(passenger != null && !passenger.equals("")){
+            String[] fullName = passenger.split("\\s");
+            if(fullName.length > 0) {
+                String nameOfPassenger = fullName[0];
+                if(fullName.length > 1) {
+                    String surnameOfPassenger = fullName[1];
+                    passengerNew = passengerRepository.findByNameAndSurname(nameOfPassenger, surnameOfPassenger);
+                } else {
+                    passengerNew = passengerRepository.findByName(nameOfPassenger);
+                }
+            }
+        }
+
         Role roleNew = roleRepository.findByName(role);
         if (userId.equals(0)) {
             User userChanged = new User(
@@ -209,15 +219,18 @@ public class UserService implements UserDetailsService {
                 mailSender.send(userChanged.getEmail(), "Activation", message);
             }
             userRepository.save(userChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new user with id " +
-                    userChanged.getId() + " (" +
-                    userChanged.getLogin() + "; " +
-                    userChanged.getEmail() + "; " +
-                    userChanged.getTelephone() + "; " +
-                    userChanged.getRole().getName() + "; " +
-                    userChanged.getPassenger().getName() + " " +userChanged.getPassenger().getSurname() + "; " +
-                    userChanged.getUuid() + "; " +
-                    userChanged.getActivationCode() + ")");
+            if(user != null && userChanged != null) {
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new user with id " +
+                        userChanged.getId() + " (" +
+                        userChanged.getLogin() + "; " +
+                        userChanged.getEmail() + "; " +
+                        userChanged.getTelephone() + "; " +
+                        //userChanged.getRole() == null ? null : userChanged.getRole().getName() + "; " +
+                        //userChanged.getPassenger() == null ? null : userChanged.getPassenger().getName() + " " +
+                        //userChanged.getPassenger() == null ? null : userChanged.getPassenger().getSurname() + "; " +
+                        userChanged.getUuid() + "; " +
+                        userChanged.getActivationCode() + ")");
+            }
         } else {
             User userChanged = userRepository.findById(userId);
             boolean wasChanged = false;
@@ -247,15 +260,18 @@ public class UserService implements UserDetailsService {
 
             if(wasChanged){
                 userRepository.save(userChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change user with id " +
-                        userChanged.getId() + " (" +
-                        userChanged.getLogin() + "; " +
-                        userChanged.getEmail() + "; " +
-                        userChanged.getTelephone() + "; " +
-                        userChanged.getRole().getName() + "; " +
-                        userChanged.getPassenger().getName() + " " +userChanged.getPassenger().getSurname() + "; " +
-                        userChanged.getUuid() + "; " +
-                        userChanged.getActivationCode() + ")");
+                if(user != null && userChanged != null) {
+                    log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change user with id " +
+                            userChanged.getId() + " (" +
+                            userChanged.getLogin() + "; " +
+                            userChanged.getEmail() + "; " +
+                            userChanged.getTelephone() + "; " +
+                            //userChanged.getRole() == null ? "" : userChanged.getRole().getName() + "; " +
+                            //userChanged.getPassenger() == null ? "" : userChanged.getPassenger().getName() + " " +
+                            //userChanged.getPassenger() == null ? "" : userChanged.getPassenger().getSurname() + "; " +
+                            userChanged.getUuid() + "; " +
+                            userChanged.getActivationCode() + ")");
+                }
             }
         }
         return "redirect:/user";

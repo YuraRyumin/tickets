@@ -14,7 +14,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Ticket findById(Integer id);
     Set<Ticket> findAllByUserLogin(String login);
     Set<Ticket> findAllByDateTicketAndScheduleTimeAndWagonId(LocalDate dateTicket, String schedule, Integer wagonId);
-    Ticket findByPassengerAndDateTicketAndTrainAndSchedule(Passenger passenger, LocalDate localDate, Train train, Schedule schedule);
+    Ticket findFirstByPassengerAndDateTicketAndTrainAndSchedule(Passenger passenger, LocalDate localDate, Train train, Schedule schedule);
     Ticket findBySeatAndDateTicketAndTrainAndSchedule(Integer seat, LocalDate localDate, Train train, Schedule schedule);
     Set<Ticket> findAllByDateTicketAndTrainAndSchedule(LocalDate localDate, Train train, Schedule schedule);
 

@@ -3,6 +3,8 @@ package com.trains.tickets.service;
 import com.trains.tickets.domain.Passenger;
 import com.trains.tickets.domain.Role;
 import com.trains.tickets.domain.User;
+import com.trains.tickets.repository.PassengerRepository;
+import com.trains.tickets.repository.RoleRepository;
 import com.trains.tickets.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,6 +21,18 @@ import static org.mockito.Mockito.when;
 class UserServiceTest {
     @Mock
     UserRepository userRepositoryMockito;
+
+    @Mock
+    PassengerRepository passengerRepository;
+
+    @Mock
+    RoleRepository roleRepository;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
+
+    @Mock
+    MailSender mailSender;
 
     @InjectMocks
     UserService userService;
@@ -35,7 +50,7 @@ class UserServiceTest {
                                                                 "login",
                                                                 "password",
                                                                 "activationCode",
-                                                                "passenger",
+                                                                "passenger p",
                                                                 "role",
                                                                 0,
                                                                 new User()));
@@ -60,9 +75,9 @@ class UserServiceTest {
                                                                 "login",
                                                                 "password",
                                                                 "activationCode",
-                                                                "passenger",
+                                                                "passenger p",
                                                                 "role",
-                                                                5,
+                                                                4,
                                                                 new User()));
     }
 

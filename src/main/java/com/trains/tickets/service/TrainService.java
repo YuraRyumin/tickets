@@ -76,7 +76,7 @@ public class TrainService {
                     number
             );
             trainRepository.save(trainChanged);
-            log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new train with id " +
+            log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " create new train with id " +
                     trainChanged.getId() + " (" +
                     trainChanged.getNumber() + ")");
         } else {
@@ -91,7 +91,7 @@ public class TrainService {
             }
             if(wasChanged){
                 trainRepository.save(trainChanged);
-                log.error(LocalDateTime.now().toString() + " - " + user.getLogin() + " change train with id " +
+                log.info(LocalDateTime.now().toString() + " - " + user.getLogin() + " change train with id " +
                         trainChanged.getId() + " (" +
                         trainChanged.getNumber() + ")");
             }

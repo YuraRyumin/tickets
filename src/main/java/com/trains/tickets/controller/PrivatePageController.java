@@ -7,9 +7,7 @@ import com.trains.tickets.service.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/privatePage")
@@ -47,5 +45,23 @@ public class PrivatePageController {
         mainService.putUserInfoToModel(user, model);
         privatePageService.putInfoAboutPrivatePageToModel(user, model, uuid);
         return "privatePage";
+    }
+    @PostMapping
+    public String passenferSave(@AuthenticationPrincipal User user,
+                                @RequestParam String passengerName,
+                                @RequestParam String passengerSurname,
+                                @RequestParam String passengerPassport,
+                                @RequestParam String passengerGender,
+                                @RequestParam String passengerDateOfBirth,
+                                Model model){
+        mainService.putUserInfoToModel(user, model);
+        privatePageService.saveInfoAboutPassenger(user,
+                                                passengerName,
+                                                passengerSurname,
+                                                passengerPassport,
+                                                passengerGender,
+                                                passengerDateOfBirth);
+        privatePageService.putInfoAboutPrivatePageToModel(user, model, user.getUuid());
+        return "/privatePage/" + user.getUuid();
     }
 }
